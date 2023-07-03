@@ -1,0 +1,38 @@
+
+rain Epoch: 1   Loss: 0.407185
+
+Test set: Average loss: 0.0081, Accuracy: 14702/18769 (78%) 
+
+Train Epoch: 2   Loss: 0.536265
+
+Test set: Average loss: 0.0078, Accuracy: 15395/18769 (82%) 
+
+Train Epoch: 3   Loss: 0.491816
+
+Test set: Average loss: 0.0076, Accuracy: 15515/18769 (83%) 
+
+Train Epoch: 4   Loss: 0.390615
+
+Test set: Average loss: 0.0075, Accuracy: 15679/18769 (84%) 
+
+Train Epoch: 5   Loss: 0.528863
+
+Test set: Average loss: 0.0075, Accuracy: 15775/18769 (84%) 
+
+Train Epoch: 6   Loss: 0.371071
+
+Test set: Average loss: 0.0074, Accuracy: 15826/18769 (84%) 
+
+Train Epoch: 7   Loss: 0.462687
+
+Test set: Average loss: 0.0074, Accuracy: 15832/18769 (84%) 
+
+Train Epoch: 8   Loss: 0.464018
+
+Test set: Average loss: 0.0074, Accuracy: 15847/18769 (84%) 
+
+Train Epoch: 9   Loss: 0.436044
+
+Test set: Average loss: 0.0073, Accuracy: 15905/18769 (85%) 
+
+(torch_Shilong) PS E:\Shilong\murmur\03_Classifier>
