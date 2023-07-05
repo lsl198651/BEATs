@@ -18,10 +18,12 @@ class GradMultiply(torch.autograd.Function):
     @staticmethod
     def forward(ctx, x, scale):
         ctx.scale = scale
+        # 创建一个新的 x<type=Tensor> 无内容
         res = x.new(x)
         return res
 
     @staticmethod
+    # 计算导数
     def backward(ctx, grad):
         return grad * ctx.scale, None
 

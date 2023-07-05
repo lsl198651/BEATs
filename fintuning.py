@@ -1,4 +1,8 @@
-import torch
+
+# Author: Shilong
+# Creat Data: 2023-7-4
+# Modify Date:2023-
+# Description:Fine-tuning示例代码
 from BEATs import BEATs, BEATsConfig
 
 # load the fine-tuned checkpoints

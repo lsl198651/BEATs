@@ -79,6 +79,8 @@ class BEATs(nn.Module):
         self.cfg = cfg
 
         self.embed = cfg.embed_dim
+
+        # layer 1
         self.post_extract_proj = (
             nn.Linear(self.embed, cfg.encoder_embed_dim)
             if self.embed != cfg.encoder_embed_dim
@@ -86,9 +88,10 @@ class BEATs(nn.Module):
         )
 
         self.input_patch_size = cfg.input_patch_size
+        # layer 2
         self.patch_embedding = nn.Conv2d(1, self.embed, kernel_size=self.input_patch_size, stride=self.input_patch_size,
                                          bias=cfg.conv_bias)
-
+        # layer 3
         self.dropout_input = nn.Dropout(cfg.dropout_input)
 
         assert not cfg.deep_norm or not cfg.layer_norm_first
@@ -110,7 +113,10 @@ class BEATs(nn.Module):
             features: torch.Tensor,
             padding_mask: torch.Tensor,
     ) -> torch.Tensor:
-        extra = padding_mask.size(1) % features.size(1)
+        # 计算padding-mask和feature-mask之间的列长度的余数extra
+        # 余数extra值大于0则将前extra列作为padding-mask
+        # 最后将padding-mask reshape到行数不变，列数与features相同
+        extra = padding_mask.size(1) % features.size(1) 
         if extra > 0:
             padding_mask = padding_mask[:, :-extra]
         padding_mask = padding_mask.view(
@@ -118,7 +124,7 @@ class BEATs(nn.Module):
         )
         padding_mask = padding_mask.all(-1)
         return padding_mask
-
+# calculate fbank value
     def preprocess(
             self,
             source: torch.Tensor,
@@ -141,27 +147,35 @@ class BEATs(nn.Module):
             fbank_mean: float = 15.41663,
             fbank_std: float = 6.55582,
     ):
+        # wav提取fbank系数
         fbank = self.preprocess(source, fbank_mean=fbank_mean, fbank_std=fbank_std)
-
+        # 如果有padding-mask的话进行forward-padding-mask
+        # 返回一个值？？？
         if padding_mask is not None:
             padding_mask = self.forward_padding_mask(fbank, padding_mask)
 
         fbank = fbank.unsqueeze(1)
+        # fbank送入卷积层patch_embedding
         features = self.patch_embedding(fbank)
         features = features.reshape(features.shape[0], features.shape[1], -1)
+        # 求转置
         features = features.transpose(1, 2)
+        # 正则化层
         features = self.layer_norm(features)
 
         if padding_mask is not None:
             padding_mask = self.forward_padding_mask(features, padding_mask)
-
+        # 若 linear projection network存在
         if self.post_extract_proj is not None:
+            # 将特征送入post_extract_proj线性网络转化为patch embeddings E
             features = self.post_extract_proj(features)
-
+        # 送入dropout
         x = self.dropout_input(features)
 
+        # 送入bcakbone的TransformerEncoder to obtain the encoded patch representations R
         x, layer_results = self.encoder(
             x,
+            # 若padding_mask非空，将x中与padding_mask对应位置置零
             padding_mask=padding_mask,
         )
 

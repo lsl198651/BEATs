@@ -95,7 +95,7 @@ class TransformerEncoder(nn.Module):
                 nn.init.xavier_normal_(self.layers[i].self_attn.out_proj.weight, gain=deep_norm_beta)
                 nn.init.xavier_normal_(self.layers[i].fc1.weight, gain=deep_norm_beta)
                 nn.init.xavier_normal_(self.layers[i].fc2.weight, gain=deep_norm_beta)
-
+        # 获取layer_wise_gradient_decay_ratio属性
         self.layer_wise_gradient_decay_ratio = getattr(args, "layer_wise_gradient_decay_ratio", 1)
 
     def forward(self, x, padding_mask=None, layer=None):
@@ -107,33 +107,38 @@ class TransformerEncoder(nn.Module):
         return x, layer_results
 
     def extract_features(self, x, padding_mask=None, tgt_layer=None):
-
+        # padding-mask对应位置置零
         if padding_mask is not None:
             x[padding_mask] = 0
-
+        # 卷积层
         x_conv = self.pos_conv(x.transpose(1, 2))
+        # 转置
         x_conv = x_conv.transpose(1, 2)
+        # 求和
         x = x + x_conv
 
         if not self.layer_norm_first:
             x = self.layer_norm(x)
-
+        # dropout
         x = F.dropout(x, p=self.dropout, training=self.training)
-
+        # 转置
         # B x T x C -> T x B x C
         x = x.transpose(0, 1)
 
         layer_results = []
         z = None
+        # tgt_layer 为空 跳过
         if tgt_layer is not None:
             layer_results.append((x, z))
         r = None
         pos_bias = None
+        # TransformerSentenceEncoderLayer：
         for i, layer in enumerate(self.layers):
             if self.layer_wise_gradient_decay_ratio != 1.0:
-                x = GradMultiply.apply(x, self.layer_wise_gradient_decay_ratio)
-            dropout_probability = np.random.random()
+                x = GradMultiply.apply(x, self.layer_wise_gradient_decay_ratio)# 可能是在求导
+            dropout_probability = np.random.random()# 生成一个随机概率[0~1)
             if not self.training or (dropout_probability > self.layerdrop):
+                # 将x送入TransformerSentenceEncoderLayer
                 x, z, pos_bias = layer(x, self_attn_padding_mask=padding_mask, need_weights=False, pos_bias=pos_bias)
             if tgt_layer is not None:
                 layer_results.append((x, z))
