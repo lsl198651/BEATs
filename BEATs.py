@@ -211,7 +211,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         
     def forward(self,x):
         with torch.no_grad():
-            x=self.BEATs.extract_features(x)
+            x,_=self.BEATs.extract_features(x)
         # dropout
         x=self.last_Dropout(x)
         # FC
