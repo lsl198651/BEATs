@@ -22,7 +22,7 @@ from PIL import Image
 from sklearn.model_selection import StratifiedShuffleSplit
 torch.__version__
 from BEATs import BEATs, BEATsConfig,BEATs_Pre_Train_itere3
-from BEATs_def import get_patientid,get_mfcc_features,copy_wav,get_mel_features
+from BEATs_def import get_patientid,get_mfcc_features,copy_wav,get_mel_features,csv_reader_cl
 # ========================/ parameteres define /========================== # 
 murmur_positoin=['_AV','_MV','_PV','_TV']
 murmur_ap=["Absent\\","Present\\"]
@@ -37,7 +37,7 @@ present_patient_id=get_patientid(present_csv)
 
 # ========================/ load model /========================== # 
 # load the pre-trained checkpoints
-checkpoint = torch.load(r'E:\Shilong\murmur\03_Classifier\LM\BEATs\BEATs_iter3.pt')
+checkpoint = torch.load(r'E:\Shilong\murmur\03_Classifier\LM\LM_Model\BEATs\BEATs_iter3.pt')
 
 cfg = BEATsConfig(checkpoint['cfg'])
 BEATs_model = BEATs(cfg)
@@ -82,41 +82,47 @@ absent_test_path=r'E:\Shilong\murmur\LM_wav_dataset\test\Absent'
 Present_train_path=r'E:\Shilong\murmur\LM_wav_dataset\train\Present'
 present_test_path=r'E:\Shilong\murmur\LM_wav_dataset\test\Present'
 
+absent_train_id_path = r'E:\Shilong\murmur\LM_wav_dataset\absent_train_id_path.csv'
+absent_test_id_path = r'E:\Shilong\murmur\LM_wav_dataset\absent_test_id_path.csv'
+present_train_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_train_id_path.csv'
+present_test_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_test_id_path.csv'
+
+folder=r'E:\Shilong\murmur\LM_wav_dataset'
 # ========================/ devide trainset and testset /========================== #
 
-"""# 将absent_id和present_id按照7：3随机选取id划分为训练集和测试集
+"""# 将absent_id和present_id按照7:3随机选取id划分为训练集和测试集
 absent_train_id=random.sample(absent_patient_id,int(len(absent_patient_id)*0.7))
 present_train_id=random.sample(present_patient_id,int(len(present_patient_id)*0.7))
 absent_test_id=list(set(absent_patient_id)-set(absent_train_id))
 present_test_id=list(set(present_patient_id)-set(present_train_id))
 
-# 将训练集和测试集文件分别copy到train和test文件夹
-positoin=['_AV','_MV','_PV','_TV']
-murmur=["Absent\\","Present\\"]
-period=["s1", "systolic", "s2", "diastolic"]
-
-folder=r'E:\Shilong\murmur\LM_wav_dataset'
-
-copy_wav(folder,absent_test_id,'Absent',absent_test_path)
-copy_wav(folder,present_test_id,'Present',present_test_path)
-copy_wav(folder,absent_train_id,'Absent',absent_train_path)
-copy_wav(folder,present_train_id,'Present',Present_train_path)
 # 保存train、test id为CSV文件
 absent_train_id=pd.DataFrame(absent_train_id)
 present_train_id=pd.DataFrame(present_train_id)
 absent_test_id=pd.DataFrame(absent_test_id)
 present_test_id=pd.DataFrame(present_test_id)
 
-absent_train_id_path = r'E:\Shilong\murmur\LM_wav_dataset\absent_train_id_path.csv'
-absent_test_id_path = r'E:\Shilong\murmur\LM_wav_dataset\absent_test_id_path.csv'
-present_train_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_train_id_path.csv'
-present_test_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_test_id_path.csv'
-
-
 absent_train_id.to_csv(absent_train_id_path, index=False, header=False)
 present_train_id.to_csv(present_train_id_path, index=False, header=False)
 absent_test_id.to_csv(absent_test_id_path, index=False, header=False)
-present_test_id.to_csv(present_test_id_path, index=False, header=False)"""
+present_test_id.to_csv(present_test_id_path, index=False, header=False)
+
+# 读取csv文件
+absent_train_id = csv_reader_cl(absent_train_id_path,0)
+present_train_id =csv_reader_cl(present_train_id_path,0)
+absent_test_id = csv_reader_cl(absent_test_id_path,0)
+present_test_id = csv_reader_cl(present_test_id_path,0)
+
+# 将wav文件拷到对应的文件夹中
+copy_wav(folder,absent_test_id,'Absent',absent_test_path)
+copy_wav(folder,present_test_id,'Present',present_test_path)
+copy_wav(folder,absent_train_id,'Absent',absent_train_path)
+copy_wav(folder,present_train_id,'Present',Present_train_path)
+"""
+
+positoin=['_AV','_MV','_PV','_TV']
+murmur=["Absent\\","Present\\"]
+period=["s1", "systolic", "s2", "diastolic"]
 
 # ========================/ save features /========================== # 
 # train_csv_path=r'E:\Shilong\murmur\LM_wav_dataset\csv'
@@ -126,6 +132,15 @@ present_test_id.to_csv(present_test_id_path, index=False, header=False)"""
 # absent_test_features=get_mfcc_features(BEATs_model,absent_test_path,absent_test_csv_path,padding_mask)# absent
 # present_train_features=get_mfcc_features(BEATs_model,Present_train_path,present_train_csv_path,padding_mask)# present
 # present_test_features=get_mfcc_features(BEATs_model,present_test_path,present_test_csv_path,padding_mask)# present
+# np.save("absent_train_features.npy",absent_train_features)
+# np.save("absent_test_features.npy",absent_test_features)
+# np.save("present_train_features.npy",present_train_features)
+# np.save("present_test_features.npy",present_test_features)
+
+absent_train_features = np.load(r'E:\Shilong\murmur\03_Classifier\absent_train_features.npy')
+absent_test_features = np.load(r'E:\Shilong\murmur\03_Classifier\absent_test_features.npy')
+present_train_features = np.load(r'E:\Shilong\murmur\03_Classifier\present_train_features.npy')
+present_test_features = np.load(r'E:\Shilong\murmur\03_Classifier\present_test_features.npy')
 # ========================/ get features & labels /========================== # 
 path=r'E:\Shilong\murmur\LM_wav_dataset\csv'
 train_path=r'E:\Shilong\murmur\LM_wav_dataset\train_csv'
@@ -139,20 +154,18 @@ train_features=train_features.astype(float)
 train_label=train_label.astype(float)
 test_features=test_features.astype(float)
 test_label=test_label.astype(float)
-
-np.save("train_features.npy",train_features)
-np.save("train_label.npy",train_label)
-np.save("test_features.npy",test_features)
-np.save("test_label.npy",test_label)
 """
-train_features = np.load(r'E:\Shilong\murmur\03_Classifier\train_features.npy')
-train_label = np.load(r'E:\Shilong\murmur\03_Classifier\train_label.npy')
-test_features = np.load(r'E:\Shilong\murmur\03_Classifier\test_features.npy')
-test_label = np.load(r'E:\Shilong\murmur\03_Classifier\test_label.npy')
-# absent_train_label=np.ones(absent_train_features.shape[0],1)
-# absent_test_label=np.ones(absent_test_features.shape[0],1)
-# present_train_label=np.zeros(present_train_features.shape[0],1)
-# present_test_label=np.zeros(present_test_features.shape[0],1)
+
+absent_train_label=np.ones(absent_train_features.shape[0],1)
+absent_test_label=np.ones(absent_test_features.shape[0],1)
+present_train_label=np.zeros(present_train_features.shape[0],1)
+present_test_label=np.zeros(present_test_features.shape[0],1)
+
+train_label=absent_train_label+present_train_label
+test_label=absent_test_label+present_test_label
+train_features=absent_train_features+present_train_features
+test_features=absent_test_features+present_test_features
+
 # ========================/ train test /========================== # 
 # train_features=absent_train_features+present_train_features
 # train_label=absent_train_label+present_train_label
