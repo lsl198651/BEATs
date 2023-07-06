@@ -5,35 +5,11 @@ import torch,shutil
 import pandas as pd
 import numpy as np
 
-def get_patientid(csv_path):
-    # 'import csv' is required
-    with open(csv_path) as csvfile:
-        reader = csv.DictReader(csvfile)
-        id = [row['0'] for row in reader]   # weight 同列的数据
-    return id
-
-
-def get_mfcc_features(BEATs_model,dir_path,csv_path,padding_mask):    
-    for root,dir,file in os.walk(dir_path):
-        for subfile in file:
-            wav_path=os.path.join(root,subfile)
-            
-            if os.path.exists(wav_path):
-                print("reading: "+subfile)
-                y, sr = librosa.load(wav_path, sr=2000)
-                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                wav = torch.tensor(y_16k)
-                # 增加一个维度满足输入要求
-                # wav = wav.unsqueeze(0)
-                # padding=torch.zeros(16-wav.shape[0], wav.shape[1]).bool()
-                rep = BEATs_model.extract_features(wav)[0]
-                # rep1 = BEATs_model.extract_features(wav)[0]
-                rep = torch.squeeze(rep).detach().cpu().numpy()
-                feature = pd.DataFrame(rep)
-                save_path = csv_path +"\\"+ subfile+ ".csv"
-                # print("shape: "+feature.shape())
-                feature.to_csv(save_path, index=False, header=False)
-    
+def csv_reader_cl(file_name,clo_num):
+    with open(file_name,encoding='utf-8') as csvfile:
+        reader=csv.reader(csvfile)
+        column=[row[clo_num] for row in reader]
+    return column
 
 def copy_wav(folder,idlist,mur,traintest):
     for patient_id in idlist:    
@@ -46,6 +22,40 @@ def copy_wav(folder,idlist,mur,traintest):
                 # if os.path.exists(dir_path):
                 shutil.copytree(subdir_path,traintest+"\\"+subdir)
     # idlist.to_scv(folder+"\\"+traintest+"\\"+mur+traintest+".csv", index=False, header=False)
+    
+def get_patientid(csv_path):
+    # 'import csv' is required
+    with open(csv_path) as csvfile:
+        reader = csv.DictReader(csvfile)
+        id = [row['0'] for row in reader]   # weight 同列的数据
+    return id
+
+
+def get_mfcc_features(BEATs_model,dir_path,csv_path,padding_mask):
+    wav=[]
+    for root,dir,file in os.walk(dir_path):
+        for subfile in file:
+            wav_path=os.path.join(root,subfile)            
+            if os.path.exists(wav_path):
+                print("reading: "+subfile)
+                y, sr = librosa.load(wav_path, sr=2000)
+                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                # wav = torch.tensor(y_16k)
+                # 增加一个维度满足输入要求
+                # wav = wav.unsqueeze(0)
+                # padding=torch.zeros(16-wav.shape[0], wav.shape[1]).bool()
+                # rep = BEATs_model.extract_features(wav)[0]
+                # rep1 = BEATs_model.extract_features(wav)[0]
+                # rep = torch.squeeze(rep).detach().cpu().numpy()
+                wav.append(y_16k)
+                feature = pd.DataFrame(y_16k)
+                save_path = csv_path +"\\"+ subfile+ ".csv"
+                # print("shape: "+feature.shape())
+                feature.to_csv(save_path, index=False, header=False)
+    return np.array(wav)
+    
+
+
 
 """
 读取csv文件返回feature和label
