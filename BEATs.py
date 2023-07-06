@@ -57,9 +57,9 @@ class BEATsConfig:
         self.gru_rel_pos: bool = False  # apply gated relative position embedding
 
         # label predictor
-        self.finetuned_model: bool = False  # whether the model is a fine-tuned model.
+        self.finetuned_model: bool = True  # whether the model is a fine-tuned model.
         self.predictor_dropout: float = 0.1  # dropout probability for the predictor
-        self.predictor_class: int = 527  # target class number for the predictor
+        self.predictor_class: int = 2  # target class number for the predictor
 
         if cfg is not None:
             self.update(cfg)
@@ -103,10 +103,6 @@ class BEATs(nn.Module):
             self.predictor = nn.Linear(cfg.encoder_embed_dim, cfg.predictor_class)
         else:
             self.predictor = None
-            
-            
-
-
 
     def forward_padding_mask(
             self,
@@ -124,6 +120,7 @@ class BEATs(nn.Module):
         )
         padding_mask = padding_mask.all(-1)
         return padding_mask
+
 # calculate fbank value
     def preprocess(
             self,
@@ -222,7 +219,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         
     def forward(self,x):
         # with torch.no_grad():
-        #     output=self.BEATs(x)
+        #     x=self.BEATs.extract_features(x)
         # dropout
         y=self.last_Dropout(x)
         # FC
