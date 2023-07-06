@@ -21,7 +21,7 @@ import pandas as pd
 import scipy
 # import wfdb
 from pydub import AudioSegment
-
+# ========================/ functions define /========================== # 
 # make dictionary
 def mkdir(path):
     folder = os.path.exists(path)
@@ -48,7 +48,7 @@ def csv_reader_row(file_name,row_num):
 # copy wav file to folder_path
 # E:\01_Work\02_SoftwareDesign\circor_digiscope_dataset\Absent\2530\2530_AV
 def copy_file(src_path,folder_path,patient_id_list,mur,position):
-    """将文件复制到目标目录"""    
+    """将所有文件复制到目标目录"""    
     for patient_id in patient_id_list:
         # for mur in murmur:
         for pos in position:
@@ -72,7 +72,7 @@ def copy_file(src_path,folder_path,patient_id_list,mur,position):
 # copy wav file to folder_path
 # E:\01_Work\02_SoftwareDesign\circor_digiscope_dataset\Absent\2530\2530_AV
 def copy_wav_file(src_path,folder_path,patient_id_list,mur,position):
-    """将文件复制到目标目录"""    
+    """将指定文件复制到目标目录"""    
     for patient_id in patient_id_list:
         # for mur in murmur:
         for pos in position:
@@ -94,7 +94,7 @@ def copy_wav_file(src_path,folder_path,patient_id_list,mur,position):
                 shutil.copy(tsvname, target_dir+"\\")
 
 def index_load(tsvname):
-   #读取tsv文件内容,不需要close函数
+   """读取tsv文件内容,不需要close函数"""
    with open(tsvname, 'r') as f:
     txt_data = f.read()
     head=['start','end','period']
@@ -159,6 +159,7 @@ def state_div(tsvname,wavname,state_path,index):
 # path="E:\\Shilong\\murmur\\LM_wav_dataset\\Absent\\2530\\"
 # state_div(tsv,wav,path,'a')
 
+# ========================/ code executive /========================== # 
 csv_path="E:\\Shilong\\murmur\\dataset_all\\training_data.csv"
 # csv_path="E:\\Shilong\\murmur\\circor_digiscope_dataset\\training_data.csv"
 
