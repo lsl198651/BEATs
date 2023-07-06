@@ -214,7 +214,8 @@ optimizer = torch.optim.Adam([
 ], lr=0.001)#指定 新加的fc层的学习率
 
 # 定义训练函数
-def train(model,device, train_loader, epoch):
+def train_model(model,device, train_loader, test_loader,epoch):
+# train model
     model.train()
     for batch_idx, data in enumerate(train_loader):
         x,y= data
@@ -226,9 +227,7 @@ def train(model,device, train_loader, epoch):
         loss.backward()
         optimizer.step()
     print ('Train Epoch: {}\t Loss: {:.6f}'.format(epoch,loss.item()))
-
-# 定义测试函数
-def test(model, device, test_loader):
+# evaluate model
     model.eval()
     test_loss = 0
     correct = 0
@@ -248,14 +247,8 @@ def test(model, device, test_loader):
             100. * correct / len(test_set)))
 # ========================/ training model /========================== # 
 # 训练epochs=9
-for epoch in range(1, 10):
-    train(model=MyModel,device=DEVICE, train_loader=test_loader,epoch=epoch)
-    test(model=MyModel, device=DEVICE, test_loader=test_loader)
-    train_log_filename = "train_log.txt"
-    result_dir=r'E:\Shilong\murmur\03_Classifier\LM\logs'
-    train_log_filepath = os.path.join(result_dir, train_log_filename)
-    train_log_txt_formatter = "{time_str} [Epoch] {epoch:03d} [Loss] {loss_str}\n"
-    to_write=train_log_txt_formatter.format(time_str=time.strtime("%Y_%n_%d_%H:%M:%S"),epoch=epoch,loss_str=" ".join(["{}".format(loss)]))
-    with open(train_log_filepath,"a") as f:
-        f.write(to_write)
+for epoch in range(1, 20):
+    train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,epoch=epoch)
+    # test(model=MyModel, device=DEVICE, test_loader=test_loader)
+
 
