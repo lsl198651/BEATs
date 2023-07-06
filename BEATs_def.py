@@ -47,6 +47,11 @@ def get_mfcc_features(BEATs_model,dir_path,csv_path,padding_mask):
                 # rep = BEATs_model.extract_features(wav)[0]
                 # rep1 = BEATs_model.extract_features(wav)[0]
                 # rep = torch.squeeze(rep).detach().cpu().numpy()
+                # 裁剪、补零
+                if y_16k.shape[0]<10000:
+                    y_16k = np.pad(y_16k,(0,10000-y_16k.shape[0]),'constant',constant_values=(0,0))
+                elif  y_16k.shape[0]>10000:
+                    y_16k=y_16k[0:10000]
                 wav.append(y_16k)
                 feature = pd.DataFrame(y_16k)
                 save_path = csv_path +"\\"+ subfile+ ".csv"

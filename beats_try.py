@@ -16,6 +16,7 @@ import shutil,os
 import random
 import csv
 import librosa
+import time
 from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets, models, transforms
 from PIL import Image
@@ -28,12 +29,12 @@ murmur_positoin=['_AV','_MV','_PV','_TV']
 murmur_ap=["Absent\\","Present\\"]
 period=["s1", "systolic", "s2", "diastolic"]
 
-file_path=r'E:\Shilong\murmur\circor_dataset_period\train'
+# file_path=r'E:\Shilong\murmur\circor_dataset_period\train'
 # get absent / present patient_id
-absent_csv=r'E:\Shilong\murmur\03_Classifier\MurmurDectection\absent_id.csv'
-present_csv=r'E:\Shilong\murmur\03_Classifier\MurmurDectection\present_id.csv'
-absent_patient_id=get_patientid(absent_csv)
-present_patient_id=get_patientid(present_csv)
+# absent_csv=r'E:\Shilong\murmur\03_Classifier\MurmurDectection\absent_id.csv'
+# present_csv=r'E:\Shilong\murmur\03_Classifier\MurmurDectection\present_id.csv'
+# absent_patient_id=get_patientid(absent_csv)
+# present_patient_id=get_patientid(present_csv)
 
 # ========================/ load model /========================== # 
 # load the pre-trained checkpoints
@@ -88,6 +89,7 @@ present_train_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_train_id_path
 present_test_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_test_id_path.csv'
 
 folder=r'E:\Shilong\murmur\LM_wav_dataset'
+npy_path=r'E:\Shilong\murmur\LM_wav_dataset\npyFile'
 # ========================/ devide trainset and testset /========================== #
 
 """# 将absent_id和present_id按照7:3随机选取id划分为训练集和测试集
@@ -124,23 +126,21 @@ positoin=['_AV','_MV','_PV','_TV']
 murmur=["Absent\\","Present\\"]
 period=["s1", "systolic", "s2", "diastolic"]
 
-# ========================/ save features /========================== # 
-# train_csv_path=r'E:\Shilong\murmur\LM_wav_dataset\csv'
-# absent_train_features=get_mfcc_features(BEATs_model,absent_train_path,train_csv_path,padding_mask)
-
+# ========================/ get wav data, length=10000 /========================== # 
 # absent_train_features=get_mfcc_features(BEATs_model,absent_train_path,absent_train_csv_path,padding_mask)# absent
 # absent_test_features=get_mfcc_features(BEATs_model,absent_test_path,absent_test_csv_path,padding_mask)# absent
 # present_train_features=get_mfcc_features(BEATs_model,Present_train_path,present_train_csv_path,padding_mask)# present
 # present_test_features=get_mfcc_features(BEATs_model,present_test_path,present_test_csv_path,padding_mask)# present
-# np.save("absent_train_features.npy",absent_train_features)
-# np.save("absent_test_features.npy",absent_test_features)
-# np.save("present_train_features.npy",present_train_features)
-# np.save("present_test_features.npy",present_test_features)
-
-absent_train_features = np.load(r'E:\Shilong\murmur\03_Classifier\absent_train_features.npy')
-absent_test_features = np.load(r'E:\Shilong\murmur\03_Classifier\absent_test_features.npy')
-present_train_features = np.load(r'E:\Shilong\murmur\03_Classifier\present_train_features.npy')
-present_test_features = np.load(r'E:\Shilong\murmur\03_Classifier\present_test_features.npy')
+# # ========================/ save as npy file /========================== # 
+# np.save(npy_path+r'\absent_train_features.npy',absent_train_features)
+# np.save(npy_path+r'\absent_test_features.npy',absent_test_features)
+# np.save(npy_path+r'\present_train_features.npy',present_train_features)
+# np.save(npy_path+r'\present_test_features.npy',present_test_features)
+# ========================/ load npy file /========================== # 
+absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)
+absent_test_features = np.load(npy_path+r'\absent_test_features.npy',allow_pickle=True)
+present_train_features = np.load(npy_path+r'\present_train_features.npy',allow_pickle=True)
+present_test_features = np.load(npy_path+r'\present_test_features.npy',allow_pickle=True)
 # ========================/ get features & labels /========================== # 
 path=r'E:\Shilong\murmur\LM_wav_dataset\csv'
 train_path=r'E:\Shilong\murmur\LM_wav_dataset\train_csv'
@@ -155,23 +155,22 @@ train_label=train_label.astype(float)
 test_features=test_features.astype(float)
 test_label=test_label.astype(float)
 """
+# ========================/ label encoder /========================== # 
+absent_train_label=np.ones(absent_train_features.shape[0])
+absent_test_label=np.ones(absent_test_features.shape[0])
+present_train_label=np.zeros(present_train_features.shape[0])
+present_test_label=np.zeros(present_test_features.shape[0])
 
-absent_train_label=np.ones(absent_train_features.shape[0],1)
-absent_test_label=np.ones(absent_test_features.shape[0],1)
-present_train_label=np.zeros(present_train_features.shape[0],1)
-present_test_label=np.zeros(present_test_features.shape[0],1)
-
-train_label=absent_train_label+present_train_label
-test_label=absent_test_label+present_test_label
-train_features=absent_train_features+present_train_features
-test_features=absent_test_features+present_test_features
+train_label=np.hstack((absent_train_label,present_train_label))
+test_label=np.hstack((absent_test_label,present_test_label))
+train_features=np.vstack((absent_train_features,present_train_features))
+test_features=np.vstack((absent_test_features,present_test_features))
 
 # ========================/ train test /========================== # 
-# train_features=absent_train_features+present_train_features
-# train_label=absent_train_label+present_train_label
-# test_features=absent_test_features+present_test_features
-# test_label=absent_test_label+present_test_label
-
+train_features=train_features.astype(float)
+train_label=train_label.astype(float)
+test_features=test_features.astype(float)
+test_label=test_label.astype(float)
 # ========================/ MyDataset /========================== # 
 train_set=MyDataset(wavlabel=train_label,wavdata=train_features)
 test_set=MyDataset(wavlabel=test_label,wavdata=test_features)
@@ -252,8 +251,11 @@ def test(model, device, test_loader):
 for epoch in range(1, 10):
     train(model=MyModel,device=DEVICE, train_loader=test_loader,epoch=epoch)
     test(model=MyModel, device=DEVICE, test_loader=test_loader)
-    # feature.to_csv(save_path, index=False, header=False)
+    train_log_filename = "train_log.txt"
+    result_dir=r'E:\Shilong\murmur\03_Classifier\LM\logs'
+    train_log_filepath = os.path.join(result_dir, train_log_filename)
+    train_log_txt_formatter = "{time_str} [Epoch] {epoch:03d} [Loss] {loss_str}\n"
+    to_write=train_log_txt_formatter.format(time_str=time.strtime("%Y_%n_%d_%H:%M:%S"),epoch=epoch,loss_str=" ".join(["{}".format(loss)]))
+    with open(train_log_filepath,"a") as f:
+        f.write(to_write)
 
-# save_features(patient_id_list=absent_patient_id)
-# save_features(patient_id_list=present_patient_id)
-# jiancha
