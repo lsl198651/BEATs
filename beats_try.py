@@ -21,6 +21,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets, models, transforms
 from PIL import Image
 from sklearn.model_selection import StratifiedShuffleSplit
+from torch.utils.tensorboard import SummaryWriter
 torch.__version__
 from BEATs import BEATs, BEATsConfig,BEATs_Pre_Train_itere3
 from BEATs_def import get_patientid,get_mfcc_features,copy_wav,get_mel_features,csv_reader_cl
@@ -196,6 +197,7 @@ optimizer = torch.optim.Adam([
 print("brgin to train")
 # ========================/ train model /========================== # 
 # 定义训练函数
+writer = SummaryWriter('logs')
 def train_model(model,device, train_loader, test_loader,padding,epoch):
 # train model
     model.train()
@@ -230,6 +232,9 @@ def train_model(model,device, train_loader, test_loader,padding,epoch):
             test_loss, correct, len(test_set),
             100. * correct / len(test_set)))
     print("===========================================================")
+    writer.add_scalar("train_loss",loss,epoch)
+    writer.add_scalar("test_loss",test_loss,epoch)
+    writer.add_scalar("test_acc",100. * correct / len(test_set),epoch)
 # ========================/ training model /========================== # 
 
 for epoch in range(num_epochs):
