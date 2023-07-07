@@ -178,8 +178,8 @@ test_set=MyDataset(wavlabel=test_label,wavdata=test_features)
 # ========================/ HyperParameters /========================== # 
 train_batch_size= 128
 test_batch_size = 128
-learning_rate = 0.001
-num_epochs = 50
+learning_rate = 0.01
+num_epochs = 100
 padding = torch.zeros(train_batch_size, 7500).bool() # we randomly mask 75% of the input patches,
 padding_mask=torch.Tensor(padding)
 # ========================/ dataloader /========================== # 
