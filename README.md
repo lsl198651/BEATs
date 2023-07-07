@@ -11,17 +11,17 @@
 2. 在每个Patient ID文件下创建听诊区文件，按照tsv文件的分割点对wav文件进行分割为单一心跳wav(1[0]--4[1])存入听诊区文件夹(**file_name: patient_ID_Poisition_num.wav**)
 3. load “Patient ID”，按照7：3 将patient ID划分w为train-set/test-set并存为CSV >>absnet_train/test_id.csv, present_train/test_id.csv
 4. 按照CSV将wav文件存入train/test文件夹 (**>>copy_wav**)
-5. 遍历train/test文件夹，在***get_mfcc_features***中对wav
+5. 遍历train/test文件夹，在***get_mfcc_features***中对wav进行操作
     - 重采样至16k
-    - 使用**BEATs.extract_features(wav)[0]**提特征，并存为csv文件(**file_name: patientID_Poisition_num.wav.csv**)
-    - 在***get_mel_features***读取每个csv,对不足24\*768的特征进行padding,对于大于24\*768的特征裁剪\[0:24,:\](**>>get_mfcc_features**)
-    - 查询absent_id和present_id对每个file的ID添加Label(absent:1, present:0)
-    - 返回**train_data,train_label,test_data,test_label**  (data和label存为.npy文件方便后续读取)
-    - 通过MayDataset产生train-set和test-set
-    - 通过dataloader生成train_loader，test_loader
+    - 设定每条wav数据长度为**10000**对长度不足10000的wav数据padding,对于大于10000的特征裁剪,\[0:10000\](**>>get_mfcc_features**)
+    - 将裁剪后的wav数据保存为单独的.csv文件并append到列表中，最后返回一个包含所有wav数据的数组
+    - **保存返回的array数组为.npy文件,下次直接读取**
+6. 返回**train_data，test_data**  并产生label（ Absent=1，Present=0）
+7. 通过MayDataset产生**train-set,test-set**
+8. 通过dataloader生成**train_loader，test_loader**
 ### 模型定义
 模型定义位于BEATs.py 的***class BEATs_Pre_Train_itere3(nn.Module)***
-由于**BEATs.extract_features(wav)[0]**已经在上文执行，故此处只定义fine-tuning部分，
+由于 **BEATs\.extract\_features\(wav\)\[0\]** 已经在上文执行，故此处只定义fine-tuning部分，
 - 首先添加checkpoint,导入BEATs的配置
 - 其次定于全连接层和Dropout
 定义forward函数：
