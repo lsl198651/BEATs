@@ -183,8 +183,8 @@ learning_rate = 0.001
 num_epochs = 50
 
 # ========================/ dataloader /========================== # 
-train_loader = DataLoader(train_set, batch_size=train_batch_size, shuffle=True)
-test_loader = DataLoader(test_set, batch_size=test_batch_size, shuffle=True)
+train_loader = DataLoader(train_set, batch_size=train_batch_size, shuffle=True,drop_last=True)
+test_loader = DataLoader(test_set, batch_size=test_batch_size, shuffle=True,drop_last=True)
 print("Dataloader is ok") # 最后再打印一下新的模型
 # ========================/ model add fc-layer /========================== # 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -228,7 +228,7 @@ def train_model(model,device, train_loader, test_loader,padding,epoch):
             test_loss, correct, len(test_set),
             100. * correct / len(test_set)))
 # ========================/ training model /========================== # 
-# 训练epochs=9
+
 for epoch in range(num_epochs):
     train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=None,epoch=epoch)
     # test(model=MyModel, device=DEVICE, test_loader=test_loader)
