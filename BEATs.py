@@ -209,9 +209,9 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # fc
         self.last_layer= nn.Linear(768,2)
         
-    def forward(self,x):
+    def forward(self,x,padding_mask: torch.Tensor =None):
         with torch.no_grad():
-            x,_=self.BEATs.extract_features(x)
+            x,_=self.BEATs.extract_features(x,padding_mask)
         # dropout
         x=self.last_Dropout(x)
         # FC
