@@ -46,8 +46,7 @@ period=["s1", "systolic", "s2", "diastolic"]
 # # BEATs_model.eval()
 # # extract the the audio representation
 # # audio_input_16khz = torch.randn(2, 10000)
-padding = torch.zeros(1, 7500).bool() # we randomly mask 75% of the input patches,
-padding_mask=torch.Tensor(padding)
+
 # probs = BEATs_model.extract_features(audio_input_16khz, padding_mask=padding_mask)[0]
 # representation = BEATs_model.extract_features(audio_input_16khz, padding_mask=padding_mask)[0]
 
@@ -181,7 +180,8 @@ train_batch_size= 128
 test_batch_size = 128
 learning_rate = 0.001
 num_epochs = 50
-
+padding = torch.zeros(train_batch_size, 7500).bool() # we randomly mask 75% of the input patches,
+padding_mask=torch.Tensor(padding)
 # ========================/ dataloader /========================== # 
 train_loader = DataLoader(train_set, batch_size=train_batch_size, shuffle=True,drop_last=True)
 test_loader = DataLoader(test_set, batch_size=test_batch_size, shuffle=True,drop_last=True)
@@ -203,6 +203,7 @@ def train_model(model,device, train_loader, test_loader,padding,epoch):
         x,y= data
         x=x.to(device)
         y=y.to(device)
+        padding=padding.to(device)
         optimizer.zero_grad()
         y_hat= model(x,padding)
         loss = criterion(y_hat, y.long())
@@ -218,19 +219,21 @@ def train_model(model,device, train_loader, test_loader,padding,epoch):
             x,y= data
             x=x.to(device)
             y=y.to(device)
+            padding=padding.to(device)
             optimizer.zero_grad()
             y_hat = model(x,padding)
             test_loss += criterion(y_hat, y.long()).item() # sum up batch loss
             pred = y_hat.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(y.view_as(pred)).sum().item()
     test_loss /= len(test_loader.dataset)
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.3f}%)\n'.format(
             test_loss, correct, len(test_set),
             100. * correct / len(test_set)))
+    print("===========================================================")
 # ========================/ training model /========================== # 
 
 for epoch in range(num_epochs):
-    train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=None,epoch=epoch)
+    train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=padding_mask,epoch=epoch)
     # test(model=MyModel, device=DEVICE, test_loader=test_loader)
 
 
