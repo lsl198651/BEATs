@@ -38,15 +38,16 @@ period=["s1", "systolic", "s2", "diastolic"]
 
 # ========================/ load model /========================== # 
 # load the pre-trained checkpoints
-checkpoint = torch.load(r'E:\Shilong\murmur\03_Classifier\LM\LM_Model\BEATs\BEATs_iter3.pt')
+# checkpoint = torch.load(r'E:\Shilong\murmur\03_Classifier\LM\LM_Model\BEATs\BEATs_iter3.pt')
 
-cfg = BEATsConfig(checkpoint['cfg'])
-BEATs_model = BEATs(cfg)
-BEATs_model.load_state_dict(checkpoint['model'])
-# BEATs_model.eval()
-# extract the the audio representation
-# audio_input_16khz = torch.randn(2, 10000)
-padding_mask = torch.zeros(1, 800).bool()
+# cfg = BEATsConfig(checkpoint['cfg'])
+# BEATs_model = BEATs(cfg)
+# BEATs_model.load_state_dict(checkpoint['model'])
+# # BEATs_model.eval()
+# # extract the the audio representation
+# # audio_input_16khz = torch.randn(2, 10000)
+padding = torch.zeros(1, 7500).bool() # we randomly mask 75% of the input patches,
+padding_mask=torch.Tensor(padding)
 # probs = BEATs_model.extract_features(audio_input_16khz, padding_mask=padding_mask)[0]
 # representation = BEATs_model.extract_features(audio_input_16khz, padding_mask=padding_mask)[0]
 
@@ -176,10 +177,10 @@ train_set=MyDataset(wavlabel=train_label,wavdata=train_features)
 test_set=MyDataset(wavlabel=test_label,wavdata=test_features)
 
 # ========================/ HyperParameters /========================== # 
-train_batch_size= 64
-test_batch_size = 64
-# learning_rate = 0.001
-num_epochs = 80
+train_batch_size= 128
+test_batch_size = 128
+learning_rate = 0.001
+num_epochs = 50
 
 # ========================/ dataloader /========================== # 
 train_loader = DataLoader(train_set, batch_size=train_batch_size, shuffle=True)
@@ -211,10 +212,10 @@ print(model) # 最后再打印一下新的模型
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam([
     {'params':MyModel.last_layer.parameters()}
-], lr=0.001)#指定 新加的fc层的学习率
+], lr=learning_rate)#指定 新加的fc层的学习率
 
 # 定义训练函数
-def train_model(model,device, train_loader, test_loader,epoch):
+def train_model(model,device, train_loader, test_loader,padding,epoch):
 # train model
     model.train()
     for batch_idx, data in enumerate(train_loader):
@@ -222,7 +223,7 @@ def train_model(model,device, train_loader, test_loader,epoch):
         x=x.to(device)
         y=y.to(device)
         optimizer.zero_grad()
-        y_hat= model(x)
+        y_hat= model(x,padding)
         loss = criterion(y_hat, y.long())
         loss.backward()
         optimizer.step()
@@ -237,7 +238,7 @@ def train_model(model,device, train_loader, test_loader,epoch):
             x=x.to(device)
             y=y.to(device)
             optimizer.zero_grad()
-            y_hat = model(x)
+            y_hat = model(x,padding)
             test_loss += criterion(y_hat, y.long()).item() # sum up batch loss
             pred = y_hat.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(y.view_as(pred)).sum().item()
@@ -247,8 +248,8 @@ def train_model(model,device, train_loader, test_loader,epoch):
             100. * correct / len(test_set)))
 # ========================/ training model /========================== # 
 # 训练epochs=9
-for epoch in range(1, 20):
-    train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,epoch=epoch)
+for epoch in range(num_epochs):
+    train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=padding_mask,epoch=epoch)
     # test(model=MyModel, device=DEVICE, test_loader=test_loader)
 
 
