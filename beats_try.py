@@ -185,35 +185,16 @@ num_epochs = 50
 # ========================/ dataloader /========================== # 
 train_loader = DataLoader(train_set, batch_size=train_batch_size, shuffle=True)
 test_loader = DataLoader(test_set, batch_size=test_batch_size, shuffle=True)
-
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# save_features(patient_id_list=absent_patient_id)
-# save_features(patient_id_list=present_patient_id)
-# ========================/ fine-tuning /========================== #
-
-
+print("Dataloader is ok") # 最后再打印一下新的模型
 # ========================/ model add fc-layer /========================== # 
-
-# 将所有的参数层进行冻结
-# for param in MyModel.parameters():
-#     param.requires_grad = False  # 参数层进行冻结
-# # 这里打印下全连接层的信息
-# print("MyModel.last_layer")
-# print(MyModel.last_layer)
-# num_fc_ftr = MyModel.last_layer.in_features #获取到fc层的输入
-# MyModel.fc = nn.Linear(num_fc_ftr, 2) # 定义一个新的FC层
-
-
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model=MyModel.to(DEVICE)# 放到设备中
-print(model) # 最后再打印一下新的模型
-# ========================/ train parameters /========================== # 
-
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam([
     {'params':MyModel.last_layer.parameters()}
 ], lr=learning_rate)#指定 新加的fc层的学习率
-
+print("brgin to train")
+# ========================/ train model /========================== # 
 # 定义训练函数
 def train_model(model,device, train_loader, test_loader,padding,epoch):
 # train model
@@ -249,7 +230,7 @@ def train_model(model,device, train_loader, test_loader,padding,epoch):
 # ========================/ training model /========================== # 
 # 训练epochs=9
 for epoch in range(num_epochs):
-    train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=padding_mask,epoch=epoch)
+    train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=None,epoch=epoch)
     # test(model=MyModel, device=DEVICE, test_loader=test_loader)
 
 
