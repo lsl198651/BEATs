@@ -87,7 +87,7 @@ def logger_init(log_level=logging.DEBUG,
         os.makedirs(log_dir)
     
     date=datetime.now()
-    log_path = os.path.join(log_dir,str(date)[:16] + '.txt')
+    log_path = os.path.join(log_dir,str(date)[:13] +'-'+str(date.minute)+ '.log')
     formatter = '[%(asctime)s - %(levelname)s:] %(message)s'
     logging.basicConfig(level=log_level,
                         format=formatter,
@@ -286,7 +286,7 @@ logging.info("# learning_rate = "+str(learning_rate))
 logging.info("# num_epochs = "+str(num_epochs))
 logging.info("# padding_size = "+str(padding_size))
 logging.info("----------------------------------------------------")
-writer = SummaryWriter('logs')
+writer = SummaryWriter(str(datetime.now())[:13])
 for epoch in range(num_epochs):
     train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=padding_mask,epoch=epoch)
 
