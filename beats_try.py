@@ -240,7 +240,7 @@ optimizer = torch.optim.Adam([
 
 # ========================/ train model /========================== # 
 # 定义训练函数
-writer = SummaryWriter('logs')
+
 def train_model(model,device, train_loader, test_loader,padding,epoch):
 # train model
     model.train()
@@ -271,20 +271,21 @@ def train_model(model,device, train_loader, test_loader,padding,epoch):
             pred = y_hat.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(y.view_as(pred)).sum().item()
     test_loss /= len(test_loader.dataset)
-    # writer.add_scalar("train_loss",loss,epoch)
-    # writer.add_scalar("test_loss",test_loss,epoch)
-    # writer.add_scalar("test_acc",100. * correct / len(test_set),epoch)
+    writer.add_scalar("train_loss",loss,epoch)
+    writer.add_scalar("test_loss",test_loss,epoch)
+    writer.add_scalar("test_acc",100. * correct / len(test_set),epoch)
     save=save_info(epoch,loss.item(),100. * correct / len(test_set),test_loss)
 
 # ========================/ training and logging info /========================== # 
+
 logger_init()
 logging.info("# train_batch_size = "+str(train_batch_size))
 logging.info("# test_batch_size = "+str(test_batch_size))
 logging.info("# learning_rate = "+str(learning_rate))
 logging.info("# num_epochs = "+str(num_epochs))
 logging.info("# padding_size = "+str(padding_size))
-
 logging.info("----------------------------------------------------")
+writer = SummaryWriter('logs')
 for epoch in range(num_epochs):
     train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=padding_mask,epoch=epoch)
 
