@@ -85,8 +85,9 @@ def logger_init(log_level=logging.DEBUG,
     # 指定路径
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-  
-    log_path = os.path.join(log_dir,  str(datetime.now())[:16] + '.log')
+    
+    date=datetime.now()
+    log_path = os.path.join(log_dir,str(date)[:16] + '.txt')
     formatter = '[%(asctime)s - %(levelname)s:] %(message)s'
     logging.basicConfig(level=log_level,
                         format=formatter,
@@ -103,8 +104,8 @@ class save_info(object):
         self.test_acc=test_acc
         self.test_loss=test_loss
         logging.info(f"epoch: "+str(self.epoch))
-        logging.info(f"train_loss: "+str('{:.3f}%'.format(self.train_loss)))
-        logging.info(f"test_acc: "+str('{:.3f}%'.format(self.test_acc))+"  test_loss: "+str('{:.3f}%'.format(self.test_loss)))
+        logging.info(f"train_loss: "+str('{:.3f}'.format(self.train_loss)))
+        logging.info(f"test_acc: "+str('{:.3f}%'.format(self.test_acc))+"  test_loss: "+str('{:.3f}'.format(self.test_loss)))
         logging.info(f"=========================================")
 
 # ========================/ file path /========================== # 
