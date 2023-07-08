@@ -17,6 +17,9 @@ import random
 import csv
 import librosa
 import time
+import logging
+from datetime import datetime
+import sys
 from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets, models, transforms
 from PIL import Image
@@ -25,6 +28,7 @@ from torch.utils.tensorboard import SummaryWriter
 torch.__version__
 from BEATs import BEATs, BEATsConfig,BEATs_Pre_Train_itere3
 from BEATs_def import get_patientid,get_mfcc_features,copy_wav,get_mel_features,csv_reader_cl
+
 # ========================/ parameteres define /========================== # 
 murmur_positoin=['_AV','_MV','_PV','_TV']
 murmur_ap=["Absent\\","Present\\"]
@@ -53,6 +57,7 @@ period=["s1", "systolic", "s2", "diastolic"]
 
 # ========================/ model define /========================== # 
 MyModel=BEATs_Pre_Train_itere3()
+
 # ========================/ dataset Class /========================== #
 class MyDataset(Dataset): 
     """ my dataset."""    
@@ -72,6 +77,36 @@ class MyDataset(Dataset):
     def __len__(self): 
         # 返回文件数据的数目
         return len(self.data)
+    
+# ========================/ logging init /========================== #
+def logger_init(log_level=logging.DEBUG,
+                log_dir=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\ResultFile',
+                ):
+    # 指定路径
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+  
+    log_path = os.path.join(log_dir,  str(datetime.now())[:16] + '.log')
+    formatter = '[%(asctime)s - %(levelname)s:] %(message)s'
+    logging.basicConfig(level=log_level,
+                        format=formatter,
+                        datefmt='%Y-%d-%m %H:%M:%S',
+                        handlers=[logging.FileHandler(log_path),
+                                logging.StreamHandler(sys.stdout)]
+                            )
+
+# ========================/ logging formate /========================== #
+class save_info(object):
+    def __init__(self,epoch,train_loss,test_acc,test_loss) :
+        self.epoch=epoch
+        self.train_loss=train_loss
+        self.test_acc=test_acc
+        self.test_loss=test_loss
+        logging.info(f"epoch: "+str(self.epoch))
+        logging.info(f"train_loss: "+str('{:.3f}%'.format(self.train_loss)))
+        logging.info(f"test_acc: "+str('{:.3f}%'.format(self.test_acc))+"  test_loss: "+str('{:.3f}%'.format(self.test_loss)))
+        logging.info(f"=========================================")
+
 # ========================/ file path /========================== # 
 absent_train_csv_path=r'E:\Shilong\murmur\LM_wav_dataset\train_csv'
 absent_test_csv_path=r'E:\Shilong\murmur\LM_wav_dataset\test_csv'
@@ -91,6 +126,7 @@ present_test_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_test_id_path.c
 
 folder=r'E:\Shilong\murmur\LM_wav_dataset'
 npy_path=r'E:\Shilong\murmur\LM_wav_dataset\npyFile'
+
 # ========================/ devide trainset and testset /========================== #
 
 """# 将absent_id和present_id按照7:3随机选取id划分为训练集和测试集
@@ -132,16 +168,19 @@ period=["s1", "systolic", "s2", "diastolic"]
 # absent_test_features=get_mfcc_features(BEATs_model,absent_test_path,absent_test_csv_path,padding_mask)# absent
 # present_train_features=get_mfcc_features(BEATs_model,Present_train_path,present_train_csv_path,padding_mask)# present
 # present_test_features=get_mfcc_features(BEATs_model,present_test_path,present_test_csv_path,padding_mask)# present
+
 # # ========================/ save as npy file /========================== # 
 # np.save(npy_path+r'\absent_train_features.npy',absent_train_features)
 # np.save(npy_path+r'\absent_test_features.npy',absent_test_features)
 # np.save(npy_path+r'\present_train_features.npy',present_train_features)
 # np.save(npy_path+r'\present_test_features.npy',present_test_features)
+
 # ========================/ load npy file /========================== # 
 absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)
 absent_test_features = np.load(npy_path+r'\absent_test_features.npy',allow_pickle=True)
 present_train_features = np.load(npy_path+r'\present_train_features.npy',allow_pickle=True)
 present_test_features = np.load(npy_path+r'\present_test_features.npy',allow_pickle=True)
+
 # ========================/ get features & labels /========================== # 
 path=r'E:\Shilong\murmur\LM_wav_dataset\csv'
 train_path=r'E:\Shilong\murmur\LM_wav_dataset\train_csv'
@@ -172,6 +211,7 @@ train_features=train_features.astype(float)
 train_label=train_label.astype(float)
 test_features=test_features.astype(float)
 test_label=test_label.astype(float)
+
 # ========================/ MyDataset /========================== # 
 train_set=MyDataset(wavlabel=train_label,wavdata=train_features)
 test_set=MyDataset(wavlabel=test_label,wavdata=test_features)
@@ -179,14 +219,17 @@ test_set=MyDataset(wavlabel=test_label,wavdata=test_features)
 # ========================/ HyperParameters /========================== # 
 train_batch_size= 128
 test_batch_size = 128
-learning_rate = 0.01
+learning_rate = 0.001
 num_epochs = 100
-padding = torch.zeros(train_batch_size, 7500).bool() # we randomly mask 75% of the input patches,
+padding_size = 7500
+padding = torch.zeros(train_batch_size, padding_size).bool() # we randomly mask 75% of the input patches,
 padding_mask=torch.Tensor(padding)
+
 # ========================/ dataloader /========================== # 
 train_loader = DataLoader(train_set, batch_size=train_batch_size, shuffle=True,drop_last=True)
 test_loader = DataLoader(test_set, batch_size=test_batch_size, shuffle=True,drop_last=True)
 print("Dataloader is ok") # 最后再打印一下新的模型
+
 # ========================/ model add fc-layer /========================== # 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model=MyModel.to(DEVICE)# 放到设备中
@@ -194,7 +237,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam([
     {'params':MyModel.last_layer.parameters()}
 ], lr=learning_rate)#指定 新加的fc层的学习率
-print("brgin to train")
+
 # ========================/ train model /========================== # 
 # 定义训练函数
 writer = SummaryWriter('logs')
@@ -211,7 +254,7 @@ def train_model(model,device, train_loader, test_loader,padding,epoch):
         loss = criterion(y_hat, y.long())
         loss.backward()
         optimizer.step()
-    print ('Train Epoch: {}\t Loss: {:.6f}'.format(epoch,loss.item()))
+
 # evaluate model
     model.eval()
     test_loss = 0
@@ -228,17 +271,23 @@ def train_model(model,device, train_loader, test_loader,padding,epoch):
             pred = y_hat.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(y.view_as(pred)).sum().item()
     test_loss /= len(test_loader.dataset)
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.3f}%)\n'.format(
-            test_loss, correct, len(test_set),
-            100. * correct / len(test_set)))
-    print("===========================================================")
-    writer.add_scalar("train_loss",loss,epoch)
-    writer.add_scalar("test_loss",test_loss,epoch)
-    writer.add_scalar("test_acc",100. * correct / len(test_set),epoch)
-# ========================/ training model /========================== # 
+    # writer.add_scalar("train_loss",loss,epoch)
+    # writer.add_scalar("test_loss",test_loss,epoch)
+    # writer.add_scalar("test_acc",100. * correct / len(test_set),epoch)
+    save=save_info(epoch,loss.item(),100. * correct / len(test_set),test_loss)
 
+# ========================/ training and logging info /========================== # 
+logger_init()
+logging.info("# train_batch_size = "+str(train_batch_size))
+logging.info("# test_batch_size = "+str(test_batch_size))
+logging.info("# learning_rate = "+str(learning_rate))
+logging.info("# num_epochs = "+str(num_epochs))
+logging.info("# padding_size = "+str(padding_size))
+
+logging.info("----------------------------------------------------")
 for epoch in range(num_epochs):
     train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=padding_mask,epoch=epoch)
-    # test(model=MyModel, device=DEVICE, test_loader=test_loader)
+
+writer.close()
 
 
