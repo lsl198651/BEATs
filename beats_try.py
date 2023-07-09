@@ -221,8 +221,8 @@ test_set=MyDataset(wavlabel=test_label,wavdata=test_features)
 train_batch_size= 128
 test_batch_size = 128
 learning_rate = 0.001
-num_epochs = 100
-padding_size = 7500
+num_epochs = 50
+padding_size = 500
 padding = torch.zeros(train_batch_size, padding_size).bool() # we randomly mask 75% of the input patches,
 padding_mask=torch.Tensor(padding)
 
@@ -286,7 +286,7 @@ logging.info("# learning_rate = "+str(learning_rate))
 logging.info("# num_epochs = "+str(num_epochs))
 logging.info("# padding_size = "+str(padding_size))
 logging.info("----------------------------------------------------")
-writer = SummaryWriter(str(datetime.now())[:13])
+writer = SummaryWriter(r'./tensorboard/'+str(datetime.now())[:13])
 for epoch in range(num_epochs):
     train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=padding_mask,epoch=epoch)
 
