@@ -57,7 +57,7 @@ class BEATsConfig:
         self.gru_rel_pos: bool = False  # apply gated relative position embedding
 
         # label predictor
-        self.finetuned_model: bool = True  # whether the model is a fine-tuned model.
+        self.finetuned_model: bool = False  # whether the model is a fine-tuned model.
         self.predictor_dropout: float = 0.1  # dropout probability for the predictor
         self.predictor_class: int = 2  # target class number for the predictor
 
@@ -193,20 +193,12 @@ class BEATs(nn.Module):
         else:
             return x, padding_mask
         
-    # def forword(self,x):
-    #     x=self.post_extract_proj(x)
-    #     x=self.dropout_input(x)
-    #     x=self.encoder(x)
-    #     x=self.layer_norm(x)
-    #     x=self.predictor_dropout(x)
-    #     x=self.predictor(x)        
-    #     return x
-    
+
 class BEATs_Pre_Train_itere3(nn.Module):
     def __init__(self,nums_class=2):
         super(BEATs_Pre_Train_itere3,self).__init__()
         
-        checkpoint=torch.load(r'E:\Shilong\murmur\03_Classifier\LM\BEATs\BEATs_iter3.pt')
+        checkpoint=torch.load(r'E:\Shilong\murmur\03_Classifier\LM\LM_Model\BEATs\BEATs_iter3.pt')
         cfg=BEATsConfig(checkpoint['cfg'])
         BEATs_model=BEATs(cfg)
         BEATs_model.load_state_dict(checkpoint['model'])
@@ -217,13 +209,13 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # fc
         self.last_layer= nn.Linear(768,2)
         
-    def forward(self,x):
-        # with torch.no_grad():
-        #     x=self.BEATs.extract_features(x)
+    def forward(self,x,padding_mask: torch.Tensor =None):
+        with torch.no_grad():
+            x,_=self.BEATs.extract_features(x,padding_mask)
         # dropout
-        y=self.last_Dropout(x)
+        x=self.last_Dropout(x)
         # FC
-        output=self.last_layer(y)
+        output=self.last_layer(x)
         # mean
         output=output.mean(dim=1)
         # sigmoid
