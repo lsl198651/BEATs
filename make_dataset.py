@@ -19,6 +19,7 @@ import pylab
 import numpy as np
 import pandas as pd
 import scipy
+
 # import wfdb
 from pydub import AudioSegment
 # ========================/ functions define /========================== # 
@@ -93,6 +94,15 @@ def copy_wav_file(src_path,folder_path,patient_id_list,mur,position):
             if os.path.exists(tsvname):
                 shutil.copy(tsvname, target_dir+"\\")
 
+# devide sounds into 4s segments
+def pos_dir_make(dir_path,patient_id,pos):
+    for po in pos:
+        subdir=dir_path+patient_id+'\\'+patient_id+po
+        wavname=subdir+".wav"
+        if os.path.exists(wavname):
+            print("exist")
+            mkdir(subdir)# make dir
+
 def index_load(tsvname):
    """读取tsv文件内容,不需要close函数"""
    with open(tsvname, 'r') as f:
@@ -106,15 +116,6 @@ def index_load(tsvname):
             head=np.vstack([head,sgmt])
    return head[1:]
 
-# devide sounds into 4s segments
-def pos_dir_make(dir_path,patient_id,pos):
-    for po in pos:
-        subdir=dir_path+patient_id+'\\'+patient_id+po
-        wavname=subdir+".wav"
-        if os.path.exists(wavname):
-            print("exist")
-            mkdir(subdir)# make dir
-
 # preprocessed PCGs were segmented into four heart sound states
 def state_div(tsvname,wavname,state_path,index):
     # 获取周期时间点
@@ -125,34 +126,27 @@ def state_div(tsvname,wavname,state_path,index):
     # 分割音频
     # states_num=[0,0,0,0]
     num=0
-    start_index=0
-    end_index=0
+    start_index2=0
+    end_index2=0
+    start_index4=0
+    end_index4=0
 
     for i in range(index_file.shape[0]-3):
-        if index_file[i][2]=='1'and index_file[i+3][2]=='4':
-            start_index=float(index_file[i][0])*1000
-            end_index=float(index_file[i+3][1])*1000
+        if index_file[i][2]=='2'and index_file[i+2][2]=='4':
+            start_index2=float(index_file[i][0])*1000
+            end_index2=float(index_file[i][1])*1000
+            start_index4=float(index_file[i][0])*1000
+            end_index4=float(index_file[i][1])*1000
             num=num+1
-        print(start_index,end_index)
-        # print("wav index")
-        # print(wav_index)
-        
-        # print(start_index,end_index)
-        # period_index=wav_index[2]
-        
-        # states_index=switch_period(wav_index[2])
+        print(start_index2,end_index2,start_index4,end_index4)
         recording, fs = librosa.load(wavname,sr=1000)
-        print("================================================================")
-        print("wav name: "+wavname)
-        # print("fs is: "+str(fs))
-
-        buff = recording[int(start_index) :  int(end_index) ]  # 字符串索引切割
-        print("buff len: "+str(len(buff)))
-        # print("buff : "+str(buff))
-        # print(buff)
-        # buff.export(folder_path+mur+patient_id+"\\"+patient_id+pos+"{}{}+.wav".format(period_index,i), format="wav")
-        # cut.append(buff)
-        soundfile.write(state_path+"{}_{}.wav".format(index,num),buff,fs)
+        print("=============================================")
+        print("wav name: "+wavname)        
+        buff2 = recording[int(start_index2) :  int(end_index2) ]  # 字符串索引切割
+        buff4 = recording[int(start_index4) :  int(end_index4) ]  # 字符串索引切割
+        print("buff2 len: "+str(len(buff2)),"buff4 len: "+str(len(buff4)))
+        soundfile.write(state_path+"{}_{}.wav".format(index,num),buff2,fs)
+        soundfile.write(state_path+"{}_{}.wav".format(index,num),buff4,fs)
 
 # tsv=r'E:\Shilong\murmur\LM_wav_dataset\Absent\2530\2530_TV.tsv'
 # wav=r'E:\Shilong\murmur\LM_wav_dataset\Absent\2530\2530_TV.wav'
