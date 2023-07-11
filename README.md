@@ -12,8 +12,8 @@
 ### 文件操作
 
 1. 将文件按照 Patient ID 创建文件夹并把听诊区 wav 文件和 tsv 文件存入文件夹
-2. 在每个 Patient ID 文件下创建听诊区文件，按照 tsv 文件的分割点对 wav 文件进行分割为单一心跳 wav(1[0]--4[1])存入听诊区文件夹(**file_name: patient_ID_Poisition_num.wav**)
-3. load “Patient ID”，按照 7：3 将 patient ID 划分 w 为 train-set/test-set 并存为 CSV >>absnet_train/test_id.csv, present_train/test_id.csv
+2. 在每个 Patient ID 文件下创建听诊区文件，按照 tsv 文件的分割点对 wav 文件进行分割为收缩期心跳和舒张期心跳存入听诊区文件夹(**file*name: patient_ID_Poisition*收缩/舒张\_num.wav**)
+3. load “Patient ID”，按照 8:2 将 patient ID 划分为 train-set/test-set 并存为 CSV >>absnet_train/test_id.csv, present_train/test_id.csv
 4. 按照 CSV 将 wav 文件存入 train/test 文件夹 (**>>copy_wav**)
 5. 遍历 train/test 文件夹，在**_get_mfcc_features_**中对 wav 进行操作
    - 重采样至 16k
@@ -47,4 +47,4 @@ def forward(self,x):
     return output
 ```
 
-定于训练，测试函数并进行训练
+用于训练，测试函数并进行训练
