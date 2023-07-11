@@ -7,20 +7,14 @@
 
 import os 
 import shutil
-import re
 import random
 import librosa
 import matplotlib.pyplot as plt 
 import librosa.display
 import soundfile
 import csv
-import pyaudio
-import pylab
 import numpy as np
 import pandas as pd
-import scipy
-
-
 # import wfdb
 from pydub import AudioSegment
 # ========================/ functions define /========================== # 
@@ -104,9 +98,9 @@ def pos_dir_make(dir_path,patient_id,pos):
             mkdir(subdir)# make dir
 
 def index_load(tsvname):
-   """读取tsv文件内容,不需要close函数"""
-   with open(tsvname, 'r') as f:
-    txt_data = f.read()
+    """读取tsv文件内容,不需要close函数"""
+    with open(tsvname, 'r') as f:
+        txt_data = f.read()
     head=['start','end','period']
     data=txt_data.split('\n')[:-1]
     #遍历每一行
@@ -114,7 +108,7 @@ def index_load(tsvname):
         sgmt=l.split('\t')
         if sgmt[2]!='0':
             head=np.vstack([head,sgmt])
-   return head[1:]
+    return head[1:]
 
 # preprocessed PCGs were segmented into four heart sound states
 def period_div(path,murmur,patient_id_list,positoin):
@@ -181,17 +175,12 @@ def copy_states_data(folder,murmur,type):
                 print(subdir_path)
                 # if os.path.exists(dir_path):
                 shutil.copytree(subdir_path,din_path+subdir)
-# tsv=r'E:\Shilong\murmur\LM_wav_dataset\Absent\2530\2530_TV.tsv'
-# wav=r'E:\Shilong\murmur\LM_wav_dataset\Absent\2530\2530_TV.wav'
-# path="E:\\Shilong\\murmur\\LM_wav_dataset\\Absent\\2530\\"
-# state_div(tsv,wav,path,'a')
 
 # ========================/ code executive /========================== # 
 # ========================/ code executive /========================== # 
 # ========================/ code executive /========================== # 
 
 csv_path=r'E:\Shilong\murmur\dataset_all\training_data.csv'
-
 # get dataset tag from table
 row_line=csv_reader_row(csv_path,0)
 tag_list=list()
