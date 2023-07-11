@@ -120,10 +120,7 @@ absent_test_path=r'E:\Shilong\murmur\LM_wav_dataset\test\Absent'
 Present_train_path=r'E:\Shilong\murmur\LM_wav_dataset\train\Present'
 present_test_path=r'E:\Shilong\murmur\LM_wav_dataset\test\Present'
 
-absent_train_id_path = r'E:\Shilong\murmur\LM_wav_dataset\absent_train_id_path.csv'
-absent_test_id_path = r'E:\Shilong\murmur\LM_wav_dataset\absent_test_id_path.csv'
-present_train_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_train_id_path.csv'
-present_test_id_path = r'E:\Shilong\murmur\LM_wav_dataset\present_test_id_path.csv'
+
 
 folder=r'E:\Shilong\murmur\LM_wav_dataset'
 npy_path=r'E:\Shilong\murmur\LM_wav_dataset\npyFile'
@@ -136,16 +133,7 @@ present_train_id=random.sample(present_patient_id,int(len(present_patient_id)*0.
 absent_test_id=list(set(absent_patient_id)-set(absent_train_id))
 present_test_id=list(set(present_patient_id)-set(present_train_id))
 
-# 保存train、test id为CSV文件
-absent_train_id=pd.DataFrame(absent_train_id)
-present_train_id=pd.DataFrame(present_train_id)
-absent_test_id=pd.DataFrame(absent_test_id)
-present_test_id=pd.DataFrame(present_test_id)
 
-absent_train_id.to_csv(absent_train_id_path, index=False, header=False)
-present_train_id.to_csv(present_train_id_path, index=False, header=False)
-absent_test_id.to_csv(absent_test_id_path, index=False, header=False)
-present_test_id.to_csv(present_test_id_path, index=False, header=False)
 
 # 读取csv文件
 absent_train_id = csv_reader_cl(absent_train_id_path,0)
