@@ -6,124 +6,47 @@
 """
 Load Pre-Trained Models
 """
-import torch,os,torchvision
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import shutil,os
-import random
-import csv
-import librosa
-import time
 import logging
 from datetime import datetime
 import sys
-from torch.utils.data import DataLoader, Dataset
-from torchvision import datasets, models, transforms
-from PIL import Image
+from torch.utils.data import DataLoader
 from sklearn.model_selection import StratifiedShuffleSplit
 from torch.utils.tensorboard import SummaryWriter
-torch.__version__
-from BEATs import BEATs, BEATsConfig,BEATs_Pre_Train_itere3
-from BEATs_def import get_patientid,get_mfcc_features,copy_wav,get_mel_features,csv_reader_cl
+from BEATs import BEATs_Pre_Train_itere3
+from BEATs_def import get_patientid,get_mfcc_features,copy_wav,get_mel_features,csv_reader_cl,MyDataset,logger_init,save_info
 
 # ========================/ parameteres define /========================== # 
 murmur_positoin=['_AV','_MV','_PV','_TV']
 murmur_ap=["Absent\\","Present\\"]
-period=["s1", "systolic", "s2", "diastolic"]
+period=["Systolic","Diastolic"]
 
 # file_path=r'E:\Shilong\murmur\circor_dataset_period\train'
 # get absent / present patient_id
-# absent_csv=r'E:\Shilong\murmur\03_Classifier\MurmurDectection\absent_id.csv'
-# present_csv=r'E:\Shilong\murmur\03_Classifier\MurmurDectection\present_id.csv'
-# absent_patient_id=get_patientid(absent_csv)
-# present_patient_id=get_patientid(present_csv)
-
-# ========================/ load model /========================== # 
-# load the pre-trained checkpoints
-# checkpoint = torch.load(r'E:\Shilong\murmur\03_Classifier\LM\LM_Model\BEATs\BEATs_iter3.pt')
-
-# cfg = BEATsConfig(checkpoint['cfg'])
-# BEATs_model = BEATs(cfg)
-# BEATs_model.load_state_dict(checkpoint['model'])
-# # BEATs_model.eval()
-# # extract the the audio representation
-# # audio_input_16khz = torch.randn(2, 10000)
-
-# probs = BEATs_model.extract_features(audio_input_16khz, padding_mask=padding_mask)[0]
-# representation = BEATs_model.extract_features(audio_input_16khz, padding_mask=padding_mask)[0]
-
-# ========================/ model define /========================== # 
-MyModel=BEATs_Pre_Train_itere3()
-
-# ========================/ dataset Class /========================== #
-class MyDataset(Dataset): 
-    """ my dataset."""    
-    # Initialize your data, download, etc.
-    def __init__(self,wavlabel,wavdata):
-        # 直接传递data和label
-        # self.len = wavlen
-        self.data = torch.from_numpy(wavdata)
-        self.label = torch.from_numpy(wavlabel)
-               
-    def __getitem__(self, index):
-        # 根据索引返回数据和对应的标签
-        dataitem = torch.Tensor(self.data[index])
-        labelitem = torch.Tensor(self.label[index])
-        return dataitem.float(), labelitem.float()
-        
-    def __len__(self): 
-        # 返回文件数据的数目
-        return len(self.data)
-    
-# ========================/ logging init /========================== #
-def logger_init(log_level=logging.DEBUG,
-                log_dir=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\ResultFile',
-                ):
-    # 指定路径
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-    
-    date=datetime.now()
-    log_path = os.path.join(log_dir,str(date)[:13] +'-'+str(date.minute)+ '.log')
-    formatter = '[%(asctime)s - %(levelname)s:] %(message)s'
-    logging.basicConfig(level=log_level,
-                        format=formatter,
-                        datefmt='%Y-%d-%m %H:%M:%S',
-                        handlers=[logging.FileHandler(log_path),
-                                logging.StreamHandler(sys.stdout)]
-                            )
-
-# ========================/ logging formate /========================== #
-class save_info(object):
-    def __init__(self,epoch,train_loss,test_acc,test_loss) :
-        self.epoch=epoch
-        self.train_loss=train_loss
-        self.test_acc=test_acc
-        self.test_loss=test_loss
-        logging.info(f"epoch: "+str(self.epoch))
-        logging.info(f"train_loss: "+str('{:.3f}'.format(self.train_loss)))
-        logging.info(f"test_acc: "+str('{:.3f}%'.format(self.test_acc))+"  test_loss: "+str('{:.3f}'.format(self.test_loss)))
-        logging.info(f"=========================================")
+absent_csv=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\absent_id.csv'
+present_csv=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\present_id.csv'
+absent_patient_id=get_patientid(absent_csv)
+present_patient_id=get_patientid(present_csv)
 
 # ========================/ file path /========================== # 
-absent_train_csv_path=r'E:\Shilong\murmur\LM_wav_dataset\train_csv'
-absent_test_csv_path=r'E:\Shilong\murmur\LM_wav_dataset\test_csv'
-present_train_csv_path=r'E:\Shilong\murmur\LM_wav_dataset\train_csv'
-present_test_csv_path=r'E:\Shilong\murmur\LM_wav_dataset\test_csv'
+absent_train_csv_path = r'E:\Shilong\murmur\03_circor_states\train_csv'
+absent_test_csv_path = r'E:\Shilong\murmur\03_circor_states\test_csv'
+present_train_csv_path = r'E:\Shilong\murmur\03_circor_states\train_csv'
+present_test_csv_path = r'E:\Shilong\murmur\03_circor_states\test_csv'
 
-filepath=r'E:\Shilong\murmur\circor_dataset_period'
-absent_train_path=r'E:\Shilong\murmur\LM_wav_dataset\train\Absent'
-absent_test_path=r'E:\Shilong\murmur\LM_wav_dataset\test\Absent'
-Present_train_path=r'E:\Shilong\murmur\LM_wav_dataset\train\Present'
-present_test_path=r'E:\Shilong\murmur\LM_wav_dataset\test\Present'
+filepath=r'E:\Shilong\murmur\03_circor_states'
+absent_train_path=r'E:\Shilong\murmur\03_circor_states\train\Absent'
+absent_test_path=r'E:\Shilong\murmur\03_circor_states\test\Absent'
+Present_train_path=r'E:\Shilong\murmur\03_circor_states\train\Present'
+present_test_path=r'E:\Shilong\murmur\03_circor_states\test\Present'
 
-
-
-folder=r'E:\Shilong\murmur\LM_wav_dataset'
-npy_path=r'E:\Shilong\murmur\LM_wav_dataset\npyFile'
+folder=r'E:\Shilong\murmur\03_circor_statest'
+npy_path=r'E:\Shilong\murmur\03_circor_states\npyFile'
 
 # ========================/ devide trainset and testset /========================== #
 
@@ -218,6 +141,9 @@ padding_mask=torch.Tensor(padding)
 train_loader = DataLoader(train_set, batch_size=train_batch_size, shuffle=True,drop_last=True)
 test_loader = DataLoader(test_set, batch_size=test_batch_size, shuffle=True,drop_last=True)
 print("Dataloader is ok") # 最后再打印一下新的模型
+
+# ========================/ load model /========================== # 
+MyModel=BEATs_Pre_Train_itere3()
 
 # ========================/ model add fc-layer /========================== # 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")

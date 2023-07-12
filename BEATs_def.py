@@ -4,6 +4,11 @@ import librosa
 import torch,shutil
 import pandas as pd
 import numpy as np
+import logging
+import datetime
+from datetime import datetime
+import sys
+from torch.utils.data import DataLoader, Dataset
 
 def csv_reader_cl(file_name,clo_num):
     with open(file_name,encoding='utf-8') as csvfile:
@@ -58,9 +63,6 @@ def get_mfcc_features(BEATs_model,dir_path,csv_path,padding_mask):
                 # print("shape: "+feature.shape())
                 feature.to_csv(save_path, index=False, header=False)
     return np.array(wav)
-    
-
-
 
 """
 读取csv文件返回feature和label
@@ -88,3 +90,53 @@ def get_mel_features(dir_path,absent_id,present_id):
                 label_list.append(0)
         
     return np.array(feature_list),np.array(label_list)
+
+# ========================/ dataset Class /========================== #
+class MyDataset(Dataset): 
+    """ my dataset."""    
+    # Initialize your data, download, etc.
+    def __init__(self,wavlabel,wavdata):
+        # 直接传递data和label
+        # self.len = wavlen
+        self.data = torch.from_numpy(wavdata)
+        self.label = torch.from_numpy(wavlabel)
+
+    def __getitem__(self, index):
+        # 根据索引返回数据和对应的标签
+        dataitem = torch.Tensor(self.data[index])
+        labelitem = torch.Tensor(self.label[index])
+        return dataitem.float(), labelitem.float()
+        
+    def __len__(self): 
+        # 返回文件数据的数目
+        return len(self.data)
+    
+# ========================/ logging init /========================== #
+def logger_init(log_level=logging.DEBUG,
+                log_dir=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\ResultFile',
+                ):
+    # 指定路径
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    
+    date=datetime.now()
+    log_path = os.path.join(log_dir,str(date)[:13] +'-'+str(date.minute)+ '.log')
+    formatter = '[%(asctime)s - %(levelname)s:] %(message)s'
+    logging.basicConfig(level=log_level,
+                        format=formatter,
+                        datefmt='%Y-%d-%m %H:%M:%S',
+                        handlers=[logging.FileHandler(log_path),
+                                logging.StreamHandler(sys.stdout)]
+                            )
+    
+# ========================/ logging formate /========================== #
+class save_info(object):
+    def __init__(self,epoch,train_loss,test_acc,test_loss) :
+        self.epoch=epoch
+        self.train_loss=train_loss
+        self.test_acc=test_acc
+        self.test_loss=test_loss
+        logging.info(f"epoch: "+str(self.epoch))
+        logging.info(f"train_loss: "+str('{:.3f}'.format(self.train_loss)))
+        logging.info(f"test_acc: "+str('{:.3f}%'.format(self.test_acc))+"  test_loss: "+str('{:.3f}'.format(self.test_loss)))
+        logging.info(f"=========================================")
