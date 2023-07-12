@@ -26,7 +26,6 @@ def mkdir(path):
         os.makedirs(path)  
 
 # read csv file by column
-# train_csv=pd.read_csv("F:/heart_data/2022_challenge/heart/training_data.csv",sep=',')
 def csv_reader_cl(file_name,clo_num):
     with open(file_name,encoding='utf-8') as csvfile:
         reader=csv.reader(csvfile)
@@ -42,7 +41,6 @@ def csv_reader_row(file_name,row_num):
 
 
 # copy wav file to folder_path
-# E:\01_Work\02_SoftwareDesign\circor_digiscope_dataset\Absent\2530\2530_AV
 def copy_file(src_path,folder_path,patient_id_list,mur,position):
     """将所有文件复制到目标目录"""    
     for patient_id in patient_id_list:
@@ -66,7 +64,6 @@ def copy_file(src_path,folder_path,patient_id_list,mur,position):
                 shutil.copy(tsvname, target_dir+"\\")
 
 # copy wav file to folder_path
-# E:\01_Work\02_SoftwareDesign\circor_digiscope_dataset\Absent\2530\2530_AV
 def copy_wav_file(src_path,folder_path,patient_id_list,mur,position):
     """将指定文件复制到目标目录"""
     # 1. make dir
@@ -124,12 +121,7 @@ def period_div(path,murmur,patient_id_list,positoin):
 # preprocessed PCGs were segmented into four heart sound states
 def state_div(tsvname,wavname,state_path,index):
     # 获取周期时间点
-    # type:array
     index_file=index_load(tsvname)
-    # print(index_file)
-    # 获取array长度：a.shape[0]
-    # 分割音频
-    # states_num=[0,0,0,0]
     num=0
     start_index2=0
     end_index2=0
@@ -200,6 +192,15 @@ Murmur_locations=csv_reader_cl(csv_path,tag_list[2])
 Systolic_murmur_timing=csv_reader_cl(csv_path,tag_list[3])
 Diastolic_murmur_timing=csv_reader_cl(csv_path,tag_list[4])
 
+# save data to csv file
+Murmur_locations_path = r'E:\Shilong\murmur\03_circor_states\Murmur_locations.csv'
+Systolic_murmur_timing_path = r'E:\Shilong\murmur\03_circor_states\Systolic_murmur_timing.csv'
+Diastolic_murmur_timing_path = r'E:\Shilong\murmur\03_circor_states\Diastolic_murmur_timing.csv'
+
+pd.DataFrame(Murmur_locations).to_csv(Murmur_locations_path, index=False, header=False)
+pd.DataFrame(Systolic_murmur_timing).to_csv(Systolic_murmur_timing_path, index=False, header=False)
+pd.DataFrame(Diastolic_murmur_timing).to_csv(Diastolic_murmur_timing_path, index=False, header=False)
+
 # init aptient id list for absent present and unknown
 absent_patient_id=list()
 present_patient_id=list()
@@ -215,8 +216,8 @@ for id in present_id:
     present_patient_id.append(id_data[id])
 
 # save patient id as csv
-pd.DataFrame(data = absent_patient_id,index = None).to_csv('absent_id.csv')
-pd.DataFrame(data = present_patient_id,index = None).to_csv('present_id.csv')
+pd.DataFrame(data = absent_patient_id,index = None).to_csv('absent_id.csv', index=False, header=False)
+pd.DataFrame(data = present_patient_id,index = None).to_csv('present_id.csv', index=False, header=False)
 
 # digaiation position
 # define path options
@@ -224,7 +225,7 @@ positoin=['_AV','_MV','_PV','_TV']
 murmur=["Absent\\","Present\\"]
 period=["s1", "systolic", "s2", "diastolic"]
 folder_path=r'E:\Shilong\murmur\03_circor_states\\'
-"""
+
 src_path=r'E:\Shilong\murmur\dataset_all\training_data'
 # # make dir and copy files for Present/Absent parients
 copy_wav_file(src_path,folder_path,absent_patient_id,"Absent",positoin)
@@ -244,18 +245,11 @@ for mur in murmur:
 # 切数据，命名格式为：id+pos+state+num
 period_div(folder_path,murmur,absent_patient_id,positoin)
 period_div(folder_path,murmur,present_patient_id,positoin)
-"""
-# 保存absent和present id并读入为list
-# read csv to get patient id
-# absent_csv=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\absent_id.csv'
-# present_csv=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\present_id.csv'
-# absent_patient_id=get_patientid(absent_csv)
-# present_patient_id=get_patientid(present_csv)
 
-absent_train_id_path = r'E:\Shilong\murmur\03_circor_states\absent_train_id_path.csv'
-absent_test_id_path = r'E:\Shilong\murmur\03_circor_states\absent_test_id_path.csv'
-present_train_id_path = r'E:\Shilong\murmur\03_circor_states\present_train_id_path.csv'
-present_test_id_path = r'E:\Shilong\murmur\03_circor_states\present_test_id_path.csv'
+absent_train_id_path = r'E:\Shilong\murmur\03_circor_states\absent_train_id.csv'
+absent_test_id_path = r'E:\Shilong\murmur\03_circor_states\absent_test_id.csv'
+present_train_id_path = r'E:\Shilong\murmur\03_circor_states\present_train_id.csv'
+present_test_id_path = r'E:\Shilong\murmur\03_circor_states\present_test_id.csv'
 
 # 将absent_id和present_id按照8:2随机选取id划分为训练集和测试集
 absent_train_id=random.sample(absent_patient_id,int(len(absent_patient_id)*0.8))
@@ -271,13 +265,7 @@ copy_states_data(folder,absent_test_id,"\\Absent\\","\\test")
 copy_states_data(folder,present_test_id,"\\Present\\","\\test")
 
 # 保存train、test id为CSV文件
-absent_train_id=pd.DataFrame(absent_train_id)
-present_train_id=pd.DataFrame(present_train_id)
-absent_test_id=pd.DataFrame(absent_test_id)
-present_test_id=pd.DataFrame(present_test_id)
-
-absent_train_id.to_csv(absent_train_id_path, index=False, header=False)
-present_train_id.to_csv(present_train_id_path, index=False, header=False)
-absent_test_id.to_csv(absent_test_id_path, index=False, header=False)
-present_test_id.to_csv(present_test_id_path, index=False, header=False)
-
+pd.DataFrame(absent_train_id).to_csv(absent_train_id_path, index=False, header=False)
+pd.DataFrame(present_train_id).to_csv(present_train_id_path, index=False, header=False)
+pd.DataFrame(absent_test_id).to_csv(absent_test_id_path, index=False, header=False)
+pd.DataFrame(present_test_id).to_csv(present_test_id_path, index=False, header=False)
