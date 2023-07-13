@@ -50,11 +50,11 @@ def get_wav_data(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
                 print("reading: "+subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                print("y_16k size: "+y_16k.size)
-                # if y_16k.shape[0]<500:
-                #     y_16k = np.pad(y_16k,(0,500-y_16k.shape[0]),'constant',constant_values=(0,0))
-                # elif  y_16k.shape[0]>500:
-                #     y_16k=y_16k[0:500]                
+                # print("y_16k size: "+y_16k.size)
+                if y_16k.shape[0]<2500:
+                    y_16k = np.pad(y_16k,(0,2500-y_16k.shape[0]),'constant',constant_values=(0,0))
+                elif  y_16k.shape[0]>2500:
+                    y_16k=y_16k[0:2500]                
                 wav.append(y_16k)
                 feature = pd.DataFrame(y_16k)
                 save_path = csv_path +"\\"+ subfile+ ".csv"
@@ -94,7 +94,7 @@ def cal_len(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
                 print("reading: "+subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                print("y size:"+str(y.size),"y_16k size: "+str(y_16k.size))
+                print("y_16k size: "+str(y_16k.size))
                 if subfile.split('_')[2] == 'Systolic':
                     slen.append(y_16k.size)
                 else:

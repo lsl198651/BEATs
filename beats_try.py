@@ -51,40 +51,40 @@ present_test_csv_path = r'E:\Shilong\murmur\03_circor_states\test_csv'
 filepath=r'E:\Shilong\murmur\03_circor_states'
 absent_train_path=r'E:\Shilong\murmur\03_circor_states\train\Absent'
 absent_test_path=r'E:\Shilong\murmur\03_circor_states\test\Absent'
-Present_train_path=r'E:\Shilong\murmur\03_circor_states\train\Present'
+present_train_path=r'E:\Shilong\murmur\03_circor_states\train\Present'
 present_test_path=r'E:\Shilong\murmur\03_circor_states\test\Present'
 
 folder=r'E:\Shilong\murmur\03_circor_statest'
 npy_path=r'E:\Shilong\murmur\03_circor_states\npyFile'
-
-slen,dlen=cal_len(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
+npy_path_padded=r'E:\Shilong\murmur\03_circor_states\npyFile_padded'
+# slen,dlen=cal_len(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
 # ========================/ get wav data, length=10000 /========================== # 
-absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
-absent_test_features,absent_test_label=get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
-present_train_features,present_train_label=get_wav_data(Present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# present
-present_test_features,present_test_label=get_wav_data(present_test_path,present_test_csv_path,'Present',id_data,Murmur_locations)# present
+# absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
+# absent_test_features,absent_test_label=get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
+# present_train_features,present_train_label=get_wav_data(present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# present
+# present_test_features,present_test_label=get_wav_data(present_test_path,present_test_csv_path,'Present',id_data,Murmur_locations)# present
 
-# # ========================/ save as npy file /========================== # 
-np.save(npy_path+r'\absent_train_features.npy',absent_train_features)
-np.save(npy_path+r'\absent_test_features.npy',absent_test_features)
-np.save(npy_path+r'\present_train_features.npy',present_train_features)
-np.save(npy_path+r'\present_test_features.npy',present_test_features)
+# # # # ========================/ save as npy file /========================== # 
+# np.save(npy_path_padded+r'\absent_train_features.npy',absent_train_features)
+# np.save(npy_path_padded+r'\absent_test_features.npy',absent_test_features)
+# np.save(npy_path_padded+r'\present_train_features.npy',present_train_features)
+# np.save(npy_path_padded+r'\present_test_features.npy',present_test_features)
 
-np.save(npy_path+r'\absent_train_label.npy',absent_train_label)
-np.save(npy_path+r'\absent_test_label.npy',absent_test_label)
-np.save(npy_path+r'\present_train_label.npy',present_train_label)
-np.save(npy_path+r'\present_test_label.npy',present_test_label)
+# np.save(npy_path_padded+r'\absent_train_label.npy',absent_train_label)
+# np.save(npy_path_padded+r'\absent_test_label.npy',absent_test_label)
+# np.save(npy_path_padded+r'\present_train_label.npy',present_train_label)
+# np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)
 
 # ========================/ load npy file /========================== # 
-absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)
-absent_test_features = np.load(npy_path+r'\absent_test_features.npy',allow_pickle=True)
-present_train_features = np.load(npy_path+r'\present_train_features.npy',allow_pickle=True)
-present_test_features = np.load(npy_path+r'\present_test_features.npy',allow_pickle=True)
+absent_train_features = np.load(npy_path_padded+r'\absent_train_features.npy',allow_pickle=True)
+absent_test_features = np.load(npy_path_padded+r'\absent_test_features.npy',allow_pickle=True)
+present_train_features = np.load(npy_path_padded+r'\present_train_features.npy',allow_pickle=True)
+present_test_features = np.load(npy_path_padded+r'\present_test_features.npy',allow_pickle=True)
 
-absent_train_label = np.load(npy_path+r'\absent_train_label.npy',allow_pickle=True)
-absent_test_label = np.load(npy_path+r'\absent_test_label.npy',allow_pickle=True)
-present_train_label = np.load(npy_path+r'\present_train_label.npy',allow_pickle=True)
-present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
+absent_train_label = np.load(npy_path_padded+r'\absent_train_label.npy',allow_pickle=True)
+absent_test_label = np.load(npy_path_padded+r'\absent_test_label.npy',allow_pickle=True)
+present_train_label = np.load(npy_path_padded+r'\present_train_label.npy',allow_pickle=True)
+present_test_label = np.load(npy_path_padded+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ get features & labels /========================== # 
 path=r'E:\Shilong\murmur\03_circor_states\csv'
