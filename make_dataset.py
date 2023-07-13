@@ -120,8 +120,8 @@ def period_div(path,murmur,patient_id_list,positoin):
 
 # preprocessed PCGs were segmented into four heart sound states
 def state_div(tsvname,wavname,state_path,index):
-    # 获取周期时间点
     index_file=index_load(tsvname)
+    recording, fs = librosa.load(wavname,sr=4000)
     num=0
     start_index2=0
     end_index2=0
@@ -130,15 +130,13 @@ def state_div(tsvname,wavname,state_path,index):
 
     for i in range(index_file.shape[0]-3):
         if index_file[i][2]=='2'and index_file[i+2][2]=='4':
-            start_index2=float(index_file[i][0])*1000
-            end_index2=float(index_file[i][1])*1000
-            # mdzz
-            start_index4=float(index_file[i+2][0])*1000
-            end_index4=float(index_file[i+2][1])*1000
+            start_index2=float(index_file[i][0])*fs
+            end_index2=float(index_file[i][1])*fs
+            start_index4=float(index_file[i+2][0])*fs
+            end_index4=float(index_file[i+2][1])*fs
             num=num+1
             #  解决出现_0.wav的问题
-            print(start_index2,end_index2,start_index4,end_index4)
-            recording, fs = librosa.load(wavname,sr=4000)
+            print(start_index2,end_index2,start_index4,end_index4)            
             print("=============================================")
             print("wav name: "+wavname)        
             buff2 = recording[int(start_index2) :int(end_index2) ]  # 字符串索引切割
@@ -146,6 +144,7 @@ def state_div(tsvname,wavname,state_path,index):
             print("buff2 len: "+str(len(buff2)),"buff4 len: "+str(len(buff4)))
             soundfile.write(state_path+"{}_{}_{}.wav".format(index,'Systolic' ,num),buff2,fs)
             soundfile.write(state_path+"{}_{}_{}.wav".format(index,'Diastolic',num),buff4,fs)
+
 
 # get patient id from csv file
 def get_patientid(csv_path):
@@ -217,8 +216,8 @@ for id in present_id:
     present_patient_id.append(id_data[id])
 
 # save patient id as csv
-pd.DataFrame(data = absent_patient_id,index = None).to_csv('absent_id.csv', index=False, header=False)
-pd.DataFrame(data = present_patient_id,index = None).to_csv('present_id.csv', index=False, header=False)
+# pd.DataFrame(data = absent_patient_id,index = None).to_csv('absent_id.csv', index=False, header=False)
+# pd.DataFrame(data = present_patient_id,index = None).to_csv('present_id.csv', index=False, header=False)
 
 # digaiation position
 # define path options
@@ -226,7 +225,7 @@ positoin=['_AV','_MV','_PV','_TV']
 murmur=["Absent\\","Present\\"]
 period=["s1", "systolic", "s2", "diastolic"]
 folder_path=r'E:\Shilong\murmur\03_circor_states\\'
-
+"""
 src_path=r'E:\Shilong\murmur\dataset_all\training_data'
 # # make dir and copy files for Present/Absent parients
 copy_wav_file(src_path,folder_path,absent_patient_id,"Absent",positoin)
@@ -241,7 +240,7 @@ for mur in murmur:
     for patient_id in absent_patient_id:
         pos_dir_make(dir_path,patient_id,positoin)
     for patient_id in present_patient_id:
-        pos_dir_make(dir_path,patient_id,positoin)
+        pos_dir_make(dir_path,patient_id,positoin)"""
 
 # 切数据，命名格式为：id+pos+state+num
 period_div(folder_path,murmur,absent_patient_id,positoin)
