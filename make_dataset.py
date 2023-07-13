@@ -132,8 +132,9 @@ def state_div(tsvname,wavname,state_path,index):
         if index_file[i][2]=='2'and index_file[i+2][2]=='4':
             start_index2=float(index_file[i][0])*1000
             end_index2=float(index_file[i][1])*1000
-            start_index4=float(index_file[i][0])*1000
-            end_index4=float(index_file[i][1])*1000
+            # mdzz
+            start_index4=float(index_file[i+2][0])*1000
+            end_index4=float(index_file[i+2][1])*1000
             num=num+1
             #  解决出现_0.wav的问题
             print(start_index2,end_index2,start_index4,end_index4)
@@ -234,7 +235,7 @@ copy_wav_file(src_path,folder_path,present_patient_id,"Present",positoin)
 # make dir for each position
 # E:\Shilong\murmur\LM_wav_dataset
 src_path=r'E:\Shilong\murmur\dataset_all\training_data'
-folder_path=r'E:\Shilong\murmur\03_circor_states\\'
+
 for mur in murmur:
     dir_path=folder_path+mur
     for patient_id in absent_patient_id:

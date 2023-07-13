@@ -19,7 +19,7 @@ from torch.utils.data import DataLoader
 from sklearn.model_selection import StratifiedShuffleSplit
 from torch.utils.tensorboard import SummaryWriter
 from BEATs import BEATs_Pre_Train_itere3
-from BEATs_def import get_patientid,get_wav_data,copy_wav,get_mel_features,csv_reader_cl,MyDataset,logger_init,save_info
+from BEATs_def import get_patientid,get_wav_data,copy_wav,get_mel_features,csv_reader_cl,MyDataset,logger_init,save_info,cal_len
 
 # ========================/ parameteres define /========================== # 
 murmur_positoin=['_AV','_MV','_PV','_TV']
@@ -57,29 +57,8 @@ present_test_path=r'E:\Shilong\murmur\03_circor_states\test\Present'
 folder=r'E:\Shilong\murmur\03_circor_statest'
 npy_path=r'E:\Shilong\murmur\03_circor_states\npyFile'
 
-# ========================/ devide trainset and testset /========================== #
-
-"""
-# 将absent_id和present_id按照7:3随机选取id划分为训练集和测试集
-absent_train_id=random.sample(absent_patient_id,int(len(absent_patient_id)*0.7))
-present_train_id=random.sample(present_patient_id,int(len(present_patient_id)*0.7))
-absent_test_id=list(set(absent_patient_id)-set(absent_train_id))
-present_test_id=list(set(present_patient_id)-set(present_train_id))
-
-# 读取csv文件
-absent_train_id = csv_reader_cl(absent_train_id_path,0)
-present_train_id =csv_reader_cl(present_train_id_path,0)
-absent_test_id = csv_reader_cl(absent_test_id_path,0)
-present_test_id = csv_reader_cl(present_test_id_path,0)
-
-# 将wav文件拷到对应的文件夹中
-copy_wav(folder,absent_test_id,'Absent',absent_test_path)
-copy_wav(folder,present_test_id,'Present',present_test_path)
-copy_wav(folder,absent_train_id,'Absent',absent_train_path)
-copy_wav(folder,present_train_id,'Present',Present_train_path)
-"""
-
-"""# ========================/ get wav data, length=10000 /========================== # 
+slen,dlen=cal_len(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
+# ========================/ get wav data, length=10000 /========================== # 
 absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
 absent_test_features,absent_test_label=get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
 present_train_features,present_train_label=get_wav_data(Present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# present
@@ -94,7 +73,7 @@ np.save(npy_path+r'\present_test_features.npy',present_test_features)
 np.save(npy_path+r'\absent_train_label.npy',absent_train_label)
 np.save(npy_path+r'\absent_test_label.npy',absent_test_label)
 np.save(npy_path+r'\present_train_label.npy',present_train_label)
-np.save(npy_path+r'\present_test_label.npy',present_test_label)"""
+np.save(npy_path+r'\present_test_label.npy',present_test_label)
 
 # ========================/ load npy file /========================== # 
 absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)

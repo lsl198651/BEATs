@@ -50,11 +50,11 @@ def get_wav_data(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
                 print("reading: "+subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                # print("y_16k size: "+y_16k.size)
-                if y_16k.shape[0]<500:
-                    y_16k = np.pad(y_16k,(0,500-y_16k.shape[0]),'constant',constant_values=(0,0))
-                elif  y_16k.shape[0]>500:
-                    y_16k=y_16k[0:500]                
+                print("y_16k size: "+y_16k.size)
+                # if y_16k.shape[0]<500:
+                #     y_16k = np.pad(y_16k,(0,500-y_16k.shape[0]),'constant',constant_values=(0,0))
+                # elif  y_16k.shape[0]>500:
+                #     y_16k=y_16k[0:500]                
                 wav.append(y_16k)
                 feature = pd.DataFrame(y_16k)
                 save_path = csv_path +"\\"+ subfile+ ".csv"
@@ -78,6 +78,28 @@ def get_wav_data(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
                     else:
                         label.append(0)                     # 说明该听诊区无杂音
     return np.array(wav),np.array(label)
+
+def cal_len(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
+    slen=[]
+    dlen=[]
+    # label=[]
+    if not os.path.exists(csv_path):
+        os.makedirs(csv_path)
+
+    for root,dir,file in os.walk(dir_path):
+        for subfile in file:
+            wav_path=os.path.join(root,subfile)            
+            if os.path.exists(wav_path):
+                # 数据读取
+                print("reading: "+subfile)
+                y, sr = librosa.load(wav_path, sr=4000)
+                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                print("y size:"+str(y.size),"y_16k size: "+str(y_16k.size))
+                if subfile.split('_')[2] == 'Systolic':
+                    slen.append(y_16k.size)
+                else:
+                    dlen.append(y_16k.size)    
+    return np.array(slen),np.array(dlen)
 
 """
 读取csv文件返回feature和label
