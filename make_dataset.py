@@ -225,7 +225,7 @@ positoin=['_AV','_MV','_PV','_TV']
 murmur=["Absent\\","Present\\"]
 period=["s1", "systolic", "s2", "diastolic"]
 folder_path=r'E:\Shilong\murmur\03_circor_states\\'
-"""
+
 src_path=r'E:\Shilong\murmur\dataset_all\training_data'
 # # make dir and copy files for Present/Absent parients
 copy_wav_file(src_path,folder_path,absent_patient_id,"Absent",positoin)
@@ -240,7 +240,7 @@ for mur in murmur:
     for patient_id in absent_patient_id:
         pos_dir_make(dir_path,patient_id,positoin)
     for patient_id in present_patient_id:
-        pos_dir_make(dir_path,patient_id,positoin)"""
+        pos_dir_make(dir_path,patient_id,positoin)
 
 # 切数据，命名格式为：id+pos+state+num
 period_div(folder_path,murmur,absent_patient_id,positoin)
