@@ -31,38 +31,53 @@ def copy_wav(folder,idlist,mur,traintest):
 def get_patientid(csv_path):
     # 'import csv' is required
     with open(csv_path) as csvfile:
-        reader = csv.DictReader(csvfile)
-        id = [row['0'] for row in reader]   # weight 同列的数据
+        reader = csv.reader(csvfile)
+        id = [row[0] for row in reader]   # weight 同列的数据
     return id
 
-
-def get_mfcc_features(BEATs_model,dir_path,csv_path,padding_mask):
+# 读取数据并打标签
+def get_wav_data(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
     wav=[]
+    label=[]
+    if not os.path.exists(csv_path):
+        os.makedirs(csv_path)
+
     for root,dir,file in os.walk(dir_path):
         for subfile in file:
             wav_path=os.path.join(root,subfile)            
             if os.path.exists(wav_path):
+                # 数据读取
                 print("reading: "+subfile)
-                y, sr = librosa.load(wav_path, sr=2000)
+                y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                # wav = torch.tensor(y_16k)
-                # 增加一个维度满足输入要求
-                # wav = wav.unsqueeze(0)
-                # padding=torch.zeros(16-wav.shape[0], wav.shape[1]).bool()
-                # rep = BEATs_model.extract_features(wav)[0]
-                # rep1 = BEATs_model.extract_features(wav)[0]
-                # rep = torch.squeeze(rep).detach().cpu().numpy()
-                # 裁剪、补零
-                if y_16k.shape[0]<10000:
-                    y_16k = np.pad(y_16k,(0,10000-y_16k.shape[0]),'constant',constant_values=(0,0))
-                elif  y_16k.shape[0]>10000:
-                    y_16k=y_16k[0:10000]
+                # print("y_16k size: "+y_16k.size)
+                if y_16k.shape[0]<500:
+                    y_16k = np.pad(y_16k,(0,500-y_16k.shape[0]),'constant',constant_values=(0,0))
+                elif  y_16k.shape[0]>500:
+                    y_16k=y_16k[0:500]                
                 wav.append(y_16k)
                 feature = pd.DataFrame(y_16k)
                 save_path = csv_path +"\\"+ subfile+ ".csv"
                 # print("shape: "+feature.shape())
                 feature.to_csv(save_path, index=False, header=False)
-    return np.array(wav)
+                # 标签读取
+                if Murmur=='Absent':    # Absent 
+                    label.append(0)
+                else:                   # Present
+                # 先找到id对应的index,再通过索引找到murmur_locations和timing
+                    index = id_data.index(subfile.split('_')[0])
+                    wav_location = subfile.split('_')[1]    # 听诊区域
+                    wav_state = subfile.split('_')[2]       # 心跳时相
+                    locations = Murmur_locations[index].split('+')                    
+                    if wav_location in locations:           # 说明该听诊区有杂音
+                        # label.append(1)
+                        if wav_state == 'Systolic':         # 读到了收缩期Systolic
+                            label.append(1)                 # 收缩期有杂音
+                        else:                               # 读到了舒张期Diastolic
+                            label.append(0)                 # 舒张期全部认为没有杂音
+                    else:
+                        label.append(0)                     # 说明该听诊区无杂音
+    return np.array(wav),np.array(label)
 
 """
 读取csv文件返回feature和label
