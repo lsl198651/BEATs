@@ -108,18 +108,43 @@ def index_load(tsvname):
     return head[1:]
 
 # preprocessed PCGs were segmented into four heart sound states
-def period_div(path,murmur,patient_id_list,positoin):
+def period_div(path,murmur,patient_id_list,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing):
     for mur in murmur:
         for patient_id in patient_id_list:
             for pos in positoin:
                 dir_path=path+mur+patient_id+"\\"+patient_id+pos
                 tsv_path=dir_path+".tsv"
                 wav_path=dir_path+".wav"
+
+                index = id_data.index(patient_id)
+                wav_location = pos[1:]    # 听诊区域
+                locations = Murmur_locations[index].split('+')  # 有杂音的区域
+                # 此听诊区有杂音
+                if wav_location in locations:
+                    Systolic_state=Systolic_murmur_timing[index]
+                    Diastolic_state=Diastolic_murmur_timing[index]
+                    # 没有 Systolic murmur
+                    if Systolic_state =='nan':
+                        Systolic_murmur='Absent'
+                    else: 
+                        Systolic_murmur='Present'
+                    # 没有 Diastolic murmur
+                    if Diastolic_state =='nan':
+                        Diastolic_murmur='Absent'
+                    else: 
+                        Diastolic_murmur='Present'
+
+                # 此听诊区没有杂音
+                else: 
+                    Systolic_murmur='Absent'
+                    Diastolic_murmur='Absent'
+                    Systolic_state='nan'
+                    Diastolic_state='nan'
                 if os.path.exists(tsv_path):
-                    state_div(tsv_path,wav_path,dir_path+"\\",patient_id+pos)
+                    state_div(tsv_path,wav_path,dir_path+"\\",patient_id+pos,Systolic_murmur,Diastolic_murmur,Systolic_state,Diastolic_state)
 
 # preprocessed PCGs were segmented into four heart sound states
-def state_div(tsvname,wavname,state_path,index):
+def state_div(tsvname,wavname,state_path,index,Systolic_murmur,Diastolic_murmur,Systolic_state,Diastolic_state):
     index_file=index_load(tsvname)
     recording, fs = librosa.load(wavname,sr=4000)
     num=0
@@ -142,8 +167,8 @@ def state_div(tsvname,wavname,state_path,index):
             buff2 = recording[int(start_index2) :int(end_index2) ]  # 字符串索引切割
             buff4 = recording[int(start_index4) :int(end_index4) ]  # 字符串索引切割
             print("buff2 len: "+str(len(buff2)),"buff4 len: "+str(len(buff4)))
-            soundfile.write(state_path+"{}_{}_{}.wav".format(index,'Systolic' ,num),buff2,fs)
-            soundfile.write(state_path+"{}_{}_{}.wav".format(index,'Diastolic',num),buff4,fs)
+            soundfile.write(state_path+"{}_{}_{}_{}_{}.wav".format(index,'Systolic' ,num,Systolic_murmur,Systolic_state),buff2,fs)
+            soundfile.write(state_path+"{}_{}_{}_{}_{}.wav".format(index,'Diastolic',num,Diastolic_murmur,Diastolic_state),buff4,fs)
 
 
 # get patient id from csv file
@@ -243,8 +268,8 @@ for mur in murmur:
         pos_dir_make(dir_path,patient_id,positoin)
 
 # 切数据，命名格式为：id+pos+state+num
-period_div(folder_path,murmur,absent_patient_id,positoin)
-period_div(folder_path,murmur,present_patient_id,positoin)
+period_div(folder_path,murmur,absent_patient_id,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing)
+period_div(folder_path,murmur,present_patient_id,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing)
 
 absent_train_id_path = r'E:\Shilong\murmur\03_circor_states\absent_train_id.csv'
 absent_test_id_path = r'E:\Shilong\murmur\03_circor_states\absent_test_id.csv'
