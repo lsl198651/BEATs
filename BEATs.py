@@ -90,7 +90,7 @@ class BEATs(nn.Module):
         self.input_patch_size = cfg.input_patch_size
         # layer 2
         self.patch_embedding = nn.Conv2d(1, self.embed, kernel_size=self.input_patch_size, stride=self.input_patch_size,
-                                         bias=cfg.conv_bias)
+                                        bias=cfg.conv_bias)
         # layer 3
         self.dropout_input = nn.Dropout(cfg.dropout_input)
 
