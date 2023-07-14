@@ -51,15 +51,16 @@ def get_wav_data(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
                 y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
                 # print("y_16k size: "+y_16k.size)
-                if y_16k.shape[0]<2500:
+                if y_16k.shape[0]<2800:
                     y_16k = np.pad(y_16k,(0,2500-y_16k.shape[0]),'constant',constant_values=(0,0))
-                elif  y_16k.shape[0]>2500:
+                elif  y_16k.shape[0]>2800:
                     y_16k=y_16k[0:2500]                
                 wav.append(y_16k)
                 feature = pd.DataFrame(y_16k)
                 save_path = csv_path +"\\"+ subfile+ ".csv"
                 # print("shape: "+feature.shape())
                 feature.to_csv(save_path, index=False, header=False)
+
                 # 标签读取
                 if Murmur=='Absent':    # Absent 
                     label.append(0)
