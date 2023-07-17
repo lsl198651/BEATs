@@ -26,14 +26,14 @@ murmur_positoin=['_AV','_MV','_PV','_TV']
 murmur_ap=["Absent\\","Present\\"]
 period=["Systolic","Diastolic"]
 
-# file_path=r'E:\Shilong\murmur\circor_dataset_period\train'
+# file_path=r'D:\Shilong\murmur\circor_dataset_period\train'
 # get absent / present patient_id
-id_data_path=r'E:\Shilong\murmur\03_circor_states\id_data.csv'
-absent_csv_path=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\absent_id.csv'
-present_csv_path=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\present_id.csv'
-Diastolic_murmur_timing_path=r'E:\Shilong\murmur\03_circor_states\Diastolic_murmur_timing.csv'
-Systolic_murmur_timing_path=r'E:\Shilong\murmur\03_circor_states\Systolic_murmur_timing.csv'
-Murmur_locations_path=r'E:\Shilong\murmur\03_circor_states\Murmur_locations.csv'
+id_data_path=r'D:\Shilong\murmur\03_circor_states\id_data.csv'
+absent_csv_path=r'D:\Shilong\murmur\03_Classifier\LM\BEATs\absent_id.csv'
+present_csv_path=r'D:\Shilong\murmur\03_Classifier\LM\BEATs\present_id.csv'
+Diastolic_murmur_timing_path=r'D:\Shilong\murmur\03_circor_states\Diastolic_murmur_timing.csv'
+Systolic_murmur_timing_path=r'D:\Shilong\murmur\03_circor_states\Systolic_murmur_timing.csv'
+Murmur_locations_path=r'D:\Shilong\murmur\03_circor_states\Murmur_locations.csv'
 
 id_data=get_patientid(id_data_path)
 absent_patient_id=get_patientid(absent_csv_path)
@@ -43,21 +43,53 @@ Systolic_murmur_timing=get_patientid(Systolic_murmur_timing_path)
 Murmur_locations=get_patientid(Murmur_locations_path)
 
 # ========================/ file path /========================== # 
-absent_train_csv_path = r'E:\Shilong\murmur\03_circor_states\train_csv'
-absent_test_csv_path = r'E:\Shilong\murmur\03_circor_states\test_csv'
-present_train_csv_path = r'E:\Shilong\murmur\03_circor_states\train_csv'
-present_test_csv_path = r'E:\Shilong\murmur\03_circor_states\test_csv'
+absent_train_csv_path = r'D:\Shilong\murmur\03_circor_states\train_csv'
+absent_test_csv_path = r'D:\Shilong\murmur\03_circor_states\test_csv'
+present_train_csv_path = r'D:\Shilong\murmur\03_circor_states\train_csv'
+present_test_csv_path = r'D:\Shilong\murmur\03_circor_states\test_csv'
 
-filepath=r'E:\Shilong\murmur\03_circor_states'
-absent_train_path=r'E:\Shilong\murmur\03_circor_states\train\Absent'
-absent_test_path=r'E:\Shilong\murmur\03_circor_states\test\Absent'
-present_train_path=r'E:\Shilong\murmur\03_circor_states\train\Present'
-present_test_path=r'E:\Shilong\murmur\03_circor_states\test\Present'
+filepath=r'D:\Shilong\murmur\03_circor_states'
+absent_train_path=r'D:\Shilong\murmur\03_circor_states\train\Absent'
+absent_test_path=r'D:\Shilong\murmur\03_circor_states\test\Absent'
+present_train_path=r'D:\Shilong\murmur\03_circor_states\train\Present'
+present_test_path=r'D:\Shilong\murmur\03_circor_states\test\Present'
 
-folder=r'E:\Shilong\murmur\03_circor_statest'
-npy_path=r'E:\Shilong\murmur\03_circor_states\npyFile'
-npy_path_padded=r'E:\Shilong\murmur\03_circor_states\npyFile_padded'
-slen,dlen=cal_len(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
+folder=r'D:\Shilong\murmur\03_circor_statest'
+npy_path=r'D:\Shilong\murmur\03_circor_states\npyFile'
+npy_path_padded=r'D:\Shilong\murmur\03_circor_states\npyFile_padded'
+
+atslen,atdlen=cal_len(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
+avslen,avdlen=cal_len(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
+ptslen,ptdlen=cal_len(present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# absent
+pvslen,pvdlen=cal_len(present_test_path,present_test_csv_path,'Present',id_data,Murmur_locations)# absent
+
+atslen_path=r'D:\Shilong\murmur\03_circor_states\atslen.csv'
+atdlen_path=r'D:\Shilong\murmur\03_circor_states\atdlen.csv'
+avslen_path=r'D:\Shilong\murmur\03_circor_states\avslen.csv'
+avdlen_path=r'D:\Shilong\murmur\03_circor_states\avdlen.csv'
+ptslen_path=r'D:\Shilong\murmur\03_circor_states\ptslen.csv'
+ptdlen_path=r'D:\Shilong\murmur\03_circor_states\ptdlen.csv'
+pvslen_path=r'D:\Shilong\murmur\03_circor_states\pvslen.csv'
+pvdlen_path=r'D:\Shilong\murmur\03_circor_states\pvdlen.csv'
+
+pd.DataFrame(atslen).to_csv(atslen_path, index=False, header=False)
+pd.DataFrame(atdlen).to_csv(atdlen_path, index=False, header=False)
+pd.DataFrame(avslen).to_csv(avslen_path, index=False, header=False)
+pd.DataFrame(avdlen).to_csv(avdlen_path, index=False, header=False)
+pd.DataFrame(ptslen).to_csv(ptslen_path, index=False, header=False)
+pd.DataFrame(ptdlen).to_csv(ptdlen_path, index=False, header=False)
+pd.DataFrame(pvslen).to_csv(pvslen_path, index=False, header=False)
+pd.DataFrame(pvdlen).to_csv(pvdlen_path, index=False, header=False)
+
+print("ats max:"+str(max(atslen)),"ats min: "+str(min(atslen)),"ats mean: "+str(mean(atslen)))
+print("atd max:"+str(max(atdlen)),"atd min: "+str(min(atdlen)),"atd mean: "+str(mean(atdlen)))
+print("avs max:"+str(max(avslen)),"avs min: "+str(min(avslen)),"avs mean: "+str(mean(avslen)))
+print("avd max:"+str(max(avdlen)),"avd min: "+str(min(avdlen)),"avd mean: "+str(mean(avdlen)))
+print("pts max:"+str(max(ptslen)),"pts min: "+str(min(ptslen)),"pts mean: "+str(mean(ptslen)))
+print("ptd max:"+str(max(ptdlen)),"ptd min: "+str(min(ptdlen)),"ptd mean: "+str(mean(ptdlen)))
+print("pvs max:"+str(max(pvslen)),"pvs min: "+str(min(pvslen)),"pvs mean: "+str(mean(pvslen)))
+print("pvd max:"+str(max(pvdlen)),"pvd min: "+str(min(pvdlen)),"pvd mean: "+str(mean(pvdlen)))
+
 # ========================/ get wav data, length=10000 /========================== # 
 # absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
 # absent_test_features,absent_test_label=get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
@@ -98,9 +130,9 @@ present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=Tr
 # present_test_label = np.load(npy_path_padded+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ get features & labels /========================== # 
-path=r'E:\Shilong\murmur\03_circor_states\csv'
-train_path=r'E:\Shilong\murmur\03_circor_states\train_csv'
-test_path=r'E:\Shilong\murmur\03_circor_states\test_csv'
+path=r'D:\Shilong\murmur\03_circor_states\csv'
+train_path=r'D:\Shilong\murmur\03_circor_states\train_csv'
+test_path=r'D:\Shilong\murmur\03_circor_states\test_csv'
 # test_features,test_label=get_mel_features(path,absent_patient_id,present_patient_id)
 
 """train_features,train_label=get_mel_features(train_path,absent_patient_id,present_patient_id)
@@ -133,7 +165,7 @@ test_set=MyDataset(wavlabel=test_label,wavdata=test_features)
 
 # ========================/ HyperParameters /========================== # 
 batch_size= 64
-learning_rate = 0.001
+learning_rate = 0.0005
 num_epochs = 50
 padding_size = 375
 padding = torch.zeros(batch_size, padding_size).bool() # we randomly mask 75% of the input patches,
@@ -151,7 +183,7 @@ MyModel=BEATs_Pre_Train_itere3()
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model=MyModel.to(DEVICE)# 放到设备中
 criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam([{'params':MyModel.last_layer.parameters()}], lr=learning_rate)#指定 新加的fc层的学习率
+optimizer = torch.optim.AdamW([{'params':MyModel.last_layer.parameters()}], lr=learning_rate)#指定 新加的fc层的学习率
 
 # ========================/ train model /========================== # 
 # 定义训练函数

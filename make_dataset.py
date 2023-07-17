@@ -252,9 +252,9 @@ period=["s1", "systolic", "s2", "diastolic"]
 folder_path=r'E:\Shilong\murmur\03_circor_states\\'
 
 src_path=r'E:\Shilong\murmur\dataset_all\training_data'
-# # make dir and copy files for Present/Absent parients
-copy_wav_file(src_path,folder_path,absent_patient_id,"Absent",positoin)
-copy_wav_file(src_path,folder_path,present_patient_id,"Present",positoin)
+# # make dir and copy files for Present/Absent patients
+# copy_wav_file(src_path,folder_path,absent_patient_id,"Absent",positoin)
+# copy_wav_file(src_path,folder_path,present_patient_id,"Present",positoin)
 
 # make dir for each position
 # E:\Shilong\murmur\LM_wav_dataset
@@ -268,8 +268,8 @@ for mur in murmur:
         pos_dir_make(dir_path,patient_id,positoin)
 
 # 切数据，命名格式为：id+pos+state+num
-period_div(folder_path,murmur,absent_patient_id,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing)
-period_div(folder_path,murmur,present_patient_id,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing)
+# period_div(folder_path,murmur,absent_patient_id,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing)
+# period_div(folder_path,murmur,present_patient_id,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing)
 
 absent_train_id_path = r'E:\Shilong\murmur\03_circor_states\absent_train_id.csv'
 absent_test_id_path = r'E:\Shilong\murmur\03_circor_states\absent_test_id.csv'
@@ -277,11 +277,14 @@ present_train_id_path = r'E:\Shilong\murmur\03_circor_states\present_train_id.cs
 present_test_id_path = r'E:\Shilong\murmur\03_circor_states\present_test_id.csv'
 
 # 将absent_id和present_id按照8:2随机选取id划分为训练集和测试集
-absent_train_id=random.sample(absent_patient_id,int(len(absent_patient_id)*0.8))
-present_train_id=random.sample(present_patient_id,int(len(present_patient_id)*0.8))
-absent_test_id=list(set(absent_patient_id)-set(absent_train_id))
-present_test_id=list(set(present_patient_id)-set(present_train_id))
-
+# absent_train_id=random.sample(absent_patient_id,int(len(absent_patient_id)*0.8))
+# present_train_id=random.sample(present_patient_id,int(len(present_patient_id)*0.8))
+# absent_test_id=list(set(absent_patient_id)-set(absent_train_id))
+# present_test_id=list(set(present_patient_id)-set(present_train_id))
+absent_train_id=csv_reader_cl(absent_train_id_path,0)
+absent_test_id=csv_reader_cl(absent_test_id_path,0)
+present_train_id=csv_reader_cl(present_train_id_path,0)
+present_test_id=csv_reader_cl(present_test_id_path,0)
 # 将训练集和测试集文件分别copy到train和test文件夹
 folder=r'E:\Shilong\murmur\03_circor_states'
 copy_states_data(folder,absent_train_id,"\\Absent\\","\\train")
@@ -290,7 +293,7 @@ copy_states_data(folder,absent_test_id,"\\Absent\\","\\test")
 copy_states_data(folder,present_test_id,"\\Present\\","\\test")
 
 # 保存train、test id为CSV文件
-pd.DataFrame(absent_train_id).to_csv(absent_train_id_path, index=False, header=False)
-pd.DataFrame(present_train_id).to_csv(present_train_id_path, index=False, header=False)
-pd.DataFrame(absent_test_id).to_csv(absent_test_id_path, index=False, header=False)
-pd.DataFrame(present_test_id).to_csv(present_test_id_path, index=False, header=False)
+# pd.DataFrame(absent_train_id).to_csv(absent_train_id_path, index=False, header=False)
+# pd.DataFrame(present_train_id).to_csv(present_train_id_path, index=False, header=False)
+# pd.DataFrame(absent_test_id).to_csv(absent_test_id_path, index=False, header=False)
+# pd.DataFrame(present_test_id).to_csv(present_test_id_path, index=False, header=False)
