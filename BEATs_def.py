@@ -10,7 +10,6 @@ import torchaudio
 from datetime import datetime
 import sys
 from torch.utils.data import DataLoader, Dataset
-from torch.utils.tensorboard import SummaryWriter
 
 
 def csv_reader_cl(file_name, clo_num):
@@ -54,31 +53,43 @@ def get_wav_data(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
             if os.path.exists(wav_path):
                 # 数据读取
                 print("reading: " + subfile)
-                y, sr = librosa.load(wav_path)
-                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                # print("y_16k size: "+y_16k.size)
-                if y_16k.shape[0] < 3500:
-                    y_16k = np.pad(y_16k, (0, 3500 - y_16k.shape[0]),
-                                   'constant',
-                                   constant_values=(0, 0))
-                elif y_16k.shape[0] > 3500:
-                    y_16k = y_16k[0:3500]
-                wav.append(y_16k)
-                # feature = pd.DataFrame(y_16k)
-                # save_path = csv_path +"\\"+ subfile+ ".csv"
+                waveform, sr = torchaudio.load(wav_path)
+                waveform_16k = torchaudio.transforms.Resample(
+                    orig_freq=sr, new_freq=16000)(waveform)
+                #  y, sr = librosa.load(wav_path, sr=4000)
+                # waveform_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                # print("waveform_16k size: "+waveform_16k.size)
+                # 裁剪数据
+                if waveform_16k.shape[0] < 00:
+                    waveform_16k = np.pad(waveform_16k,
+                                          (0, 2500 - waveform_16k.shape[0]),
+                                          'constant',
+                                          constant_values=(0, 0))
+                elif waveform_16k.shape[0] > 2800:
+                    waveform_16k = waveform_16k[0:2500]
+                wav.append(waveform_16k)
+                feature = pd.DataFrame(waveform_16k)
+                save_path = csv_path + "\\" + subfile + ".csv"
                 # print("shape: "+feature.shape())
-                # feature.to_csv(save_path, index=False, header=False)
+                feature.to_csv(save_path, index=False, header=False)
 
                 # 标签读取
                 if Murmur == 'Absent':  # Absent
                     label.append(0)
                 else:  # Present
                     # 先找到id对应的index,再通过索引找到murmur_locations和timing
-                    murmur_ap = subfile.split('_')[4]
-                    if murmur_ap == 'Absent':  # 说明该听诊区有杂音
-                        label.append(0)  # 舒张期全部认为没有杂音
+                    index = id_data.index(subfile.split('_')[0])
+                    wav_location = subfile.split('_')[1]  # 听诊区域
+                    wav_state = subfile.split('_')[2]  # 心跳时相
+                    locations = Murmur_locations[index].split('+')
+                    if wav_location in locations:  # 说明该听诊区有杂音
+                        # label.append(1)
+                        if wav_state == 'Systolic':  # 读到了收缩期Systolic
+                            label.append(1)  # 收缩期有杂音
+                        else:  # 读到了舒张期Diastolic
+                            label.append(0)  # 舒张期全部认为没有杂音
                     else:
-                        label.append(1)  # 说明该听诊区无杂音
+                        label.append(0)  # 说明该听诊区无杂音
     return np.array(wav), np.array(label)
 
 
@@ -164,7 +175,7 @@ class MyDataset(Dataset):
 # ========================/ logging init /========================== #
 def logger_init(
     log_level=logging.DEBUG,
-    log_dir=r'D:\Shilong\murmur\00_Code\LM\BEATs\ResultFile',
+    log_dir=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\ResultFile',
 ):
     # 指定路径
     if not os.path.exists(log_dir):
@@ -187,7 +198,7 @@ def logger_init(
 class save_info(object):
 
     def __init__(self, writer, epoch_num, epoch, train_loss, test_acc,
-                 test_loss, recall):
+                 test_loss):
         self.epoch = epoch
         self.train_loss = train_loss
         self.test_acc = test_acc

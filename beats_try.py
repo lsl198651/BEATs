@@ -203,7 +203,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
             padding = padding.to(device)
             optimizer.zero_grad()
             y_hat = model(x, padding)
-            recall = recall_score(y_hat, y)
+
             test_loss += criterion(y_hat, y.long()).item()  # sum up batch loss
             pred = y_hat.max(
                 1, keepdim=True)[1]  # get the index of the max log-probability
@@ -212,8 +212,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
     test_loss /= len(test_loader.dataset)
     test_acc = 100. * correct / len(test_set)
 
-    save_info(writer, num_epochs, epoch, loss.item(), test_acc, test_loss,
-              recall)
+    save_info(writer, num_epochs, epoch, loss.item(), test_acc, test_loss)
 
 
 # ========================/ training and logging info /========================== #
