@@ -58,7 +58,7 @@ folder=r'D:\Shilong\murmur\03_circor_statest'
 npy_path=r'D:\Shilong\murmur\03_circor_states\npyFile'
 npy_path_padded=r'D:\Shilong\murmur\03_circor_states\npyFile_padded'
 
-# ========================/ get wav data, length=10000 /========================== # 
+"""# ========================/ get wav data, length=10000 /========================== # 
 absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
 absent_test_features,absent_test_label = get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
 present_train_features,present_train_label= get_wav_data(present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# present
@@ -74,28 +74,28 @@ np.save(npy_path_padded+r'\absent_train_label.npy',absent_train_label)
 np.save(npy_path_padded+r'\absent_test_label.npy',absent_test_label)
 np.save(npy_path_padded+r'\present_train_label.npy',present_train_label)
 np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)
-
+"""
 # ========================/ load npy file /========================== # 
-absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)
-absent_test_features = np.load(npy_path+r'\absent_test_features.npy',allow_pickle=True)
-present_train_features = np.load(npy_path+r'\present_train_features.npy',allow_pickle=True)
-present_test_features = np.load(npy_path+r'\present_test_features.npy',allow_pickle=True)
+# absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)
+# absent_test_features = np.load(npy_path+r'\absent_test_features.npy',allow_pickle=True)
+# present_train_features = np.load(npy_path+r'\present_train_features.npy',allow_pickle=True)
+# present_test_features = np.load(npy_path+r'\present_test_features.npy',allow_pickle=True)
 
-absent_train_label = np.load(npy_path+r'\absent_train_label.npy',allow_pickle=True)
-absent_test_label = np.load(npy_path+r'\absent_test_label.npy',allow_pickle=True)
-present_train_label = np.load(npy_path+r'\present_train_label.npy',allow_pickle=True)
-present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
+# absent_train_label = np.load(npy_path+r'\absent_train_label.npy',allow_pickle=True)
+# absent_test_label = np.load(npy_path+r'\absent_test_label.npy',allow_pickle=True)
+# present_train_label = np.load(npy_path+r'\present_train_label.npy',allow_pickle=True)
+# present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ load npy padded file /========================== # 
-# absent_train_features = np.load(npy_path_padded+r'\absent_train_features.npy',allow_pickle=True)
-# absent_test_features = np.load(npy_path_padded+r'\absent_test_features.npy',allow_pickle=True)
-# present_train_features = np.load(npy_path_padded+r'\present_train_features.npy',allow_pickle=True)
-# present_test_features = np.load(npy_path_padded+r'\present_test_features.npy',allow_pickle=True)
+absent_train_features = np.load(npy_path_padded+r'\absent_train_features.npy',allow_pickle=True)
+absent_test_features = np.load(npy_path_padded+r'\absent_test_features.npy',allow_pickle=True)
+present_train_features = np.load(npy_path_padded+r'\present_train_features.npy',allow_pickle=True)
+present_test_features = np.load(npy_path_padded+r'\present_test_features.npy',allow_pickle=True)
 
-# absent_train_label = np.load(npy_path_padded+r'\absent_train_label.npy',allow_pickle=True)
-# absent_test_label = np.load(npy_path_padded+r'\absent_test_label.npy',allow_pickle=True)
-# present_train_label = np.load(npy_path_padded+r'\present_train_label.npy',allow_pickle=True)
-# present_test_label = np.load(npy_path_padded+r'\present_test_label.npy',allow_pickle=True)
+absent_train_label = np.load(npy_path_padded+r'\absent_train_label.npy',allow_pickle=True)
+absent_test_label = np.load(npy_path_padded+r'\absent_test_label.npy',allow_pickle=True)
+present_train_label = np.load(npy_path_padded+r'\present_train_label.npy',allow_pickle=True)
+present_test_label = np.load(npy_path_padded+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ get features & labels /========================== # 
 path=r'D:\Shilong\murmur\03_circor_states\csv'
@@ -132,7 +132,7 @@ train_set=MyDataset(wavlabel=train_label,wavdata=train_features)
 test_set=MyDataset(wavlabel=test_label,wavdata=test_features)
 
 # ========================/ HyperParameters /========================== # 
-batch_size= 64
+batch_size= 128
 learning_rate = 0.0005
 num_epochs = 50
 padding_size = 375
@@ -186,24 +186,24 @@ def train_model(model,device, train_loader, test_loader,padding,epochs):
             pred = y_hat.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(y.view_as(pred)).sum().item()
     test_loss /= len(test_loader.dataset)
-    # writer.add_scalar("train_loss",loss,epoch)
-    # writer.add_scalar("test_loss",test_loss,epoch)
-    # writer.add_scalar("test_acc",100. * correct / len(test_set),epoch)
-    # save=save_info(epoch,loss.item(),100. * correct / len(test_set),test_loss)
+    writer.add_scalar("train_loss",loss,epoch)
+    writer.add_scalar("test_loss",test_loss,epoch)
+    writer.add_scalar("test_acc",100. * correct / len(test_set),epoch)
+    save=save_info(epoch,loss.item(),100. * correct / len(test_set),test_loss)
 
 # ========================/ training and logging info /========================== # 
 
-# logger_init()
-# logging.info("# train_batch_size = "+str(train_batch_size))
-# logging.info("# test_batch_size = "+str(test_batch_size))
-# logging.info("# learning_rate = "+str(learning_rate))
-# logging.info("# num_epochs = "+str(num_epochs))
-# logging.info("# padding_size = "+str(padding_size))
-# logging.info("----------------------------------------------------")
-# writer = SummaryWriter(r'./tensorboard/'+str(datetime.now())[:13])
+logger_init()
+logging.info("# batch_size = "+str(batch_size))
+logging.info("# learning_rate = "+str(learning_rate))
+logging.info("# num_epochs = "+str(num_epochs))
+logging.info("# padding_size = "+str(padding_size))
+logging.info("----------------------------------------------------")
+writer = SummaryWriter(r'./tensorboard/'+str(datetime.now())[:13])
+
 for epoch in range(num_epochs):
     train_model(model=MyModel,device=DEVICE, train_loader=train_loader,test_loader=test_loader,padding=padding_mask,epochs=epoch)
 
-# writer.close()
+writer.close()
 
 

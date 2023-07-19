@@ -145,7 +145,7 @@ class MyDataset(Dataset):
     
 # ========================/ logging init /========================== #
 def logger_init(log_level=logging.DEBUG,
-                log_dir=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\ResultFile',
+                log_dir=r'D:\Shilong\murmur\00_Code\LM\BEATs\ResultFile',
                 ):
     # 指定路径
     if not os.path.exists(log_dir):

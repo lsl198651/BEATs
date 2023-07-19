@@ -198,7 +198,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
     def __init__(self,nums_class=2):
         super(BEATs_Pre_Train_itere3,self).__init__()
         
-        checkpoint=torch.load(r'E:\Shilong\murmur\03_Classifier\LM\LM_Model\BEATs\BEATs_iter3.pt')
+        checkpoint=torch.load(r'D:\Shilong\murmur\00_Code\LM\LM_Model\BEATs\BEATs_iter3.pt')
         cfg=BEATsConfig(checkpoint['cfg'])
         BEATs_model=BEATs(cfg)
         BEATs_model.load_state_dict(checkpoint['model'])
