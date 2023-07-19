@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import logging
 import datetime
+import torchaudio
 from datetime import datetime
 import sys
 from torch.utils.data import DataLoader, Dataset
@@ -48,36 +49,29 @@ def get_wav_data(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
             if os.path.exists(wav_path):
                 # 数据读取
                 print("reading: "+subfile)
-                y, sr = librosa.load(wav_path, sr=4000)
+                y, sr = librosa.load(wav_path)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
                 # print("y_16k size: "+y_16k.size)
-                if y_16k.shape[0]<2800:
-                    y_16k = np.pad(y_16k,(0,2500-y_16k.shape[0]),'constant',constant_values=(0,0))
-                elif  y_16k.shape[0]>2800:
-                    y_16k=y_16k[0:2500]                
+                if y_16k.shape[0]<3500:
+                    y_16k = np.pad(y_16k,(0,3500-y_16k.shape[0]),'constant',constant_values=(0,0))
+                elif  y_16k.shape[0]>3500:
+                    y_16k=y_16k[0:3500]                
                 wav.append(y_16k)
-                feature = pd.DataFrame(y_16k)
-                save_path = csv_path +"\\"+ subfile+ ".csv"
+                # feature = pd.DataFrame(y_16k)
+                # save_path = csv_path +"\\"+ subfile+ ".csv"
                 # print("shape: "+feature.shape())
-                feature.to_csv(save_path, index=False, header=False)
+                # feature.to_csv(save_path, index=False, header=False)
 
                 # 标签读取
                 if Murmur=='Absent':    # Absent 
                     label.append(0)
                 else:                   # Present
                 # 先找到id对应的index,再通过索引找到murmur_locations和timing
-                    index = id_data.index(subfile.split('_')[0])
-                    wav_location = subfile.split('_')[1]    # 听诊区域
-                    wav_state = subfile.split('_')[2]       # 心跳时相
-                    locations = Murmur_locations[index].split('+')                    
-                    if wav_location in locations:           # 说明该听诊区有杂音
-                        # label.append(1)
-                        if wav_state == 'Systolic':         # 读到了收缩期Systolic
-                            label.append(1)                 # 收缩期有杂音
-                        else:                               # 读到了舒张期Diastolic
-                            label.append(0)                 # 舒张期全部认为没有杂音
+                    murmur_ap=subfile.split('_')[4]
+                    if murmur_ap == 'Absent':           # 说明该听诊区有杂音
+                        label.append(0)                 # 舒张期全部认为没有杂音
                     else:
-                        label.append(0)                     # 说明该听诊区无杂音
+                        label.append(1)                     # 说明该听诊区无杂音
     return np.array(wav),np.array(label)
 
 def cal_len(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
@@ -93,13 +87,13 @@ def cal_len(dir_path,csv_path,Murmur:str,id_data,Murmur_locations):
             if os.path.exists(wav_path):
                 # 数据读取
                 print("reading: "+subfile)
-                y, sr = librosa.load(wav_path, sr=4000)
-                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                print("y_16k size: "+str(y_16k.size))
+                waveform, sr = librosa.load(wav_path, sr=4000)
+                waveform_16k = librosa.resample(y=waveform, orig_sr=sr, target_sr=16000)
+                print("waveform_16k size: "+str(waveform_16k.size))
                 if subfile.split('_')[2] == 'Systolic':
-                    slen.append(y_16k.size)
+                    slen.append(waveform_16k.size)
                 else:
-                    dlen.append(y_16k.size)    
+                    dlen.append(waveform_16k.size)    
     return np.array(slen),np.array(dlen)
 
 """

@@ -29,8 +29,8 @@ period=["Systolic","Diastolic"]
 # file_path=r'D:\Shilong\murmur\circor_dataset_period\train'
 # get absent / present patient_id
 id_data_path=r'D:\Shilong\murmur\03_circor_states\id_data.csv'
-absent_csv_path=r'D:\Shilong\murmur\03_Classifier\LM\BEATs\absent_id.csv'
-present_csv_path=r'D:\Shilong\murmur\03_Classifier\LM\BEATs\present_id.csv'
+absent_csv_path=r'D:\Shilong\murmur\03_circor_states\absent_id.csv'
+present_csv_path=r'D:\Shilong\murmur\03_circor_states\present_id.csv'
 Diastolic_murmur_timing_path=r'D:\Shilong\murmur\03_circor_states\Diastolic_murmur_timing.csv'
 Systolic_murmur_timing_path=r'D:\Shilong\murmur\03_circor_states\Systolic_murmur_timing.csv'
 Murmur_locations_path=r'D:\Shilong\murmur\03_circor_states\Murmur_locations.csv'
@@ -58,54 +58,22 @@ folder=r'D:\Shilong\murmur\03_circor_statest'
 npy_path=r'D:\Shilong\murmur\03_circor_states\npyFile'
 npy_path_padded=r'D:\Shilong\murmur\03_circor_states\npyFile_padded'
 
-atslen,atdlen=cal_len(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
-avslen,avdlen=cal_len(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
-ptslen,ptdlen=cal_len(present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# absent
-pvslen,pvdlen=cal_len(present_test_path,present_test_csv_path,'Present',id_data,Murmur_locations)# absent
-
-atslen_path=r'D:\Shilong\murmur\03_circor_states\atslen.csv'
-atdlen_path=r'D:\Shilong\murmur\03_circor_states\atdlen.csv'
-avslen_path=r'D:\Shilong\murmur\03_circor_states\avslen.csv'
-avdlen_path=r'D:\Shilong\murmur\03_circor_states\avdlen.csv'
-ptslen_path=r'D:\Shilong\murmur\03_circor_states\ptslen.csv'
-ptdlen_path=r'D:\Shilong\murmur\03_circor_states\ptdlen.csv'
-pvslen_path=r'D:\Shilong\murmur\03_circor_states\pvslen.csv'
-pvdlen_path=r'D:\Shilong\murmur\03_circor_states\pvdlen.csv'
-
-pd.DataFrame(atslen).to_csv(atslen_path, index=False, header=False)
-pd.DataFrame(atdlen).to_csv(atdlen_path, index=False, header=False)
-pd.DataFrame(avslen).to_csv(avslen_path, index=False, header=False)
-pd.DataFrame(avdlen).to_csv(avdlen_path, index=False, header=False)
-pd.DataFrame(ptslen).to_csv(ptslen_path, index=False, header=False)
-pd.DataFrame(ptdlen).to_csv(ptdlen_path, index=False, header=False)
-pd.DataFrame(pvslen).to_csv(pvslen_path, index=False, header=False)
-pd.DataFrame(pvdlen).to_csv(pvdlen_path, index=False, header=False)
-
-print("ats max:"+str(max(atslen)),"ats min: "+str(min(atslen)),"ats mean: "+str(mean(atslen)))
-print("atd max:"+str(max(atdlen)),"atd min: "+str(min(atdlen)),"atd mean: "+str(mean(atdlen)))
-print("avs max:"+str(max(avslen)),"avs min: "+str(min(avslen)),"avs mean: "+str(mean(avslen)))
-print("avd max:"+str(max(avdlen)),"avd min: "+str(min(avdlen)),"avd mean: "+str(mean(avdlen)))
-print("pts max:"+str(max(ptslen)),"pts min: "+str(min(ptslen)),"pts mean: "+str(mean(ptslen)))
-print("ptd max:"+str(max(ptdlen)),"ptd min: "+str(min(ptdlen)),"ptd mean: "+str(mean(ptdlen)))
-print("pvs max:"+str(max(pvslen)),"pvs min: "+str(min(pvslen)),"pvs mean: "+str(mean(pvslen)))
-print("pvd max:"+str(max(pvdlen)),"pvd min: "+str(min(pvdlen)),"pvd mean: "+str(mean(pvdlen)))
-
 # ========================/ get wav data, length=10000 /========================== # 
-# absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
-# absent_test_features,absent_test_label=get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
-# present_train_features,present_train_label=get_wav_data(present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# present
-# present_test_features,present_test_label=get_wav_data(present_test_path,present_test_csv_path,'Present',id_data,Murmur_locations)# present
+absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
+absent_test_features,absent_test_label = get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
+present_train_features,present_train_label= get_wav_data(present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# present
+present_test_features,present_test_label=get_wav_data(present_test_path,present_test_csv_path,'Present',id_data,Murmur_locations)# present
 
 # # # # ========================/ save as npy file /========================== # 
-# np.save(npy_path_padded+r'\absent_train_features.npy',absent_train_features)
-# np.save(npy_path_padded+r'\absent_test_features.npy',absent_test_features)
-# np.save(npy_path_padded+r'\present_train_features.npy',present_train_features)
-# np.save(npy_path_padded+r'\present_test_features.npy',present_test_features)
+np.save(npy_path_padded+r'\absent_train_features.npy',absent_train_features)
+np.save(npy_path_padded+r'\absent_test_features.npy',absent_test_features)
+np.save(npy_path_padded+r'\present_train_features.npy',present_train_features)
+np.save(npy_path_padded+r'\present_test_features.npy',present_test_features)
 
-# np.save(npy_path_padded+r'\absent_train_label.npy',absent_train_label)
-# np.save(npy_path_padded+r'\absent_test_label.npy',absent_test_label)
-# np.save(npy_path_padded+r'\present_train_label.npy',present_train_label)
-# np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)
+np.save(npy_path_padded+r'\absent_train_label.npy',absent_train_label)
+np.save(npy_path_padded+r'\absent_test_label.npy',absent_test_label)
+np.save(npy_path_padded+r'\present_train_label.npy',present_train_label)
+np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)
 
 # ========================/ load npy file /========================== # 
 absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)
