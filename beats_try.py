@@ -144,7 +144,11 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 batch_size = 128
 learning_rate = 0.0005
 num_epochs = 100
+<<<<<<< HEAD
 padding_size = 3500
+=======
+padding_size = 375
+>>>>>>> 9f049515ce4f370cdc38435d76ce14d57ce37a4d
 padding = torch.zeros(
     batch_size,
     padding_size).bool()  # we randomly mask 75% of the input patches,
@@ -203,7 +207,11 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
             padding = padding.to(device)
             optimizer.zero_grad()
             y_hat = model(x, padding)
+<<<<<<< HEAD
 
+=======
+            recall = recall_score(y_hat, y)
+>>>>>>> 9f049515ce4f370cdc38435d76ce14d57ce37a4d
             test_loss += criterion(y_hat, y.long()).item()  # sum up batch loss
             pred = y_hat.max(
                 1, keepdim=True)[1]  # get the index of the max log-probability
@@ -212,7 +220,12 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
     test_loss /= len(test_loader.dataset)
     test_acc = 100. * correct / len(test_set)
 
+<<<<<<< HEAD
     save_info(writer, num_epochs, epoch, loss.item(), test_acc, test_loss)
+=======
+    save_info(writer, num_epochs, epoch, loss.item(), test_acc, test_loss,
+              recall)
+>>>>>>> 9f049515ce4f370cdc38435d76ce14d57ce37a4d
 
 
 # ========================/ training and logging info /========================== #

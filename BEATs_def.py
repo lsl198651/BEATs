@@ -10,7 +10,13 @@ import torchaudio
 from datetime import datetime
 import sys
 from torch.utils.data import DataLoader, Dataset
+from torch.utils.tensorboard import SummaryWriter
 
+
+def csv_reader_cl(file_name, clo_num):
+    with open(file_name, encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        column = [row[clo_num] for row in reader]
 
 def csv_reader_cl(file_name, clo_num):
     with open(file_name, encoding='utf-8') as csvfile:
@@ -18,6 +24,10 @@ def csv_reader_cl(file_name, clo_num):
         column = [row[clo_num] for row in reader]
     return column
 
+
+def copy_wav(folder, idlist, mur, traintest):
+    for patient_id in idlist:
+        dir_path = folder + "\\" + mur + "\\" + patient_id
 
 def copy_wav(folder, idlist, mur, traintest):
     for patient_id in idlist:
@@ -37,6 +47,7 @@ def get_patientid(csv_path):
     with open(csv_path) as csvfile:
         reader = csv.reader(csvfile)
         id = [row[0] for row in reader]  # weight 同列的数据
+        id = [row[0] for row in reader]  # weight 同列的数据
     return id
 
 
@@ -47,52 +58,40 @@ def get_wav_data(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
     if not os.path.exists(csv_path):
         os.makedirs(csv_path)
 
-    for root, dir, file in os.walk(dir_path):
+    for root,  dir,  file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
             if os.path.exists(wav_path):
                 # 数据读取
-                print("reading: " + subfile)
-                waveform, sr = torchaudio.load(wav_path)
-                waveform_16k = torchaudio.transforms.Resample(
-                    orig_freq=sr, new_freq=16000)(waveform)
-                #  y, sr = librosa.load(wav_path, sr=4000)
-                # waveform_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                # print("waveform_16k size: "+waveform_16k.size)
-                # 裁剪数据
-                if waveform_16k.shape[0] < 00:
-                    waveform_16k = np.pad(waveform_16k,
-                                          (0, 2500 - waveform_16k.shape[0]),
-                                          'constant',
-                                          constant_values=(0, 0))
-                elif waveform_16k.shape[0] > 2800:
-                    waveform_16k = waveform_16k[0:2500]
-                wav.append(waveform_16k)
-                feature = pd.DataFrame(waveform_16k)
-                save_path = csv_path + "\\" + subfile + ".csv"
+                print("reading: "+subfile)
+                y, sr = librosa.load(wav_path)
+                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                # print("y_16k size: "+y_16k.size)
+                if y_16k.shape[0]<3500:
+                    y_16k = np.pad(y_16k,(0,3500-y_16k.shape[0]),'constant',constant_values=(0,0))
+                elif  y_16k.shape[0]>3500:
+                    y_16k=y_16k[0:3500]                
+                wav.append(y_16k)
+                # feature = pd.DataFrame(y_16k)
+                # save_path = csv_path +"\\"+ subfile+ ".csv"
                 # print("shape: "+feature.shape())
                 feature.to_csv(save_path, index=False, header=False)
 
                 # 标签读取
                 if Murmur == 'Absent':  # Absent
                     label.append(0)
-                else:  # Present
-                    # 先找到id对应的index,再通过索引找到murmur_locations和timing
-                    index = id_data.index(subfile.split('_')[0])
-                    wav_location = subfile.split('_')[1]  # 听诊区域
-                    wav_state = subfile.split('_')[2]  # 心跳时相
-                    locations = Murmur_locations[index].split('+')
-                    if wav_location in locations:  # 说明该听诊区有杂音
-                        # label.append(1)
-                        if wav_state == 'Systolic':  # 读到了收缩期Systolic
-                            label.append(1)  # 收缩期有杂音
-                        else:  # 读到了舒张期Diastolic
-                            label.append(0)  # 舒张期全部认为没有杂音
+                else:                   # Present
+                # 先找到id对应的index,再通过索引找到murmur_locations和timing
+                    murmur_ap=subfile.split('_')[4]
+                    if murmur_ap == 'Absent':           # 说明该听诊区有杂音
+                        label.append(0)                 # 舒张期全部认为没有杂音
                     else:
-                        label.append(0)  # 说明该听诊区无杂音
-    return np.array(wav), np.array(label)
+                        label.append(1)                     # 说明该听诊区无杂音
+    return np.array(wav),np.array(label)
 
-
+def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
+    slen = []
+    dlen = []
 def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
     slen = []
     dlen = []
@@ -100,13 +99,19 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
     if not os.path.exists(csv_path):
         os.makedirs(csv_path)
 
-    for root, dir, file in os.walk(dir_path):
+    for root,  dir,  file in os.walk(dir_path):
         for subfile in file:
+            wav_path = os.path.join(root, subfile)
             wav_path = os.path.join(root, subfile)
             if os.path.exists(wav_path):
                 # 数据读取
                 print("reading: " + subfile)
+                print("reading: " + subfile)
                 waveform, sr = librosa.load(wav_path, sr=4000)
+                waveform_16k = librosa.resample(y=waveform,
+                                                orig_sr=sr,
+                                                target_sr=16000)
+                print("waveform_16k size: " + str(waveform_16k.size))
                 waveform_16k = librosa.resample(y=waveform,
                                                 orig_sr=sr,
                                                 target_sr=16000)
@@ -114,6 +119,9 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                 if subfile.split('_')[2] == 'Systolic':
                     slen.append(waveform_16k.size)
                 else:
+                    dlen.append(waveform_16k.size)
+    return np.array(slen), np.array(dlen)
+
                     dlen.append(waveform_16k.size)
     return np.array(slen), np.array(dlen)
 
@@ -127,12 +135,27 @@ def get_mel_features(dir_path, absent_id, present_id):
     feature_list = []
     label_list = []
     for root, dir, file in os.walk(dir_path):
+
+
+def get_mel_features(dir_path, absent_id, present_id):
+    feature_list = []
+    label_list = []
+    for root, dir, file in os.walk(dir_path):
         for subfile in file:
             csv_path = os.path.join(root, subfile)
             print("reading: " + subfile)
+            csv_path = os.path.join(root, subfile)
+            print("reading: " + subfile)
             # filename = r'E:\Shilong\murmur\LM_wav_dataset\train_csv\2530_AV_1.wav.csv'
-            df = pd.read_csv(csv_path, header=None)
+            df = pd.read_csv(csv_path,  header=None)
             data = np.array(df)
+            if data.shape[0] < 24:
+                data = np.pad(data, (0, 24 - data.shape[0]),
+                              'constant',
+                              constant_values=(0, 0))
+                data = data[:, 0:768]
+            elif data.shape[0] > 24:
+                data = data[0:24, :]
             if data.shape[0] < 24:
                 data = np.pad(data, (0, 24 - data.shape[0]),
                               'constant',
@@ -142,6 +165,7 @@ def get_mel_features(dir_path, absent_id, present_id):
                 data = data[0:24, :]
             feature_list.append(data)
             id = subfile.split('_')[0]
+            id = subfile.split('_')[0]
             if id in absent_id:
                 label_list.append(1)
             if id in present_id:
@@ -150,12 +174,18 @@ def get_mel_features(dir_path, absent_id, present_id):
     return np.array(feature_list), np.array(label_list)
 
 
+    return np.array(feature_list), np.array(label_list)
+
+
 # ========================/ dataset Class /========================== #
 class MyDataset(Dataset):
     """ my dataset."""
 
+class MyDataset(Dataset):
+    """ my dataset."""
+
     # Initialize your data, download, etc.
-    def __init__(self, wavlabel, wavdata):
+    def __init__(self,  wavlabel,  wavdata):
         # 直接传递data和label
         # self.len = wavlen
         self.data = torch.from_numpy(wavdata)
@@ -168,14 +198,18 @@ class MyDataset(Dataset):
         return dataitem.float(), labelitem.float()
 
     def __len__(self):
+
+    def __len__(self):
         # 返回文件数据的数目
         return len(self.data)
+
+
 
 
 # ========================/ logging init /========================== #
 def logger_init(
     log_level=logging.DEBUG,
-    log_dir=r'E:\Shilong\murmur\03_Classifier\LM\BEATs\ResultFile',
+    log_dir=r'D:\Shilong\murmur\00_Code\LM\BEATs\ResultFile',
 ):
     # 指定路径
     if not os.path.exists(log_dir):
@@ -184,10 +218,20 @@ def logger_init(
     date = datetime.now()
     log_path = os.path.join(log_dir,
                             str(date)[:13] + '-' + str(date.minute) + '.log')
+
+    date = datetime.now()
+    log_path = os.path.join(log_dir,
+                            str(date)[:13] + '-' + str(date.minute) + '.log')
     formatter = '[%(asctime)s - %(levelname)s:] %(message)s'
     logging.basicConfig(level=log_level,
                         format=formatter,
                         datefmt='%Y-%d-%m %H:%M:%S',
+                        handlers=[
+                            logging.FileHandler(log_path),
+                            logging.StreamHandler(sys.stdout)
+                        ])
+
+
                         handlers=[
                             logging.FileHandler(log_path),
                             logging.StreamHandler(sys.stdout)
