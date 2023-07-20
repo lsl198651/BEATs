@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import logging
 from datetime import datetime
 import sys
+from torch import optim
 from torch.utils.data import DataLoader
 from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -161,9 +162,9 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 128
+batch_size = 300
 learning_rate = 0.0005
-num_epochs = 100
+num_epochs = 500
 padding_size = 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -187,7 +188,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(
     [{"params": MyModel.last_layer.parameters()}], lr=learning_rate
 )  # 指定 新加的fc层的学习率
-
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=3e-5)
 # ========================/ train model /========================== #
 # 定义训练函数
 
@@ -224,14 +225,14 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
                 1
             ]  # get the index of the max log-probability
             correct += pred.eq(y.view_as(pred)).sum().item()
-
+    
+    scheduler.step()
+    # 更新权值
     test_loss /= len(test_loader.dataset)
     test_acc = 100.0 * correct / len(test_set)
-
     writer.add_scalar("train_loss", loss, epoch)
     writer.add_scalar("test_loss", test_loss, epoch)
     writer.add_scalar("test_acc", test_acc, epoch)
-
     save_info(writer, num_epochs, epoch, loss.item(), test_acc, test_loss)
 
 

@@ -196,7 +196,7 @@ class save_info(object):
         self.test_acc = test_acc
         self.test_loss = test_loss
 
-        logging.info(f"epoch: " + str(self.epoch) + "/" + str(epoch_num))
+        logging.info(f"epoch: " + str(self.epoch+1) + "/" + str(epoch_num))
         logging.info(f"train_loss: " + str("{:.3f}".format(self.train_loss)))
         logging.info(
             f"test_acc: "
