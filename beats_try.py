@@ -203,7 +203,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
         padding = padding.to(device)
         optimizer.zero_grad()
         y_hat = model(x, padding)
-        loss = criterion(y_hat, y.long())
+        loss = criterion(y_hat, y.long()).item()
         loss.backward()
         optimizer.step()
 
@@ -234,7 +234,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
     writer.add_scalar("train_loss", loss, epoch)
     writer.add_scalar("test_loss", test_loss, epoch)
     writer.add_scalar("test_acc", test_acc, epoch)
-    a=save_info(num_epochs, epoch, loss.item(), test_acc, test_loss)
+    a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
 
 # ========================/ training and logging info /========================== #
 logger_init()
