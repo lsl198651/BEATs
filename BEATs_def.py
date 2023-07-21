@@ -190,7 +190,7 @@ def logger_init(
 
 # ========================/ logging formate /========================== #
 class save_info(object):
-    def __init__(self, writer, epoch_num, epoch, train_loss, test_acc, test_loss):
+    def __init__(self, epoch_num, epoch, train_loss, test_acc, test_loss):
         self.epoch = epoch
         self.train_loss = train_loss
         self.test_acc = test_acc

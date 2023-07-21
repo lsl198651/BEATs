@@ -232,11 +232,11 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
     # 更新权值
     test_loss /= len(test_loader.dataset)
     test_acc = 100.0 * correct / len(test_set)
+    
     writer.add_scalar("train_loss", loss, epoch)
     writer.add_scalar("test_loss", test_loss, epoch)
     writer.add_scalar("test_acc", test_acc, epoch)
-    save_info(writer, num_epochs, epoch, loss.item(), test_acc, test_loss)
-
+    a=save_info(num_epochs, epoch, loss.item(), test_acc, test_loss)
 
 # ========================/ training and logging info /========================== #
 logger_init()
