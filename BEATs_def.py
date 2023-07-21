@@ -14,7 +14,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 def csv_reader_cl(file_name, clo_num):
-    with open(file_name, encoding='utf-8') as csvfile:
+    with open(file_name, encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
         column = [row[clo_num] for row in reader]
     return column
@@ -58,9 +58,12 @@ def get_wav_data(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
                 # print("y_16k size: "+y_16k.size)
                 if y_16k.shape[0] < 3500:
-                    y_16k = np.pad(y_16k, (0, 3500 - y_16k.shape[0]),
-                                   'constant',
-                                   constant_values=(0, 0))
+                    y_16k = np.pad(
+                        y_16k,
+                        (0, 3500 - y_16k.shape[0]),
+                        "constant",
+                        constant_values=(0, 0),
+                    )
                 elif y_16k.shape[0] > 3500:
                     y_16k = y_16k[0:3500]
                 wav.append(y_16k)
@@ -70,12 +73,12 @@ def get_wav_data(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                 # feature.to_csv(save_path, index=False, header=False)
 
                 # 标签读取
-                if Murmur == 'Absent':  # Absent
+                if Murmur == "Absent":  # Absent
                     label.append(0)
                 else:  # Present
                     # 先找到id对应的index,再通过索引找到murmur_locations和timing
-                    murmur_ap = subfile.split('_')[4]
-                    if murmur_ap == 'Absent':  # 说明该听诊区有杂音
+                    murmur_ap = subfile.split("_")[4]
+                    if murmur_ap == "Absent":  # 说明该听诊区有杂音
                         label.append(0)  # 舒张期全部认为没有杂音
                     else:
                         label.append(1)  # 说明该听诊区无杂音
@@ -98,15 +101,11 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                 print("reading: " + subfile)
                 print("reading: " + subfile)
                 waveform, sr = librosa.load(wav_path, sr=4000)
-                waveform_16k = librosa.resample(y=waveform,
-                                                orig_sr=sr,
-                                                target_sr=16000)
+                waveform_16k = librosa.resample(y=waveform, orig_sr=sr, target_sr=16000)
                 print("waveform_16k size: " + str(waveform_16k.size))
-                waveform_16k = librosa.resample(y=waveform,
-                                                orig_sr=sr,
-                                                target_sr=16000)
+                waveform_16k = librosa.resample(y=waveform, orig_sr=sr, target_sr=16000)
                 print("waveform_16k size: " + str(waveform_16k.size))
-                if subfile.split('_')[2] == 'Systolic':
+                if subfile.split("_")[2] == "Systolic":
                     slen.append(waveform_16k.size)
                 else:
                     dlen.append(waveform_16k.size)
@@ -131,14 +130,14 @@ def get_mel_features(dir_path, absent_id, present_id):
             df = pd.read_csv(csv_path, header=None)
             data = np.array(df)
             if data.shape[0] < 24:
-                data = np.pad(data, (0, 24 - data.shape[0]),
-                              'constant',
-                              constant_values=(0, 0))
+                data = np.pad(
+                    data, (0, 24 - data.shape[0]), "constant", constant_values=(0, 0)
+                )
                 data = data[:, 0:768]
             elif data.shape[0] > 24:
                 data = data[0:24, :]
             feature_list.append(data)
-            id = subfile.split('_')[0]
+            id = subfile.split("_")[0]
             if id in absent_id:
                 label_list.append(1)
             if id in present_id:
@@ -149,7 +148,7 @@ def get_mel_features(dir_path, absent_id, present_id):
 
 # ========================/ dataset Class /========================== #
 class MyDataset(Dataset):
-    """ my dataset."""
+    """my dataset."""
 
     # Initialize your data, download, etc.
     def __init__(self, wavlabel, wavdata):
@@ -172,42 +171,37 @@ class MyDataset(Dataset):
 # ========================/ logging init /========================== #
 def logger_init(
     log_level=logging.DEBUG,
-    log_dir=r'D:\Shilong\murmur\00_Code\LM\BEATs\ResultFile',
+    log_dir=r"D:\Shilong\murmur\00_Code\LM\BEATs\ResultFile",
 ):
     # 指定路径
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
     # 指定日志格式
     date = datetime.now()
-    log_path = os.path.join(log_dir,
-                            str(date)[:13] + '-' + str(date.minute) + '.log')
-    formatter = '[%(asctime)s - %(levelname)s:] %(message)s'
-    logging.basicConfig(level=log_level,
-                        format=formatter,
-                        datefmt='%Y-%d-%m %H:%M:%S',
-                        handlers=[
-                            logging.FileHandler(log_path),
-                            logging.StreamHandler(sys.stdout)
-                        ])
+    log_path = os.path.join(log_dir, str(date)[:13] + "-" + str(date.minute) + ".log")
+    formatter = "[%(asctime)s - %(levelname)s:] %(message)s"
+    logging.basicConfig(
+        level=log_level,
+        format=formatter,
+        datefmt="%Y-%d-%m %H:%M:%S",
+        handlers=[logging.FileHandler(log_path), logging.StreamHandler(sys.stdout)],
+    )
 
 
 # ========================/ logging formate /========================== #
 class save_info(object):
-
-    def __init__(self, writer, epoch_num, epoch, train_loss, test_acc,
-                 test_loss):
+    def __init__(self, epoch_num, epoch, train_loss, test_acc, test_loss):
         self.epoch = epoch
         self.train_loss = train_loss
         self.test_acc = test_acc
         self.test_loss = test_loss
 
-        writer.add_scalar("train_loss", train_loss, epoch)
-        writer.add_scalar("test_loss", test_loss, epoch)
-        writer.add_scalar("test_acc", test_acc, epoch)
-
-        logging.info(f"epoch: " + str(self.epoch) + '/' + str(epoch_num))
-        logging.info(f"train_loss: " + str('{:.3f}'.format(self.train_loss)))
-        logging.info(f"test_acc: " + str('{:.3f}%'.format(self.test_acc)) +
-                     ", test_loss: " + str('{:.3f}'.format(self.test_loss)))
-        logging.info(f"recall: " + str(self.recall))
+        logging.info(f"epoch: " + str(self.epoch+1) + "/" + str(epoch_num))
+        logging.info(f"train_loss: " + str("{:.3f}".format(self.train_loss)))
+        logging.info(
+            f"test_acc: "
+            + str("{:.3f}%".format(self.test_acc))
+            + ", test_loss: "
+            + str("{:.3f}".format(self.test_loss))
+        )
         logging.info(f"======================================")
