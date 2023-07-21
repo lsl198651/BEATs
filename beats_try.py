@@ -186,9 +186,11 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = MyModel.to(DEVICE)  # 放到设备中
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(
-    [{"params": MyModel.last_layer.parameters()}], lr=learning_rate
+    [{"params": MyModel.last_layer.parameters()}], lr=learning_rate,betas=(0.9, 0.98),
 )  # 指定 新加的fc层的学习率
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=3e-5)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+    optimizer, T_max=10, eta_min=3e-5
+)
 # ========================/ train model /========================== #
 # 定义训练函数
 
@@ -225,7 +227,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
                 1
             ]  # get the index of the max log-probability
             correct += pred.eq(y.view_as(pred)).sum().item()
-    
+
     scheduler.step()
     # 更新权值
     test_loss /= len(test_loader.dataset)
