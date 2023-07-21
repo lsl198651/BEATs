@@ -196,10 +196,10 @@ scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
 def train_model(model, device, train_loader, test_loader, padding, epochs):
     # train model
     model.train()
-    for data in train_loader:
-        x, y = data
-        x = x.to(device)
-        y = y.to(device)
+    for x, y in train_loader:
+        x, y = x.to(device),y.to(device)
+        # x = x.to(device)
+        # y = y.to(device)
         padding = padding.to(device)
         optimizer.zero_grad()
         y_hat = model(x, padding)
@@ -212,21 +212,21 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
     test_loss = 0
     correct = 0
     with torch.no_grad():
-        for data in test_loader:
-            x, y = data
-            x = x.to(device)
-            y = y.to(device)
+        for xx, yy in test_loader:
+            xx, yy = xx.to(device),yy.to(device)
+            # xx = xx.to(device)
+            # yy = yy.to(device)
             padding = padding.to(device)
             optimizer.zero_grad()
-            y_hat = model(x, padding)
+            y_hat = model(xx, padding)
             # recall = recall_score(y_hat, y)
-            test_loss += criterion(y_hat, y.long()).item()  # sum up batch loss
+            test_loss += criterion(y_hat, yy.long()).item()  # sum up batch loss
             pred = y_hat.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
-            correct += pred.eq(y.view_as(pred)).sum().item()
-
+            correct += pred.eq(yy.view_as(pred)).sum().item()
     scheduler.step()
+    
     # 更新权值
     test_loss /= len(test_loader.dataset)
     test_acc = 100.0 * correct / len(test_set)
