@@ -162,9 +162,9 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 300
-learning_rate = 0.0005
-num_epochs = 500
+batch_size = 64
+learning_rate = 0.001
+num_epochs = 300
 padding_size = 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -244,8 +244,8 @@ logging.info("# batch_size = " + str(batch_size))
 logging.info("# learning_rate = " + str(learning_rate))
 logging.info("# num_epochs = " + str(num_epochs))
 logging.info("# padding_size = " + str(padding_size))
-logging.info("# optimizer = " + str(optimizer))
 logging.info("# criterion = " + str(criterion))
+logging.info("# optimizer = " + str(optimizer))
 logging.info("----------------------------------")
 writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13])
 
