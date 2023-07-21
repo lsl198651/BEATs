@@ -205,3 +205,5 @@ class save_info(object):
             + str("{:.3f}".format(self.test_loss))
         )
         logging.info(f"======================================")
+
+# ========================/ train and test /========================== #

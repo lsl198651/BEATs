@@ -162,9 +162,9 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 64
+batch_size = 128
 learning_rate = 0.001
-num_epochs = 300
+num_epochs = 200
 padding_size = 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -189,12 +189,10 @@ optimizer = torch.optim.AdamW(
     [{"params": MyModel.last_layer.parameters()}], lr=learning_rate,betas=(0.9, 0.98),
 )  # 指定 新加的fc层的学习率
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-    optimizer, T_max=10, eta_min=3e-5
+    optimizer, T_max=10, eta_min=0
 )
 # ========================/ train model /========================== #
 # 定义训练函数
-
-
 def train_model(model, device, train_loader, test_loader, padding, epochs):
     # train model
     model.train()
@@ -245,6 +243,7 @@ logging.info("# learning_rate = " + str(learning_rate))
 logging.info("# num_epochs = " + str(num_epochs))
 logging.info("# padding_size = " + str(padding_size))
 logging.info("# criterion = " + str(criterion))
+logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
 logging.info("----------------------------------")
 writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13])
