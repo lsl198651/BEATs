@@ -187,7 +187,8 @@ optimizer = torch.optim.AdamW(
     betas=(0.9, 0.98),
 )  # 指定 新加的fc层的学习率
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
-
+min_lr = 10.0
+max_lr = 0.0
 
 # ========================/ train model /========================== #
 # 定义训练函数
@@ -229,11 +230,11 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
             correct += pred.eq(label_v.view_as(pred)).sum().item()
     scheduler.step()
 
-    min_lr = 10.0
-    max_lr = 0.0
+
     for group in optimizer.param_groups:
-        min_lr = min(min_lr, group["lr"])
-        max_lr = max(max_lr, group["lr"])
+        lr_now = group["lr"]
+    min_lr = min(min_lr, lr_now)
+    max_lr = max(max_lr, lr_now)
 
     # 更新权值
     test_loss /= len(test_loader.dataset)
@@ -245,6 +246,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
     writer.add_scalar("train_loss", train_loss, epoch)
     writer.add_scalar("test_loss", test_loss, epoch)
     writer.add_scalar("test_acc", test_acc, epoch)
+    writer.add_scalar("learning_rate", lr_now, epoch)
     # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
     logging.info(f"epoch: " + str(epoch + 1) + "/" + str(num_epochs))
     logging.info(f"train_loss: " + str("{:.4f}".format(train_loss)))
