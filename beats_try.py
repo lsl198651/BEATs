@@ -192,7 +192,7 @@ max_lr = 0.0
 
 # ========================/ train model /========================== #
 # 定义训练函数
-def train_model(model, device, train_loader, test_loader, padding, epochs):
+def train_model(model, device, train_loader, test_loader, padding, epochs,lr=[]):
     # train model
     model.train()
     for data_t, label_t in train_loader:
@@ -230,11 +230,9 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
             correct += pred.eq(label_v.view_as(pred)).sum().item()
     scheduler.step()
 
-
     for group in optimizer.param_groups:
         lr_now = group["lr"]
-    min_lr = min(min_lr, lr_now)
-    max_lr = max(max_lr, lr_now)
+    lr.append(lr_now)
 
     # 更新权值
     test_loss /= len(test_loader.dataset)
@@ -243,13 +241,14 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
     max_test_acc=0.
     max_test_acc = max(max_test_acc, correct / len(test_set))
 
-    writer.add_scalar("train_loss", train_loss, epoch)
-    writer.add_scalar("test_loss", test_loss, epoch)
-    writer.add_scalar("test_acc", test_acc, epoch)
-    writer.add_scalar("learning_rate", lr_now, epoch)
+    tb_writer.add_scalar("train_loss", train_loss, epochs)
+    tb_writer.add_scalar("test_loss", test_loss, epochs)
+    tb_writer.add_scalar("test_acc", test_acc, epochs)
+    tb_writer.add_scalar("learning_rate", lr_now, epochs)
     # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
-    logging.info(f"epoch: " + str(epoch + 1) + "/" + str(num_epochs))
+    logging.info(f"epoch: " + str(epochs + 1) + "/" + str(num_epochs))
     logging.info(f"train_loss: " + str("{:.4f}".format(train_loss)))
+    logging.info(f"learning_rate: " + str("{:.4f}".format(lr_now)))
     logging.info(
         f"test_acc: "
         + str("{:.4f}%".format(test_acc))
@@ -262,9 +261,9 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
     )
     logging.info(
         f"max_lr: "
-        + str("{:.4f}".format(max_lr))
+        + str("{:.4f}".format(max(lr)))
         + ", min_lr: "
-        + str("{:.4f}".format(min_lr))
+        + str("{:.4f}".format(min(lr)))
     )
     logging.info(f"======================================")
 
@@ -278,7 +277,7 @@ logging.info("# criterion = " + str(criterion))
 logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
 logging.info("-------------------------------")
-writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13])
+tb_writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13])
 
 for epoch in range(num_epochs):
     train_model(
@@ -289,4 +288,4 @@ for epoch in range(num_epochs):
         padding=padding_mask,
         epochs=epoch,
     )
-writer.close()
+tb_writer.close()
