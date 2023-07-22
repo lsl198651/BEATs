@@ -198,9 +198,9 @@ def train_model(model, device, train_loader, test_loader, padding, epochs):
         data_t, label_t = data_t.to(device), label_t.to(device)
         padding = padding.to(device)
         optimizer.zero_grad()
-        with torch.cuda.amp.autocast():
-            predict = model(data_t, padding)
-            loss = criterion(predict, label_t.long())
+        # with torch.cuda.amp.autocast():
+        predict = model(data_t, padding)
+        loss = criterion(predict, label_t.long())
         loss.backward()
         optimizer.step()
 
@@ -275,7 +275,7 @@ logging.info("# padding_size = " + str(padding_size))
 logging.info("# criterion = " + str(criterion))
 logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
-logging.info("----------------------------------")
+logging.info("-------------------------------")
 writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13])
 
 for epoch in range(num_epochs):
