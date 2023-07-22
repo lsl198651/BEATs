@@ -38,7 +38,7 @@ murmur_positoin = ["_AV", "_MV", "_PV", "_TV"]
 murmur_ap = ["Absent\\", "Present\\"]
 period = ["Systolic", "Diastolic"]
 
-# file_path=r'D:\Shilong\murmur\circor_dataset_period\train'
+# ========================/ file path /========================== #
 # get absent / present patient_id
 id_data_path = r"D:\Shilong\murmur\03_circor_states\id_data.csv"
 absent_csv_path = r"D:\Shilong\murmur\03_circor_states\absent_id.csv"
@@ -51,14 +51,6 @@ Systolic_murmur_timing_path = (
 )
 Murmur_locations_path = r"D:\Shilong\murmur\03_circor_states\Murmur_locations.csv"
 
-id_data = get_patientid(id_data_path)
-absent_patient_id = get_patientid(absent_csv_path)
-present_patient_id = get_patientid(present_csv_path)
-Diastolic_murmur_timing = get_patientid(Diastolic_murmur_timing_path)
-Systolic_murmur_timing = get_patientid(Systolic_murmur_timing_path)
-Murmur_locations = get_patientid(Murmur_locations_path)
-
-# ========================/ file path /========================== #
 absent_train_csv_path = r"D:\Shilong\murmur\03_circor_states\train_csv"
 absent_test_csv_path = r"D:\Shilong\murmur\03_circor_states\test_csv"
 present_train_csv_path = r"D:\Shilong\murmur\03_circor_states\train_csv"
@@ -73,6 +65,18 @@ present_test_path = r"D:\Shilong\murmur\03_circor_states\test\Present"
 folder = r"D:\Shilong\murmur\03_circor_statest"
 npy_path = r"D:\Shilong\murmur\03_circor_states\npyFile"
 npy_path_padded = r"D:\Shilong\murmur\03_circor_states\npyFile_padded"
+
+path = r"D:\Shilong\murmur\03_circor_states\csv"
+train_path = r"D:\Shilong\murmur\03_circor_states\train_csv"
+test_path = r"D:\Shilong\murmur\03_circor_states\test_csv"
+# ========================/ get lists /========================== #
+id_data = get_patientid(id_data_path)
+absent_patient_id = get_patientid(absent_csv_path)
+present_patient_id = get_patientid(present_csv_path)
+Diastolic_murmur_timing = get_patientid(Diastolic_murmur_timing_path)
+Systolic_murmur_timing = get_patientid(Systolic_murmur_timing_path)
+Murmur_locations = get_patientid(Murmur_locations_path)
+
 """# ========================/ get wav data, length=10000 /========================== # 
 absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
 absent_test_features,absent_test_label = get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
@@ -129,9 +133,6 @@ present_test_label = np.load(
 )
 
 # ========================/ get features & labels /========================== #
-path = r"D:\Shilong\murmur\03_circor_states\csv"
-train_path = r"D:\Shilong\murmur\03_circor_states\train_csv"
-test_path = r"D:\Shilong\murmur\03_circor_states\test_csv"
 # test_features,test_label=get_mel_features(path,absent_patient_id,present_patient_id)
 """train_features,train_label=get_mel_features(train_path,absent_patient_id,present_patient_id)
 test_features,test_label=get_mel_features(test_path,absent_patient_id,present_patient_id)
@@ -141,11 +142,6 @@ test_features=test_features.astype(float)
 test_label=test_label.astype(float)"""
 
 # ========================/ label encoder /========================== #
-# absent_train_label=np.ones(absent_train_features.shape[0])
-# absent_test_label=np.ones(absent_test_features.shape[0])
-# present_train_label=np.zeros(present_train_features.shape[0])
-# present_test_label=np.zeros(present_test_features.shape[0])
-
 train_label = np.hstack((absent_train_label, present_train_label))
 test_label = np.hstack((absent_test_label, present_test_label))
 train_features = np.vstack((absent_train_features, present_train_features))
@@ -162,10 +158,10 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 128
-learning_rate = 0.001
+batch_size = 64
+learning_rate = 0.0005
 num_epochs = 200
-padding_size = 3500
+padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
 ).bool()  # we randomly mask 75% of the input patches,
@@ -186,55 +182,89 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = MyModel.to(DEVICE)  # 放到设备中
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(
-    [{"params": MyModel.last_layer.parameters()}], lr=learning_rate,betas=(0.9, 0.98),
+    [{"params": MyModel.last_layer.parameters()}],
+    lr=learning_rate,
+    betas=(0.9, 0.98),
 )  # 指定 新加的fc层的学习率
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-    optimizer, T_max=10, eta_min=0
-)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
+
+
 # ========================/ train model /========================== #
 # 定义训练函数
 def train_model(model, device, train_loader, test_loader, padding, epochs):
     # train model
     model.train()
-    for x, y in train_loader:
-        x, y = x.to(device),y.to(device)
-        # x = x.to(device)
-        # y = y.to(device)
+    for data_t, label_t in train_loader:
+        data_t, label_t = data_t.to(device), label_t.to(device)
         padding = padding.to(device)
         optimizer.zero_grad()
-        y_hat = model(x, padding)
-        loss = criterion(y_hat, y.long()).item()
+        with torch.cuda.amp.autocast():
+            predict = model(data_t, padding)
+            loss = criterion(predict, label_t.long())
         loss.backward()
         optimizer.step()
+
+    train_loss = loss.item()
 
     # evaluate model
     model.eval()
     test_loss = 0
     correct = 0
     with torch.no_grad():
-        for xx, yy in test_loader:
-            xx, yy = xx.to(device),yy.to(device)
-            # xx = xx.to(device)
-            # yy = yy.to(device)
-            padding = padding.to(device)
+        for data_v, label_v in test_loader:
+            data_v, label_v, padding = (
+                data_v.to(device),
+                label_v.to(device),
+                padding.to(device),
+            )
             optimizer.zero_grad()
-            y_hat = model(xx, padding)
+            predict_v = model(data_v, padding)
             # recall = recall_score(y_hat, y)
-            test_loss += criterion(y_hat, yy.long()).item()  # sum up batch loss
-            pred = y_hat.max(1, keepdim=True)[
+            test_loss += criterion(
+                predict_v, label_v.long()
+            ).item()  # sum up batch loss
+            pred = predict_v.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
-            correct += pred.eq(yy.view_as(pred)).sum().item()
+            correct += pred.eq(label_v.view_as(pred)).sum().item()
     scheduler.step()
-    
+
+    min_lr = 10.0
+    max_lr = 0.0
+    for group in optimizer.param_groups:
+        min_lr = min(min_lr, group["lr"])
+        max_lr = max(max_lr, group["lr"])
+
     # 更新权值
     test_loss /= len(test_loader.dataset)
     test_acc = 100.0 * correct / len(test_set)
-    
-    writer.add_scalar("train_loss", loss, epoch)
+
+    max_test_acc=0.
+    max_test_acc = max(max_test_acc, correct / len(test_set))
+
+    writer.add_scalar("train_loss", train_loss, epoch)
     writer.add_scalar("test_loss", test_loss, epoch)
     writer.add_scalar("test_acc", test_acc, epoch)
-    a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
+    # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
+    logging.info(f"epoch: " + str(epoch + 1) + "/" + str(num_epochs))
+    logging.info(f"train_loss: " + str("{:.4f}".format(train_loss)))
+    logging.info(
+        f"test_acc: "
+        + str("{:.4f}%".format(test_acc))
+        + ", test_loss: "
+        + str("{:.3f}".format(test_loss))
+    )
+    logging.info(
+        f"max_test_acc: "
+        + str("{:.4f}".format(max_test_acc))
+    )
+    logging.info(
+        f"max_lr: "
+        + str("{:.4f}".format(max_lr))
+        + ", min_lr: "
+        + str("{:.4f}".format(min_lr))
+    )
+    logging.info(f"======================================")
 
 # ========================/ training and logging info /========================== #
 logger_init()
@@ -257,5 +287,4 @@ for epoch in range(num_epochs):
         padding=padding_mask,
         epochs=epoch,
     )
-
 writer.close()
