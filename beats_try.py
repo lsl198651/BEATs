@@ -158,7 +158,7 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 64
+batch_size = 128
 learning_rate = 0.0005
 num_epochs = 200
 padding_size = train_features.shape[1]  # 3500
@@ -253,7 +253,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs,lr=[])
         f"test_acc: "
         + str("{:.4f}%".format(test_acc))
         + ", test_loss: "
-        + str("{:.3f}".format(test_loss))
+        + str("{:.4f}".format(test_loss))
     )
     logging.info(
         f"max_test_acc: "

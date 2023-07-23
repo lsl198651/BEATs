@@ -95,16 +95,13 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
-            wav_path = os.path.join(root, subfile)
             if os.path.exists(wav_path):
                 # 数据读取
                 print("reading: " + subfile)
-                print("reading: " + subfile)
-                waveform, sr = librosa.load(wav_path, sr=4000)
+                waveform, sr = librosa.load(wav_path)
                 waveform_16k = librosa.resample(y=waveform, orig_sr=sr, target_sr=16000)
                 print("waveform_16k size: " + str(waveform_16k.size))
-                waveform_16k = librosa.resample(y=waveform, orig_sr=sr, target_sr=16000)
-                print("waveform_16k size: " + str(waveform_16k.size))
+
                 if subfile.split("_")[2] == "Systolic":
                     slen.append(waveform_16k.size)
                 else:
@@ -183,7 +180,7 @@ def logger_init(
     logging.basicConfig(
         level=log_level,
         format=formatter,
-        datefmt="%Y-%d-%m %H:%M:%S",
+        datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[logging.FileHandler(log_path), logging.StreamHandler(sys.stdout)],
     )
 
