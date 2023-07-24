@@ -213,13 +213,14 @@ class BEATs_Pre_Train_itere3(nn.Module):
         with torch.no_grad():
             x,_=self.BEATs.extract_features(x,padding_mask)
         # dropout
-        x=self.last_Dropout(x)
-        # FC
-        output=self.last_layer(x)
-        # mean
-        output=output.mean(dim=1)
-        # sigmoid
-        output=torch.sigmoid(output)
+        with torch.enable_grad():
+            x=self.last_Dropout(x)
+            # FC
+            output=self.last_layer(x)
+            # mean
+            output=output.mean(dim=1)
+            # sigmoid
+            output=torch.sigmoid(output)
         return output
         
             

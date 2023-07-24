@@ -158,8 +158,8 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 128
-learning_rate = 0.0005
+batch_size = 300
+learning_rate = 3e-5
 num_epochs = 200
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
@@ -192,8 +192,10 @@ max_lr = 0.0
 
 # ========================/ train model /========================== #
 # 定义训练函数
-def train_model(model, device, train_loader, test_loader, padding, epochs,lr=[]):
+def train_model(model, device, train_loader, test_loader, padding, epochs, lr=[],max_test_acc = [],max_train_acc =[]):
     # train model
+    train_loss = 0
+    correct_t = 0
     model.train()
     for data_t, label_t in train_loader:
         data_t, label_t = data_t.to(device), label_t.to(device)
@@ -204,13 +206,16 @@ def train_model(model, device, train_loader, test_loader, padding, epochs,lr=[])
         loss = criterion(predict, label_t.long())
         loss.backward()
         optimizer.step()
-
-    train_loss = loss.item()
+        train_loss += loss.item()
+        pred_t = predict.max(1, keepdim=True)[
+            1
+        ]  # get the index of the max log-probability
+        correct_t += pred_t.eq(label_t.view_as(pred_t)).sum().item()
 
     # evaluate model
     model.eval()
     test_loss = 0
-    correct = 0
+    correct_v = 0
     with torch.no_grad():
         for data_v, label_v in test_loader:
             data_v, label_v, padding = (
@@ -227,7 +232,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs,lr=[])
             pred = predict_v.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
-            correct += pred.eq(label_v.view_as(pred)).sum().item()
+            correct_v += pred.eq(label_v.view_as(pred)).sum().item()
     scheduler.step()
 
     for group in optimizer.param_groups:
@@ -236,29 +241,38 @@ def train_model(model, device, train_loader, test_loader, padding, epochs,lr=[])
 
     # 更新权值
     test_loss /= len(test_loader.dataset)
-    test_acc = 100.0 * correct / len(test_set)
+    train_loss /= len(train_loader.dataset)
+    train_acc = 100.0 * correct_t / len(train_set)
+    test_acc = 100.0 * correct_v / len(test_set)
 
-    max_test_acc=0.
-    max_test_acc = max(max_test_acc, correct / len(test_set))
+    max_train_acc.append(train_acc/100)
+    max_test_acc.append(test_acc/100)    
+    max_train_acc = max(max_train_acc)
+    max_test_acc = max(max_test_acc)
 
+    tb_writer.add_scalar("train_acc", train_acc, epochs)
+    tb_writer.add_scalar("test_acc", test_acc, epochs)
     tb_writer.add_scalar("train_loss", train_loss, epochs)
     tb_writer.add_scalar("test_loss", test_loss, epochs)
-    tb_writer.add_scalar("test_acc", test_acc, epochs)
     tb_writer.add_scalar("learning_rate", lr_now, epochs)
+
     # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
     logging.info(f"epoch: " + str(epochs + 1) + "/" + str(num_epochs))
-    logging.info(f"train_loss: " + str("{:.4f}".format(train_loss)))
     logging.info(f"learning_rate: " + str("{:.4f}".format(lr_now)))
+    logging.info(
+        f"train_acc: "
+        + str("{:.4f}%".format(train_acc))
+        + ", train_loss: "
+        + str("{:.4f}".format(train_loss))
+    )
     logging.info(
         f"test_acc: "
         + str("{:.4f}%".format(test_acc))
         + ", test_loss: "
         + str("{:.4f}".format(test_loss))
     )
-    logging.info(
-        f"max_test_acc: "
-        + str("{:.4f}".format(max_test_acc))
-    )
+    logging.info(f"max_train_acc: " + str("{:.4f}".format(max_train_acc)))
+    logging.info(f"max_test_acc: " + str("{:.4f}".format(max_test_acc)))
     logging.info(
         f"max_lr: "
         + str("{:.4f}".format(max(lr)))
@@ -266,6 +280,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs,lr=[])
         + str("{:.4f}".format(min(lr)))
     )
     logging.info(f"======================================")
+
 
 # ========================/ training and logging info /========================== #
 logger_init()
