@@ -1,0 +1,21 @@
+[2023-07-26 11:39:32 - INFO:] # batch_size = 128
+[2023-07-26 11:39:32 - INFO:] # learning_rate = 0.005
+[2023-07-26 11:39:32 - INFO:] # num_epochs = 200
+[2023-07-26 11:39:32 - INFO:] # padding_size = 3500
+[2023-07-26 11:39:32 - INFO:] # criterion = CrossEntropyLoss()
+[2023-07-26 11:39:32 - INFO:] # scheduler = <torch.optim.lr_scheduler.LambdaLR object at 0x000001FC5A659490>
+[2023-07-26 11:39:32 - INFO:] # optimizer = AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.98)
+    capturable: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    initial_lr: 0.005
+    lr: 0.0
+    maximize: False
+    weight_decay: 0.01
+)
+[2023-07-26 11:39:32 - INFO:] -------------------------------
