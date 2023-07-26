@@ -158,8 +158,8 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 300
-learning_rate = 3e-5
+batch_size = 128
+learning_rate = 0.005
 num_epochs = 200
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
@@ -245,8 +245,8 @@ def train_model(model, device, train_loader, test_loader, padding, epochs, lr=[]
     train_acc = 100.0 * correct_t / len(train_set)
     test_acc = 100.0 * correct_v / len(test_set)
 
-    max_train_acc.append(train_acc/100)
-    max_test_acc.append(test_acc/100)    
+    max_train_acc.append(train_acc)
+    max_test_acc.append(test_acc)    
     max_train_acc = max(max_train_acc)
     max_test_acc = max(max_test_acc)
 
@@ -271,8 +271,8 @@ def train_model(model, device, train_loader, test_loader, padding, epochs, lr=[]
         + ", test_loss: "
         + str("{:.4f}".format(test_loss))
     )
-    logging.info(f"max_train_acc: " + str("{:.4f}".format(max_train_acc)))
-    logging.info(f"max_test_acc: " + str("{:.4f}".format(max_test_acc)))
+    logging.info(f"max_train_acc: " + str("{:.4f}%".format(max_train_acc)))
+    logging.info(f"max_test_acc: " + str("{:.4f}%".format(max_test_acc)))
     logging.info(
         f"max_lr: "
         + str("{:.4f}".format(max(lr)))
