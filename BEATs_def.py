@@ -171,7 +171,7 @@ def logger_init(
         os.makedirs(log_dir)
     # 指定日志格式
     date = datetime.now()
-    log_path = os.path.join(log_dir, str(date)[:13] + "-" + str(date.minute) + ".log")
+    log_path = os.path.join(log_dir, str(date)[:13]  + str(date.minute) + ".log")
     formatter = "[%(asctime)s - %(levelname)s:] %(message)s"
     logging.basicConfig(
         level=log_level,
@@ -239,9 +239,10 @@ def draw_confusion_matrix(
 
     """
     cm = confusion_matrix(label_true, label_pred)
-    if normlize:
-        row_sums = np.sum(cm, axis=1)  # 计算每行的和
-        cm = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
+    
+    row_sums = np.sum(cm, axis=1)  # 计算每行的和
+    cm2 = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
+    cm2 = cm2.T
     cm = cm.T
     plt.imshow(cm, cmap="Reds")
     plt.title(title)
@@ -256,11 +257,12 @@ def draw_confusion_matrix(
     for i in range(label_name.__len__()):
         for j in range(label_name.__len__()):
             # color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
-            value = float(format("%.4f" % cm[i, j]))
+            # value = float(format("%.4f" % cm[i, j]))
+            str_value="{:.2f}({})".format(cm[i, j],cm2[i, j])
             plt.text(
                 i,
                 j,
-                value,
+                str_value,
                 verticalalignment="center",
                 horizontalalignment="center",
                 # color=color,
@@ -270,6 +272,6 @@ def draw_confusion_matrix(
     if not pdf_save_path is None:
         if not os.path.exists(pdf_save_path):
             os.makedirs(pdf_save_path)
-        plt.savefig(pdf_save_path+'/-'+str(epoch)+'.png', bbox_inches="tight", dpi=dpi)
+        plt.savefig(pdf_save_path+'/epoch-'+str(epoch+1)+'.png', bbox_inches="tight", dpi=dpi)
         plt.close()
 

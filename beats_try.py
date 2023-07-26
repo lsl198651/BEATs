@@ -126,10 +126,10 @@ present_test_label = np.load(
     npy_path_padded + r"\present_test_label.npy", allow_pickle=True
 )
 
-List_train = random.sample(range(1,absent_train_features.shape[0]),present_train_features.shape[0])
+List_train = random.sample(range(1,absent_train_features.shape[0]+2),present_train_features.shape[0])
 absent_train_features = absent_train_features[List_train]
 absent_train_label = absent_train_label[List_train]
-List_test=random.sample(range(1,absent_test_features.shape[0]),present_test_features.shape[0])
+List_test=random.sample(range(1,absent_test_features.shape[0]+2),present_test_features.shape[0])
 absent_test_features = absent_test_features[List_test]
 absent_test_label = absent_test_label[List_test]
 
@@ -159,9 +159,9 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 128
-learning_rate = 0.005
-num_epochs = 10
+batch_size = 64
+learning_rate = 0.0001
+num_epochs = 30
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -193,11 +193,11 @@ optimizer = torch.optim.AdamW(
 # scheduler =
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
-scheduler = optimization.get_cosine_schedule_with_warmup(
-    optimizer,
-    num_warmup_steps=warm_up_ratio * total_steps,
-    num_training_steps=total_steps,
-)
+# scheduler = optimization.get_cosine_schedule_with_warmup(
+#     optimizer,
+#     num_warmup_steps=warm_up_ratio * total_steps,
+#     num_training_steps=total_steps,
+# )
 
 
 # ========================/ train model /========================== #
@@ -258,7 +258,7 @@ def train_model(
             pred.extend(pred_v.cpu().tolist())
             label.extend(label_v.cpu().tolist())
 
-    scheduler.step()
+    # scheduler.step()
 
     for group in optimizer.param_groups:
         lr_now = group["lr"]
@@ -323,11 +323,11 @@ logging.info("# learning_rate = " + str(learning_rate))
 logging.info("# num_epochs = " + str(num_epochs))
 logging.info("# padding_size = " + str(padding_size))
 logging.info("# criterion = " + str(criterion))
-logging.info("# scheduler = " + str(scheduler))
+# logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
 logging.info("-------------------------------")
-confusion_matrix_path = r"./confusion_matrix/" + str(datetime.now())[5:13]
-tb_writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13])
+confusion_matrix_path = r"./confusion_matrix/" + str(datetime.now())[:13]+str(datetime.now().minute)
+tb_writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13]+str(datetime.now().minute))
 
 for epoch in range(num_epochs):
     train_model(
