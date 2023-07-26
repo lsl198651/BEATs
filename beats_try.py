@@ -9,13 +9,15 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.profiler
+import logging
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import logging
+
+from sklearn.metrics import confusion_matrix
 from datetime import datetime
-import sys
 from torch import optim
+from transformers import optimization
 from torch.utils.data import DataLoader
 from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -31,6 +33,7 @@ from BEATs_def import (
     logger_init,
     save_info,
     cal_len,
+    draw_confusion_matrix,
 )
 
 # ========================/ parameteres define /========================== #
@@ -186,13 +189,32 @@ optimizer = torch.optim.AdamW(
     lr=learning_rate,
     betas=(0.9, 0.98),
 )  # 指定 新加的fc层的学习率
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
-min_lr = 10.0
-max_lr = 0.0
+
+# ========================/ setup warmup lr /========================== #
+# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
+# scheduler =
+warm_up_ratio = 0.1
+total_steps = len(train_loader) * num_epochs
+scheduler = optimization.get_cosine_schedule_with_warmup(
+    optimizer,
+    num_warmup_steps=warm_up_ratio * total_steps,
+    num_training_steps=total_steps,
+)
+
 
 # ========================/ train model /========================== #
 # 定义训练函数
-def train_model(model, device, train_loader, test_loader, padding, epochs, lr=[],max_test_acc = [],max_train_acc =[]):
+def train_model(
+    model,
+    device,
+    train_loader,
+    test_loader,
+    padding,
+    epochs,
+    lr=[],
+    max_test_acc=[],
+    max_train_acc=[],
+):
     # train model
     train_loss = 0
     correct_t = 0
@@ -229,10 +251,10 @@ def train_model(model, device, train_loader, test_loader, padding, epochs, lr=[]
             test_loss += criterion(
                 predict_v, label_v.long()
             ).item()  # sum up batch loss
-            pred = predict_v.max(1, keepdim=True)[
+            pred_v = predict_v.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
-            correct_v += pred.eq(label_v.view_as(pred)).sum().item()
+            correct_v += pred_v.eq(label_v.view_as(pred_v)).sum().item()
     scheduler.step()
 
     for group in optimizer.param_groups:
@@ -246,7 +268,7 @@ def train_model(model, device, train_loader, test_loader, padding, epochs, lr=[]
     test_acc = 100.0 * correct_v / len(test_set)
 
     max_train_acc.append(train_acc)
-    max_test_acc.append(test_acc)    
+    max_test_acc.append(test_acc)
     max_train_acc = max(max_train_acc)
     max_test_acc = max(max_test_acc)
 
@@ -281,6 +303,15 @@ def train_model(model, device, train_loader, test_loader, padding, epochs, lr=[]
     )
     logging.info(f"======================================")
 
+    draw_confusion_matrix(
+        label_v,
+        pred_v,
+        ["Absent", "Present"],
+        True,
+        str(datetime.now)[5:13] + str(epochs),
+        pdf_save_path=confusion_matrix_path+'\\'+str(epochs)+'epoch.png',
+    )
+
 
 # ========================/ training and logging info /========================== #
 logger_init()
@@ -292,6 +323,7 @@ logging.info("# criterion = " + str(criterion))
 logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
 logging.info("-------------------------------")
+confusion_matrix_path = r"./confusion_matrix/" + str(datetime.now())[5:13]
 tb_writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13])
 
 for epoch in range(num_epochs):
