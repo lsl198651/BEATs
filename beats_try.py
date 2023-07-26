@@ -23,18 +23,8 @@ from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedShuffleSplit
 from torch.utils.tensorboard import SummaryWriter
 from BEATs import BEATs_Pre_Train_itere3
-from BEATs_def import (
-    get_patientid,
-    get_wav_data,
-    copy_wav,
-    get_mel_features,
-    csv_reader_cl,
-    MyDataset,
-    logger_init,
-    save_info,
-    cal_len,
-    draw_confusion_matrix,
-)
+from BEATs_def import get_patientid,get_wav_data,copy_wav,get_mel_features,csv_reader_cl,MyDataset,logger_init,save_info,cal_len,draw_confusion_matrix
+
 
 # ========================/ parameteres define /========================== #
 murmur_positoin = ["_AV", "_MV", "_PV", "_TV"]
@@ -152,9 +142,9 @@ test_features = np.vstack((absent_test_features, present_test_features))
 
 # ========================/ train test /========================== #
 train_features = train_features.astype(float)
-train_label = train_label.astype(float)
+train_label = train_label.astype(int)
 test_features = test_features.astype(float)
-test_label = test_label.astype(float)
+test_label = test_label.astype(int)
 
 # ========================/ MyDataset /========================== #
 train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
@@ -163,7 +153,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 # ========================/ HyperParameters /========================== #
 batch_size = 128
 learning_rate = 0.005
-num_epochs = 200
+num_epochs = 10
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -236,6 +226,8 @@ def train_model(
 
     # evaluate model
     model.eval()
+    label=[]
+    pred=[]
     test_loss = 0
     correct_v = 0
     with torch.no_grad():
@@ -255,6 +247,9 @@ def train_model(
                 1
             ]  # get the index of the max log-probability
             correct_v += pred_v.eq(label_v.view_as(pred_v)).sum().item()
+            pred.extend(pred_v.cpu().tolist())
+            label.extend(label_v.cpu().tolist())
+
     scheduler.step()
 
     for group in optimizer.param_groups:
@@ -304,12 +299,13 @@ def train_model(
     logging.info(f"======================================")
 
     draw_confusion_matrix(
-        label_v,
-        pred_v,
+        label,
+        pred,
         ["Absent", "Present"],
-        True,
+        False,
         str(datetime.now)[5:13] + str(epochs),
-        pdf_save_path=confusion_matrix_path+'\\'+str(epochs)+'epoch.png',
+        pdf_save_path=confusion_matrix_path,
+        epoch=epochs,
     )
 
 

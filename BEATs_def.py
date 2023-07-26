@@ -168,7 +168,7 @@ class MyDataset(Dataset):
 # ========================/ logging init /========================== #
 def logger_init(
     log_level=logging.DEBUG,
-    log_dir=r"D:\Shilong\murmur\00_Code\LM\BEATs\ResultFile",
+    log_dir=r"./ResultFile",
 ):
     # 指定路径
     if not os.path.exists(log_dir):
@@ -183,6 +183,7 @@ def logger_init(
         datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[logging.FileHandler(log_path), logging.StreamHandler(sys.stdout)],
     )
+    logging.disable(logging.DEBUG)
 
 
 # ========================/ logging formate /========================== #
@@ -193,7 +194,7 @@ class save_info(object):
         self.test_acc = test_acc
         self.test_loss = test_loss
 
-        logging.info(f"epoch: " + str(self.epoch+1) + "/" + str(epoch_num))
+        logging.info(f"epoch: " + str(self.epoch + 1) + "/" + str(epoch_num))
         logging.info(f"train_loss: " + str("{:.3f}".format(self.train_loss)))
         logging.info(
             f"test_acc: "
@@ -203,13 +204,23 @@ class save_info(object):
         )
         logging.info(f"======================================")
 
+
 # ========================/ train and test /========================== #
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
 
-def draw_confusion_matrix(label_true, label_pred, label_name, normlize, title="Confusion Matrix", pdf_save_path=None, dpi=600):
+def draw_confusion_matrix(
+    label_true,
+    label_pred,
+    label_name,
+    normlize,
+    title="Confusion Matrix",
+    pdf_save_path=None,
+    dpi=600,
+    epoch=0,
+):
     """
 
     @param label_true: 真实标签，比如[0,1,2,7,4,5,...]
@@ -235,8 +246,8 @@ def draw_confusion_matrix(label_true, label_pred, label_name, normlize, title="C
     if normlize:
         row_sums = np.sum(cm, axis=1)  # 计算每行的和
         cm = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
-    cm=cm.T
-    plt.imshow(cm, cmap='Blues')
+    cm = cm.T
+    plt.imshow(cm, cmap="Reds")
     plt.title(title)
     plt.xlabel("Predict label")
     plt.ylabel("Truth label")
@@ -246,12 +257,23 @@ def draw_confusion_matrix(label_true, label_pred, label_name, normlize, title="C
     plt.tight_layout()
     plt.colorbar()
 
-    for i in range(label_name.__len__()):
-        for j in range(label_name.__len__()):
-            color = (1, 1, 1) if i == j else (0, 0, 0)	# 对角线字体白色，其他黑色
-            value = float(format('%.2f' % cm[i, j]))
-            plt.text(i, j, value, verticalalignment='center', horizontalalignment='center', color=color)
+    # for i in range(label_name.__len__()):
+    #     for j in range(label_name.__len__()):
+    #         color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
+    #         value = float(format("%.4f" % cm[i, j]))
+    #         plt.text(
+    #             i,
+    #             j,
+    #             value,
+    #             verticalalignment="center",
+    #             horizontalalignment="center",
+    #             color=color,
+    #         )
 
     # plt.show()
     if not pdf_save_path is None:
-        plt.savefig(pdf_save_path, bbox_inches='tight',dpi=dpi)
+        if not os.path.exists(pdf_save_path):
+            os.makedirs(pdf_save_path)
+        plt.savefig(pdf_save_path+'-'+str(epoch)+'.png', bbox_inches="tight", dpi=dpi)
+        plt.close()
+

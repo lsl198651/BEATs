@@ -1,0 +1,45 @@
+[2023-07-26 14:13:52 - INFO:] # batch_size = 128
+[2023-07-26 14:13:52 - INFO:] # learning_rate = 0.005
+[2023-07-26 14:13:52 - INFO:] # num_epochs = 200
+[2023-07-26 14:13:52 - INFO:] # padding_size = 3500
+[2023-07-26 14:13:52 - INFO:] # criterion = CrossEntropyLoss()
+[2023-07-26 14:13:52 - INFO:] # scheduler = <torch.optim.lr_scheduler.LambdaLR object at 0x00000197C9DC6460>
+[2023-07-26 14:13:52 - INFO:] # optimizer = AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.98)
+    capturable: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    initial_lr: 0.005
+    lr: 0.0
+    maximize: False
+    weight_decay: 0.01
+)
+[2023-07-26 14:13:52 - INFO:] -------------------------------
+[2023-07-26 14:16:45 - INFO:] epoch: 1/200
+[2023-07-26 14:16:45 - INFO:] learning_rate: 0.0000
+[2023-07-26 14:16:45 - INFO:] train_acc: 79.2539%, train_loss: 0.0053
+[2023-07-26 14:16:45 - INFO:] test_acc: 88.6199%, test_loss: 0.0053
+[2023-07-26 14:16:45 - INFO:] max_train_acc: 79.2539%
+[2023-07-26 14:16:45 - INFO:] max_test_acc: 88.6199%
+[2023-07-26 14:16:45 - INFO:] max_lr: 0.0000, min_lr: 0.0000
+[2023-07-26 14:16:45 - INFO:] ======================================
+[2023-07-26 14:19:32 - INFO:] epoch: 2/200
+[2023-07-26 14:19:32 - INFO:] learning_rate: 0.0000
+[2023-07-26 14:19:32 - INFO:] train_acc: 82.8617%, train_loss: 0.0053
+[2023-07-26 14:19:32 - INFO:] test_acc: 89.6735%, test_loss: 0.0052
+[2023-07-26 14:19:32 - INFO:] max_train_acc: 82.8617%
+[2023-07-26 14:19:32 - INFO:] max_test_acc: 89.6735%
+[2023-07-26 14:19:32 - INFO:] max_lr: 0.0000, min_lr: 0.0000
+[2023-07-26 14:19:32 - INFO:] ======================================
+[2023-07-26 14:22:16 - INFO:] epoch: 3/200
+[2023-07-26 14:22:16 - INFO:] learning_rate: 0.0000
+[2023-07-26 14:22:16 - INFO:] train_acc: 88.7047%, train_loss: 0.0052
+[2023-07-26 14:22:16 - INFO:] test_acc: 90.8751%, test_loss: 0.0052
+[2023-07-26 14:22:16 - INFO:] max_train_acc: 88.7047%
+[2023-07-26 14:22:16 - INFO:] max_test_acc: 90.8751%
+[2023-07-26 14:22:16 - INFO:] max_lr: 0.0000, min_lr: 0.0000
+[2023-07-26 14:22:16 - INFO:] ======================================
