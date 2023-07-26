@@ -12,6 +12,7 @@ import torch.profiler
 import logging
 import pandas as pd
 import numpy as np
+import random
 import matplotlib.pyplot as plt
 
 from sklearn.metrics import confusion_matrix
@@ -50,10 +51,10 @@ present_train_csv_path = r"D:\Shilong\murmur\03_circor_states\train_csv"
 present_test_csv_path = r"D:\Shilong\murmur\03_circor_states\test_csv"
 
 filepath = r"D:\Shilong\murmur\03_circor_states"
-absent_train_path = r"D:\Shilong\murmur\03_circor_states\train\Absent"
-absent_test_path = r"D:\Shilong\murmur\03_circor_states\test\Absent"
-present_train_path = r"D:\Shilong\murmur\03_circor_states\train\Present"
-present_test_path = r"D:\Shilong\murmur\03_circor_states\test\Present"
+absent_train_path = r"D:\Shilong\murmur\03_circor_states\trainset\absent"
+absent_test_path = r"D:\Shilong\murmur\03_circor_states\testset\absent"
+present_train_path = r"D:\Shilong\murmur\03_circor_states\trainset\present"
+present_test_path = r"D:\Shilong\murmur\03_circor_states\testset\present"
 
 folder = r"D:\Shilong\murmur\03_circor_statest"
 npy_path = r"D:\Shilong\murmur\03_circor_states\npyFile"
@@ -71,10 +72,10 @@ Systolic_murmur_timing = get_patientid(Systolic_murmur_timing_path)
 Murmur_locations = get_patientid(Murmur_locations_path)
 
 """# ========================/ get wav data, length=10000 /========================== # 
-absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path,'Absent',id_data,Murmur_locations)# absent
-absent_test_features,absent_test_label = get_wav_data(absent_test_path,absent_test_csv_path,'Absent',id_data,Murmur_locations)# absent
-present_train_features,present_train_label= get_wav_data(present_train_path,present_train_csv_path,'Present',id_data,Murmur_locations)# present
-present_test_features,present_test_label=get_wav_data(present_test_path,present_test_csv_path,'Present',id_data,Murmur_locations)# present
+absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path)# absent
+absent_test_features,absent_test_label = get_wav_data(absent_test_path,absent_test_csv_path)# absent
+present_train_features,present_train_label= get_wav_data(present_train_path,present_train_csv_path)# present
+present_test_features,present_test_label=get_wav_data(present_test_path,present_test_csv_path)# present
 
 # # # # ========================/ save as npy file /========================== # 
 np.save(npy_path_padded+r'\absent_train_features.npy',absent_train_features)
@@ -85,8 +86,8 @@ np.save(npy_path_padded+r'\present_test_features.npy',present_test_features)
 np.save(npy_path_padded+r'\absent_train_label.npy',absent_train_label)
 np.save(npy_path_padded+r'\absent_test_label.npy',absent_test_label)
 np.save(npy_path_padded+r'\present_train_label.npy',present_train_label)
-np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)
-"""
+np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)"""
+
 # ========================/ load npy file /========================== #
 # absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)
 # absent_test_features = np.load(npy_path+r'\absent_test_features.npy',allow_pickle=True)
@@ -124,6 +125,13 @@ present_train_label = np.load(
 present_test_label = np.load(
     npy_path_padded + r"\present_test_label.npy", allow_pickle=True
 )
+
+List_train = random.sample(range(1,absent_train_features.shape[0]),present_train_features.shape[0])
+absent_train_features = absent_train_features[List_train]
+absent_train_label = absent_train_label[List_train]
+List_test=random.sample(range(1,absent_test_features.shape[0]),present_test_features.shape[0])
+absent_test_features = absent_test_features[List_test]
+absent_test_label = absent_test_label[List_test]
 
 # ========================/ get features & labels /========================== #
 # test_features,test_label=get_mel_features(path,absent_patient_id,present_patient_id)
@@ -307,7 +315,6 @@ def train_model(
         pdf_save_path=confusion_matrix_path,
         epoch=epochs,
     )
-
 
 # ========================/ training and logging info /========================== #
 logger_init()

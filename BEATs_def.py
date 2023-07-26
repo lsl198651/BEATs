@@ -42,11 +42,11 @@ def get_patientid(csv_path):
 
 
 # 读取数据并打标签
-def get_wav_data(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
+def get_wav_data(dir_path, csv_path):
     wav = []
     label = []
-    if not os.path.exists(csv_path):
-        os.makedirs(csv_path)
+    # if not os.path.exists(csv_path):
+    #     os.makedirs(csv_path)
 
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
@@ -72,16 +72,12 @@ def get_wav_data(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                 # print("shape: "+feature.shape())
                 # feature.to_csv(save_path, index=False, header=False)
 
+                file_name=subfile.split("_")
                 # 标签读取
-                if Murmur == "Absent":  # Absent
+                if file_name[4] == "Absent":  # Absent
                     label.append(0)
-                else:  # Present
-                    # 先找到id对应的index,再通过索引找到murmur_locations和timing
-                    murmur_ap = subfile.split("_")[4]
-                    if murmur_ap == "Absent":  # 说明该听诊区有杂音
-                        label.append(0)  # 舒张期全部认为没有杂音
-                    else:
-                        label.append(1)  # 说明该听诊区无杂音
+                if file_name[4] == "Present":  # Present
+                    label.append(1)  # 说明该听诊区无杂音
     return np.array(wav), np.array(label)
 
 
@@ -257,23 +253,23 @@ def draw_confusion_matrix(
     plt.tight_layout()
     plt.colorbar()
 
-    # for i in range(label_name.__len__()):
-    #     for j in range(label_name.__len__()):
-    #         color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
-    #         value = float(format("%.4f" % cm[i, j]))
-    #         plt.text(
-    #             i,
-    #             j,
-    #             value,
-    #             verticalalignment="center",
-    #             horizontalalignment="center",
-    #             color=color,
-    #         )
+    for i in range(label_name.__len__()):
+        for j in range(label_name.__len__()):
+            # color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
+            value = float(format("%.4f" % cm[i, j]))
+            plt.text(
+                i,
+                j,
+                value,
+                verticalalignment="center",
+                horizontalalignment="center",
+                # color=color,
+            )
 
     # plt.show()
     if not pdf_save_path is None:
         if not os.path.exists(pdf_save_path):
             os.makedirs(pdf_save_path)
-        plt.savefig(pdf_save_path+'-'+str(epoch)+'.png', bbox_inches="tight", dpi=dpi)
+        plt.savefig(pdf_save_path+'/-'+str(epoch)+'.png', bbox_inches="tight", dpi=dpi)
         plt.close()
 
