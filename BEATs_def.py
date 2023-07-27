@@ -72,7 +72,7 @@ def get_wav_data(dir_path, csv_path):
                 # print("shape: "+feature.shape())
                 # feature.to_csv(save_path, index=False, header=False)
 
-                file_name=subfile.split("_")
+                file_name = subfile.split("_")
                 # 标签读取
                 if file_name[4] == "Absent":  # Absent
                     label.append(0)
@@ -171,12 +171,14 @@ def logger_init(
         os.makedirs(log_dir)
     # 指定日志格式
     date = datetime.now()
-    log_path = os.path.join(log_dir, str(date)[:13]  + str(date.minute) + ".log")
+    log_path = os.path.join(
+        log_dir, str(datetime.now().strftime("%Y-%m%d %H%M")) + ".log"
+    )
     formatter = "[%(asctime)s - %(levelname)s] %(message)s"
     logging.basicConfig(
         level=log_level,
         format=formatter,
-        datefmt="%Y-%m-%d %H%M",
+        datefmt="%Y-%m%d %H%M",
         handlers=[logging.FileHandler(log_path), logging.StreamHandler(sys.stdout)],
     )
     logging.disable(logging.DEBUG)
@@ -239,7 +241,7 @@ def draw_confusion_matrix(
 
     """
     cm = confusion_matrix(label_true, label_pred)
-    
+
     row_sums = np.sum(cm, axis=1)  # 计算每行的和
     cm2 = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
     cm2 = cm2.T
@@ -258,7 +260,7 @@ def draw_confusion_matrix(
         for j in range(label_name.__len__()):
             # color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
             # value = float(format("%.4f" % cm[i, j]))
-            str_value="{}({:.2%})".format(cm[i, j],cm2[i, j])
+            str_value = "{}({:.2%})".format(cm[i, j], cm2[i, j])
             plt.text(
                 i,
                 j,
@@ -272,6 +274,9 @@ def draw_confusion_matrix(
     if not pdf_save_path is None:
         if not os.path.exists(pdf_save_path):
             os.makedirs(pdf_save_path)
-        plt.savefig(pdf_save_path+'/epoch-'+str(epoch+1)+'.png', bbox_inches="tight", dpi=dpi)
+        plt.savefig(
+            pdf_save_path + "/epoch" + str(epoch) + ".png",
+            bbox_inches="tight",
+            dpi=dpi,
+        )
         plt.close()
-

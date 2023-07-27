@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-
+from torch.utils.data.sampler import WeightedRandomSampler
 from sklearn.metrics import confusion_matrix
 from datetime import datetime
 from torch import optim
@@ -24,8 +24,18 @@ from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedShuffleSplit
 from torch.utils.tensorboard import SummaryWriter
 from BEATs import BEATs_Pre_Train_itere3
-from BEATs_def import get_patientid,get_wav_data,copy_wav,get_mel_features,csv_reader_cl,MyDataset,logger_init,save_info,cal_len,draw_confusion_matrix
-
+from BEATs_def import (
+    get_patientid,
+    get_wav_data,
+    copy_wav,
+    get_mel_features,
+    csv_reader_cl,
+    MyDataset,
+    logger_init,
+    save_info,
+    cal_len,
+    draw_confusion_matrix,
+)
 
 # ========================/ parameteres define /========================== #
 murmur_positoin = ["_AV", "_MV", "_PV", "_TV"]
@@ -70,7 +80,6 @@ present_patient_id = get_patientid(present_csv_path)
 Diastolic_murmur_timing = get_patientid(Diastolic_murmur_timing_path)
 Systolic_murmur_timing = get_patientid(Systolic_murmur_timing_path)
 Murmur_locations = get_patientid(Murmur_locations_path)
-
 """# ========================/ get wav data, length=10000 /========================== # 
 absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path)# absent
 absent_test_features,absent_test_label = get_wav_data(absent_test_path,absent_test_csv_path)# absent
@@ -125,26 +134,24 @@ present_train_label = np.load(
 present_test_label = np.load(
     npy_path_padded + r"\present_test_label.npy", allow_pickle=True
 )
-train_absent_size=present_train_features.shape[0]+200
-test_absent_size=present_test_features.shape[0]+200
-train_present_size=present_train_features.shape[0]
-test_present_size=present_test_features.shape[0]
-List_train = random.sample(range(1,absent_train_features.shape[0]),train_absent_size)
-absent_train_features = absent_train_features[List_train]
-absent_train_label = absent_train_label[List_train]
-List_test=random.sample(range(1,absent_test_features.shape[0]),test_absent_size)
-absent_test_features = absent_test_features[List_test]
-absent_test_label = absent_test_label[List_test]
+# ap_ratio = 1
+# train_absent_size = int(present_train_features.shape[0] * ap_ratio)
+# test_absent_size = int(present_test_features.shape[0] * ap_ratio)
+
+# List_train = random.sample(range(1, absent_train_features.shape[0]), train_absent_size)
+# absent_train_features = absent_train_features[List_train]
+# absent_train_label = absent_train_label[List_train]
+# List_test = random.sample(range(1, absent_test_features.shape[0]), test_absent_size)
+# absent_test_features = absent_test_features[List_test]
+# absent_test_label = absent_test_label[List_test]
 
 # ========================/ get features & labels /========================== #
 # test_features,test_label=get_mel_features(path,absent_patient_id,present_patient_id)
 """train_features,train_label=get_mel_features(train_path,absent_patient_id,present_patient_id)
 test_features,test_label=get_mel_features(test_path,absent_patient_id,present_patient_id)
-train_features=train_features.astype(float)
-train_label=train_label.astype(float)
-test_features=test_features.astype(float)
-test_label=test_label.astype(float)"""
-
+"""
+# train_present_size = present_train_features.shape[0]
+# test_present_size = present_test_features.shape[0]
 # ========================/ label encoder /========================== #
 train_label = np.hstack((absent_train_label, present_train_label))
 test_label = np.hstack((absent_test_label, present_test_label))
@@ -165,7 +172,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 # ========================/ HyperParameters /========================== #
 batch_size = 64
 learning_rate = 0.0001
-num_epochs = 50
+num_epochs = 80
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -173,8 +180,12 @@ padding = torch.zeros(
 padding_mask = torch.Tensor(padding)
 
 # ========================/ dataloader /========================== #
+## 如果label为1，那么对应的该类别被取出来的概率是另外一个类别的2倍
+weights = [9 if label == 1 else 1 for data, label in train_set]
+Data_sampler = WeightedRandomSampler(weights, num_samples=9, replacement=True)
+
 train_loader = DataLoader(
-    train_set, batch_size=batch_size, shuffle=True, drop_last=True
+    train_set, batch_size=batch_size, shuffle=True, drop_last=True, sampler=Data_sampler
 )
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=True)
 print("Dataloader is ok")  # 最后再打印一下新的模型
@@ -194,9 +205,10 @@ optimizer = torch.optim.AdamW(
 
 # ========================/ setup warmup lr /========================== #
 # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
-# scheduler =
+
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
+
 # scheduler = optimization.get_cosine_schedule_with_warmup(
 #     optimizer,
 #     num_warmup_steps=warm_up_ratio * total_steps,
@@ -238,8 +250,8 @@ def train_model(
 
     # evaluate model
     model.eval()
-    label=[]
-    pred=[]
+    label = []
+    pred = []
     test_loss = 0
     correct_v = 0
     with torch.no_grad():
@@ -315,17 +327,18 @@ def train_model(
         pred,
         ["Absent", "Present"],
         False,
-        str(datetime.now)[5:13] + str(epochs),
+        "epoch" + str(epochs + 1) + ",testacc: {:.2%}".format(test_acc),
         pdf_save_path=confusion_matrix_path,
-        epoch=epochs,
+        epoch=epochs + 1,
     )
+
 
 # ========================/ training and logging info /========================== #
 logger_init()
 logging.info("# trainset_size = " + str(trainset_size))
 logging.info("# testset_size = " + str(testset_size))
-logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
-logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
+# logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
+# logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
 logging.info("# batch_size = " + str(batch_size))
 logging.info("# learning_rate = " + str(learning_rate))
 logging.info("# num_epochs = " + str(num_epochs))
@@ -334,8 +347,12 @@ logging.info("# criterion = " + str(criterion))
 # logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
 logging.info("-------------------------------")
-confusion_matrix_path = r"./confusion_matrix/" + str(datetime.now())[:13]+"{:2}".format(str(datetime.now().minute))
-tb_writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13]+str(datetime.now().minute))
+confusion_matrix_path = r"./confusion_matrix/" + str(
+    datetime.now().strftime("%Y-%m%d %H%M")
+)
+tb_writer = SummaryWriter(
+    r"./tensorboard/" + str(datetime.now().strftime("%Y-%m%d %H%M"))
+)
 
 for epoch in range(num_epochs):
     train_model(
