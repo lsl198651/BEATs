@@ -1,0 +1,70 @@
+[2023-0727 1612 - INFO] <<< BEATs_iter3_plus_AS20K >>>
+[2023-0727 1612 - INFO] # trainset_size = 94712
+[2023-0727 1612 - INFO] # testset_size = 22970
+[2023-0727 1612 - INFO] # batch_size = 64
+[2023-0727 1612 - INFO] # learning_rate = 0.0001
+[2023-0727 1612 - INFO] # num_epochs = 80
+[2023-0727 1612 - INFO] # padding_size = 3500
+[2023-0727 1612 - INFO] # criterion = CrossEntropyLoss()
+[2023-0727 1612 - INFO] # optimizer = AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.98)
+    capturable: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.0001
+    maximize: False
+    weight_decay: 0.01
+)
+[2023-0727 1612 - INFO] -------------------------------
+[2023-0727 1612 - INFO] epoch: 1/80
+[2023-0727 1612 - INFO] learning_rate: 0.0001
+[2023-0727 1612 - INFO] train_acc: 0.0000%, train_loss: 0.0000
+[2023-0727 1612 - INFO] test_acc: 72.3335%, test_loss: 0.0107
+[2023-0727 1612 - INFO] max_train_acc: 0.0000%
+[2023-0727 1612 - INFO] max_test_acc: 72.3335%
+[2023-0727 1612 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0727 1612 - INFO] ======================================
+[2023-0727 1613 - INFO] epoch: 2/80
+[2023-0727 1613 - INFO] learning_rate: 0.0001
+[2023-0727 1613 - INFO] train_acc: 0.0000%, train_loss: 0.0000
+[2023-0727 1613 - INFO] test_acc: 72.3161%, test_loss: 0.0107
+[2023-0727 1613 - INFO] max_train_acc: 0.0000%
+[2023-0727 1613 - INFO] max_test_acc: 72.3335%
+[2023-0727 1613 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0727 1613 - INFO] ======================================
+[2023-0727 1614 - INFO] epoch: 3/80
+[2023-0727 1614 - INFO] learning_rate: 0.0001
+[2023-0727 1614 - INFO] train_acc: 0.0000%, train_loss: 0.0000
+[2023-0727 1614 - INFO] test_acc: 72.3204%, test_loss: 0.0107
+[2023-0727 1614 - INFO] max_train_acc: 0.0000%
+[2023-0727 1614 - INFO] max_test_acc: 72.3335%
+[2023-0727 1614 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0727 1614 - INFO] ======================================
+[2023-0727 1614 - INFO] epoch: 4/80
+[2023-0727 1614 - INFO] learning_rate: 0.0001
+[2023-0727 1614 - INFO] train_acc: 0.0000%, train_loss: 0.0000
+[2023-0727 1614 - INFO] test_acc: 72.3465%, test_loss: 0.0107
+[2023-0727 1614 - INFO] max_train_acc: 0.0000%
+[2023-0727 1614 - INFO] max_test_acc: 72.3465%
+[2023-0727 1614 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0727 1614 - INFO] ======================================
+[2023-0727 1615 - INFO] epoch: 5/80
+[2023-0727 1615 - INFO] learning_rate: 0.0001
+[2023-0727 1615 - INFO] train_acc: 0.0000%, train_loss: 0.0000
+[2023-0727 1615 - INFO] test_acc: 72.3465%, test_loss: 0.0107
+[2023-0727 1615 - INFO] max_train_acc: 0.0000%
+[2023-0727 1615 - INFO] max_test_acc: 72.3465%
+[2023-0727 1615 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0727 1615 - INFO] ======================================
+[2023-0727 1615 - INFO] epoch: 6/80
+[2023-0727 1615 - INFO] learning_rate: 0.0001
+[2023-0727 1615 - INFO] train_acc: 0.0000%, train_loss: 0.0000
+[2023-0727 1615 - INFO] test_acc: 72.3291%, test_loss: 0.0107
+[2023-0727 1615 - INFO] max_train_acc: 0.0000%
+[2023-0727 1615 - INFO] max_test_acc: 72.3465%
+[2023-0727 1615 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0727 1615 - INFO] ======================================

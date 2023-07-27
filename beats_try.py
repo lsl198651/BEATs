@@ -134,20 +134,22 @@ present_train_label = np.load(
 present_test_label = np.load(
     npy_path_padded + r"\present_test_label.npy", allow_pickle=True
 )
-# ap_ratio = 1
-# train_absent_size = int(present_train_features.shape[0] * ap_ratio)
-# test_absent_size = int(present_test_features.shape[0] * ap_ratio)
 
-# List_train = random.sample(range(1, absent_train_features.shape[0]), train_absent_size)
-# absent_train_features = absent_train_features[List_train]
-# absent_train_label = absent_train_label[List_train]
+ap_ratio = 1
+train_absent_size = int(present_train_features.shape[0] * ap_ratio)
+test_absent_size = int(present_test_features.shape[0] * ap_ratio)
+
+List_train = random.sample(range(1, absent_train_features.shape[0]), train_absent_size)
+absent_train_features = absent_train_features[List_train]
+absent_train_label = absent_train_label[List_train]
 # List_test = random.sample(range(1, absent_test_features.shape[0]), test_absent_size)
 # absent_test_features = absent_test_features[List_test]
 # absent_test_label = absent_test_label[List_test]
 
 # ========================/ get features & labels /========================== #
 # test_features,test_label=get_mel_features(path,absent_patient_id,present_patient_id)
-"""train_features,train_label=get_mel_features(train_path,absent_patient_id,present_patient_id)
+"""
+train_features,train_label=get_mel_features(train_path,absent_patient_id,present_patient_id)
 test_features,test_label=get_mel_features(test_path,absent_patient_id,present_patient_id)
 """
 # train_present_size = present_train_features.shape[0]
@@ -172,7 +174,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 # ========================/ HyperParameters /========================== #
 batch_size = 64
 learning_rate = 0.0001
-num_epochs = 80
+num_epochs = 50
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -180,12 +182,15 @@ padding = torch.zeros(
 padding_mask = torch.Tensor(padding)
 
 # ========================/ dataloader /========================== #
-## 如果label为1，那么对应的该类别被取出来的概率是另外一个类别的2倍
-weights = [9 if label == 1 else 1 for data, label in train_set]
-Data_sampler = WeightedRandomSampler(weights, num_samples=9, replacement=True)
+# 如果label为1，那么对应的该类别被取出来的概率是另外一个类别的2倍
+# weights = [9 if label == 1 else 1 for data, label in train_set]
+# Data_sampler = WeightedRandomSampler(weights, num_samples=9, replacement=True)
 
 train_loader = DataLoader(
-    train_set, batch_size=batch_size, shuffle=True, drop_last=True, sampler=Data_sampler
+    train_set,
+    batch_size=batch_size,
+    drop_last=True,
+    shuffle=True,
 )
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=True)
 print("Dataloader is ok")  # 最后再打印一下新的模型
@@ -283,16 +288,16 @@ def train_model(
     # 更新权值
     test_loss /= len(test_loader.dataset)
     train_loss /= len(train_loader.dataset)
-    train_acc = 100.0 * correct_t / len(train_set)
-    test_acc = 100.0 * correct_v / len(test_set)
+    train_acc = correct_t / len(train_set)
+    test_acc = correct_v / len(test_set)
 
     max_train_acc.append(train_acc)
     max_test_acc.append(test_acc)
     max_train_acc = max(max_train_acc)
     max_test_acc = max(max_test_acc)
 
-    tb_writer.add_scalar("train_acc", train_acc, epochs)
-    tb_writer.add_scalar("test_acc", test_acc, epochs)
+    tb_writer.add_scalar("train_acc", train_acc * 100, epochs)
+    tb_writer.add_scalar("test_acc", test_acc * 100, epochs)
     tb_writer.add_scalar("train_loss", train_loss, epochs)
     tb_writer.add_scalar("test_loss", test_loss, epochs)
     tb_writer.add_scalar("learning_rate", lr_now, epochs)
@@ -302,18 +307,18 @@ def train_model(
     logging.info(f"learning_rate: " + str("{:.4f}".format(lr_now)))
     logging.info(
         f"train_acc: "
-        + str("{:.4f}%".format(train_acc))
+        + str("{:.2%}".format(train_acc))
         + ", train_loss: "
         + str("{:.4f}".format(train_loss))
     )
     logging.info(
         f"test_acc: "
-        + str("{:.4f}%".format(test_acc))
+        + str("{:.2%}".format(test_acc))
         + ", test_loss: "
         + str("{:.4f}".format(test_loss))
     )
-    logging.info(f"max_train_acc: " + str("{:.4f}%".format(max_train_acc)))
-    logging.info(f"max_test_acc: " + str("{:.4f}%".format(max_test_acc)))
+    logging.info(f"max_train_acc: " + str("{:.2%}".format(max_train_acc)))
+    logging.info(f"max_test_acc: " + str("{:.2%}".format(max_test_acc)))
     logging.info(
         f"max_lr: "
         + str("{:.4f}".format(max(lr)))
@@ -335,6 +340,8 @@ def train_model(
 
 # ========================/ training and logging info /========================== #
 logger_init()
+model_name = "BEATs_iter3_plus_AS20K"
+logging.info("<<< " + model_name + " >>>")
 logging.info("# trainset_size = " + str(trainset_size))
 logging.info("# testset_size = " + str(testset_size))
 # logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
