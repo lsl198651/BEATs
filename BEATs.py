@@ -222,11 +222,12 @@ class BEATs(nn.Module):
 
 
 class BEATs_Pre_Train_itere3(nn.Module):
-    def __init__(self, nums_class=2):
+    def __init__(self, model_name="BEATs_Pre_Train_itere3"):
+        self.model_name = model_name
         super(BEATs_Pre_Train_itere3, self).__init__()
         # 修改model后记得修改logging
         checkpoint = torch.load(
-            r"D:\Shilong\murmur\00_Code\LM\LM_Model\BEATs\BEATs_iter3_plus_AS20K.pt"
+            r"D:\Shilong\murmur\00_Code\LM\LM_Model\BEATs\\" + self.model_name + ".pt"
         )
         cfg = BEATsConfig(checkpoint["cfg"])
         BEATs_model = BEATs(cfg)

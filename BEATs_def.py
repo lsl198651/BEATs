@@ -213,7 +213,6 @@ def draw_confusion_matrix(
     label_true,
     label_pred,
     label_name,
-    normlize,
     title="Confusion Matrix",
     pdf_save_path=None,
     dpi=600,

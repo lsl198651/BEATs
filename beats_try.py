@@ -174,7 +174,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 # ========================/ HyperParameters /========================== #
 batch_size = 64
 learning_rate = 0.0001
-num_epochs = 50
+num_epochs = 100
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -307,18 +307,18 @@ def train_model(
     logging.info(f"learning_rate: " + str("{:.4f}".format(lr_now)))
     logging.info(
         f"train_acc: "
-        + str("{:.2%}".format(train_acc))
+        + str("{:.3%}".format(train_acc))
         + ", train_loss: "
         + str("{:.4f}".format(train_loss))
     )
     logging.info(
         f"test_acc: "
-        + str("{:.2%}".format(test_acc))
+        + str("{:.3%}".format(test_acc))
         + ", test_loss: "
         + str("{:.4f}".format(test_loss))
     )
-    logging.info(f"max_train_acc: " + str("{:.2%}".format(max_train_acc)))
-    logging.info(f"max_test_acc: " + str("{:.2%}".format(max_test_acc)))
+    logging.info(f"max_train_acc: " + str("{:.3%}".format(max_train_acc)))
+    logging.info(f"max_test_acc: " + str("{:.3%}".format(max_test_acc)))
     logging.info(
         f"max_lr: "
         + str("{:.4f}".format(max(lr)))
@@ -326,13 +326,13 @@ def train_model(
         + str("{:.4f}".format(min(lr)))
     )
     logging.info(f"======================================")
-
+    # 画混淆矩阵
     draw_confusion_matrix(
         label,
         pred,
         ["Absent", "Present"],
         False,
-        "epoch" + str(epochs + 1) + ",testacc: {:.2%}".format(test_acc),
+        "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
         pdf_save_path=confusion_matrix_path,
         epoch=epochs + 1,
     )
@@ -340,7 +340,7 @@ def train_model(
 
 # ========================/ training and logging info /========================== #
 logger_init()
-model_name = "BEATs_iter3_plus_AS20K"
+model_name = MyModel.model_name
 logging.info("<<< " + model_name + " >>>")
 logging.info("# trainset_size = " + str(trainset_size))
 logging.info("# testset_size = " + str(testset_size))
