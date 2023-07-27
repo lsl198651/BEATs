@@ -172,11 +172,11 @@ def logger_init(
     # 指定日志格式
     date = datetime.now()
     log_path = os.path.join(log_dir, str(date)[:13]  + str(date.minute) + ".log")
-    formatter = "[%(asctime)s - %(levelname)s:] %(message)s"
+    formatter = "[%(asctime)s - %(levelname)s] %(message)s"
     logging.basicConfig(
         level=log_level,
         format=formatter,
-        datefmt="%Y-%m-%d %H:%M:%S",
+        datefmt="%Y-%m-%d %H%M",
         handlers=[logging.FileHandler(log_path), logging.StreamHandler(sys.stdout)],
     )
     logging.disable(logging.DEBUG)
@@ -258,7 +258,7 @@ def draw_confusion_matrix(
         for j in range(label_name.__len__()):
             # color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
             # value = float(format("%.4f" % cm[i, j]))
-            str_value="{:.2f}({})".format(cm[i, j],cm2[i, j])
+            str_value="{}({:.2%})".format(cm[i, j],cm2[i, j])
             plt.text(
                 i,
                 j,

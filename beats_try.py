@@ -125,11 +125,14 @@ present_train_label = np.load(
 present_test_label = np.load(
     npy_path_padded + r"\present_test_label.npy", allow_pickle=True
 )
-
-List_train = random.sample(range(1,absent_train_features.shape[0]+2),present_train_features.shape[0])
+train_absent_size=present_train_features.shape[0]+200
+test_absent_size=present_test_features.shape[0]+200
+train_present_size=present_train_features.shape[0]
+test_present_size=present_test_features.shape[0]
+List_train = random.sample(range(1,absent_train_features.shape[0]),train_absent_size)
 absent_train_features = absent_train_features[List_train]
 absent_train_label = absent_train_label[List_train]
-List_test=random.sample(range(1,absent_test_features.shape[0]+2),present_test_features.shape[0])
+List_test=random.sample(range(1,absent_test_features.shape[0]),test_absent_size)
 absent_test_features = absent_test_features[List_test]
 absent_test_label = absent_test_label[List_test]
 
@@ -153,7 +156,8 @@ train_features = train_features.astype(float)
 train_label = train_label.astype(int)
 test_features = test_features.astype(float)
 test_label = test_label.astype(int)
-
+trainset_size = train_features.shape[0]
+testset_size = test_features.shape[0]
 # ========================/ MyDataset /========================== #
 train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
@@ -161,7 +165,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 # ========================/ HyperParameters /========================== #
 batch_size = 64
 learning_rate = 0.0001
-num_epochs = 30
+num_epochs = 50
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -318,6 +322,10 @@ def train_model(
 
 # ========================/ training and logging info /========================== #
 logger_init()
+logging.info("# trainset_size = " + str(trainset_size))
+logging.info("# testset_size = " + str(testset_size))
+logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
+logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
 logging.info("# batch_size = " + str(batch_size))
 logging.info("# learning_rate = " + str(learning_rate))
 logging.info("# num_epochs = " + str(num_epochs))
@@ -326,7 +334,7 @@ logging.info("# criterion = " + str(criterion))
 # logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
 logging.info("-------------------------------")
-confusion_matrix_path = r"./confusion_matrix/" + str(datetime.now())[:13]+str(datetime.now().minute)
+confusion_matrix_path = r"./confusion_matrix/" + str(datetime.now())[:13]+"{:2}".format(str(datetime.now().minute))
 tb_writer = SummaryWriter(r"./tensorboard/" + str(datetime.now())[:13]+str(datetime.now().minute))
 
 for epoch in range(num_epochs):
