@@ -259,7 +259,7 @@ def draw_confusion_matrix(
         for j in range(label_name.__len__()):
             # color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
             # value = float(format("%.4f" % cm[i, j]))
-            str_value = "{}({:.2%})".format(cm[i, j], cm2[i, j])
+            str_value = "{:.2%}({})".format(cm2[i, j], cm[i, j])
             plt.text(
                 i,
                 j,

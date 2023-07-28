@@ -222,12 +222,15 @@ class BEATs(nn.Module):
 
 
 class BEATs_Pre_Train_itere3(nn.Module):
-    def __init__(self, model_name="BEATs_Pre_Train_itere3"):
+    def __init__(self, model_name="BEATs_iter3_plus_AS2M"):
         self.model_name = model_name
         super(BEATs_Pre_Train_itere3, self).__init__()
         # 修改model后记得修改logging
         checkpoint = torch.load(
-            r"D:\Shilong\murmur\00_Code\LM\LM_Model\BEATs\\" + self.model_name + ".pt"
+            r"D:\Shilong\murmur\00_Code\LM\LM_Model\BEATs"
+            + "\\"
+            + self.model_name
+            + ".pt"
         )
         cfg = BEATsConfig(checkpoint["cfg"])
         BEATs_model = BEATs(cfg)
@@ -237,6 +240,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # Dropout
         self.last_Dropout = nn.Dropout(0.1)
         # fc
+        self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
 
     def forward(self, x, padding_mask: torch.Tensor = None):
@@ -246,7 +250,9 @@ class BEATs_Pre_Train_itere3(nn.Module):
         with torch.enable_grad():
             x = self.last_Dropout(x)
             # FC
-            output = self.last_layer(x)
+            output = self.fc_layer(x)
+            # add fc layer
+            output = self.last_layer(output)
             # mean
             output = output.mean(dim=1)
             # sigmoid

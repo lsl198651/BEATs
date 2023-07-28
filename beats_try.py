@@ -136,10 +136,10 @@ present_test_label = np.load(
 )
 
 ap_ratio = 1
-train_absent_size = int(present_train_features.shape[0] * ap_ratio)
-test_absent_size = int(present_test_features.shape[0] * ap_ratio)
+absent_size = int(present_train_features.shape[0] * ap_ratio)
 
-List_train = random.sample(range(1, absent_train_features.shape[0]), train_absent_size)
+
+List_train = random.sample(range(1, absent_train_features.shape[0]), absent_size)
 absent_train_features = absent_train_features[List_train]
 absent_train_label = absent_train_label[List_train]
 # List_test = random.sample(range(1, absent_test_features.shape[0]), test_absent_size)
@@ -152,8 +152,11 @@ absent_train_label = absent_train_label[List_train]
 train_features,train_label=get_mel_features(train_path,absent_patient_id,present_patient_id)
 test_features,test_label=get_mel_features(test_path,absent_patient_id,present_patient_id)
 """
-# train_present_size = present_train_features.shape[0]
-# test_present_size = present_test_features.shape[0]
+train_present_size = present_train_features.shape[0]
+train_absent_size = absent_train_features.shape[0]
+test_present_size = present_test_features.shape[0]
+test_absent_size = absent_test_features.shape[0]
+
 # ========================/ label encoder /========================== #
 train_label = np.hstack((absent_train_label, present_train_label))
 test_label = np.hstack((absent_test_label, present_test_label))
@@ -209,11 +212,11 @@ optimizer = torch.optim.AdamW(
 )  # 指定 新加的fc层的学习率
 
 # ========================/ setup warmup lr /========================== #
-# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
-
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
 
+scheduler = None
+# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
 # scheduler = optimization.get_cosine_schedule_with_warmup(
 #     optimizer,
 #     num_warmup_steps=warm_up_ratio * total_steps,
@@ -331,7 +334,6 @@ def train_model(
         label,
         pred,
         ["Absent", "Present"],
-        False,
         "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
         pdf_save_path=confusion_matrix_path,
         epoch=epochs + 1,
@@ -344,14 +346,14 @@ model_name = MyModel.model_name
 logging.info("<<< " + model_name + " >>>")
 logging.info("# trainset_size = " + str(trainset_size))
 logging.info("# testset_size = " + str(testset_size))
-# logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
-# logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
+logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
+logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
 logging.info("# batch_size = " + str(batch_size))
 logging.info("# learning_rate = " + str(learning_rate))
 logging.info("# num_epochs = " + str(num_epochs))
 logging.info("# padding_size = " + str(padding_size))
 logging.info("# criterion = " + str(criterion))
-# logging.info("# scheduler = " + str(scheduler))
+logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
 logging.info("-------------------------------")
 confusion_matrix_path = r"./confusion_matrix/" + str(
