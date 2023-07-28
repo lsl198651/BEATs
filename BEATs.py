@@ -250,9 +250,9 @@ class BEATs_Pre_Train_itere3(nn.Module):
         with torch.enable_grad():
             x = self.last_Dropout(x)
             # FC
-            output = self.fc_layer(x)
+            # x = self.fc_layer(x)
             # add fc layer
-            output = self.last_layer(output)
+            output = self.last_layer(x)
             # mean
             output = output.mean(dim=1)
             # sigmoid

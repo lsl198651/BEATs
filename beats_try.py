@@ -208,7 +208,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(
     [{"params": MyModel.last_layer.parameters()}],
     lr=learning_rate,
-    betas=(0.9, 0.98),
+    betas=(0.9, 0.999),
 )  # 指定 新加的fc层的学习率
 
 # ========================/ setup warmup lr /========================== #
@@ -343,7 +343,7 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " >>>")
+logging.info("<<< " + model_name + " >>> - 1 fc layer")
 logging.info("# trainset_size = " + str(trainset_size))
 logging.info("# testset_size = " + str(testset_size))
 logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
