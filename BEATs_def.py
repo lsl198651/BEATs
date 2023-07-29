@@ -245,7 +245,7 @@ def draw_confusion_matrix(
     cm2 = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
     cm2 = cm2.T
     cm = cm.T
-    plt.imshow(cm, cmap="Reds")
+    plt.imshow(cm2, cmap="Reds")
     plt.title(title)
     plt.xlabel("Predict label")
     plt.ylabel("Truth label")

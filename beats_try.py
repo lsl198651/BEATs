@@ -176,7 +176,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
 batch_size = 64
-learning_rate = 0.0001
+learning_rate = 0.0005
 num_epochs = 100
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
@@ -281,8 +281,8 @@ def train_model(
             correct_v += pred_v.eq(label_v.view_as(pred_v)).sum().item()
             pred.extend(pred_v.cpu().tolist())
             label.extend(label_v.cpu().tolist())
-
-    # scheduler.step()
+    if scheduler is not None:
+        scheduler.step()
 
     for group in optimizer.param_groups:
         lr_now = group["lr"]
