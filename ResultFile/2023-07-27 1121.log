@@ -21,29 +21,6 @@ Parameter Group 0
     weight_decay: 0.01
 )
 [2023-07-27 1121 - INFO] -------------------------------
-[2023-07-27 1121 - INFO] # trainset_size = 25515
-[2023-07-27 1121 - INFO] # testset_size = 6150
-[2023-07-27 1121 - INFO] # train_a/p = 17010/8505
-[2023-07-27 1121 - INFO] # test_a/p = 4100/2050
-[2023-07-27 1121 - INFO] # batch_size = 64
-[2023-07-27 1121 - INFO] # learning_rate = 0.0001
-[2023-07-27 1121 - INFO] # num_epochs = 80
-[2023-07-27 1121 - INFO] # padding_size = 3500
-[2023-07-27 1121 - INFO] # criterion = CrossEntropyLoss()
-[2023-07-27 1121 - INFO] # optimizer = AdamW (
-Parameter Group 0
-    amsgrad: False
-    betas: (0.9, 0.98)
-    capturable: False
-    differentiable: False
-    eps: 1e-08
-    foreach: None
-    fused: None
-    lr: 0.0001
-    maximize: False
-    weight_decay: 0.01
-)
-[2023-07-27 1121 - INFO] -------------------------------
 [2023-07-27 1122 - INFO] epoch: 1/80
 [2023-07-27 1122 - INFO] learning_rate: 0.0001
 [2023-07-27 1122 - INFO] train_acc: 67.0860%, train_loss: 0.0098

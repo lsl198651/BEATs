@@ -175,8 +175,8 @@ train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
-batch_size = 64
-learning_rate = 0.0005
+batch_size = 128
+learning_rate = 0.001
 num_epochs = 100
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(

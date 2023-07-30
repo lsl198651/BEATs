@@ -225,7 +225,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
     def __init__(self, model_name="BEATs_iter3_plus_AS2M"):
         self.model_name = model_name
         super(BEATs_Pre_Train_itere3, self).__init__()
-        # 修改model后记得修改logging
+
         checkpoint = torch.load(
             r"D:\Shilong\murmur\00_Code\LM\LM_Model\BEATs"
             + "\\"
@@ -249,7 +249,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # dropout
         with torch.enable_grad():
             x = self.last_Dropout(x)
-            # FC
+            # FC 修改层数记得修改logging
             # x = self.fc_layer(x)
             # add fc layer
             output = self.last_layer(x)
