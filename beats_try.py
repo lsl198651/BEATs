@@ -14,7 +14,8 @@ import pandas as pd
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-from torch.utils.data.sampler import WeightedRandomSampSler
+
+# from torch.utils.data.sampler import WeightedRandomSampSler
 from sklearn.metrics import confusion_matrix
 from datetime import datetime
 from torch import optim
@@ -215,8 +216,8 @@ optimizer = torch.optim.AdamW(
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
 
-scheduler = None
-# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
+# scheduler = None
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
 # scheduler = optimization.get_cosine_schedule_with_warmup(
 #     optimizer,
 #     num_warmup_steps=warm_up_ratio * total_steps,
