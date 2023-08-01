@@ -1,4 +1,4 @@
-[2023-0729 1859 - INFO] <<< BEATs_iter3_plus_AS2M >>> - 1 fc layer
+[2023-0729 1859 - INFO] <<< BEATs_iter3_plus_AS2M - 1 fc layer >>> 
 [2023-0729 1859 - INFO] # trainset_size = 17010
 [2023-0729 1859 - INFO] # testset_size = 22970
 [2023-0729 1859 - INFO] # train_a/p = 8505/8505

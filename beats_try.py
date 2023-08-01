@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-from torch.utils.data.sampler import WeightedRandomSampler
+from torch.utils.data.sampler import WeightedRandomSampSler
 from sklearn.metrics import confusion_matrix
 from datetime import datetime
 from torch import optim
@@ -343,7 +343,7 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " >>> - 1 fc layer")
+logging.info("<<< " + model_name + " - 1 fc layer >>> ")
 logging.info("# trainset_size = " + str(trainset_size))
 logging.info("# testset_size = " + str(testset_size))
 logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
@@ -355,7 +355,7 @@ logging.info("# padding_size = " + str(padding_size))
 logging.info("# criterion = " + str(criterion))
 logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
-logging.info("-------------------------------")
+logging.info("-------------------------------------")
 confusion_matrix_path = r"./confusion_matrix/" + str(
     datetime.now().strftime("%Y-%m%d %H%M")
 )
