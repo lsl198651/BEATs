@@ -16,6 +16,7 @@ import random
 import matplotlib.pyplot as plt
 
 # from torch.utils.data.sampler import WeightedRandomSampSler
+from torch.cuda.amp import autocast, GradScaler
 from sklearn.metrics import confusion_matrix
 from datetime import datetime
 from torch import optim
@@ -179,6 +180,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 batch_size = 128
 learning_rate = 0.001
 num_epochs = 100
+loss_type = "CE"
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -205,7 +207,11 @@ MyModel = BEATs_Pre_Train_itere3()
 # ========================/ model add fc-layer /========================== #
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = MyModel.to(DEVICE)  # 放到设备中
-criterion = nn.CrossEntropyLoss()
+
+if loss_type == "BCE":
+    loss_fn = nn.BCEWithLogitsLoss()
+elif loss_type == "CE":
+    loss_fn = nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(
     [{"params": MyModel.last_layer.parameters()}],
     lr=learning_rate,
@@ -216,8 +222,8 @@ optimizer = torch.optim.AdamW(
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
 
-# scheduler = None
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
+scheduler = None
+# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
 # scheduler = optimization.get_cosine_schedule_with_warmup(
 #     optimizer,
 #     num_warmup_steps=warm_up_ratio * total_steps,
@@ -241,16 +247,23 @@ def train_model(
     # train model
     train_loss = 0
     correct_t = 0
+    # for amp
+    scaler = GradScaler()
     model.train()
     for data_t, label_t in train_loader:
         data_t, label_t = data_t.to(device), label_t.to(device)
         padding = padding.to(device)
-        optimizer.zero_grad()
+
         # with torch.cuda.amp.autocast():
         predict = model(data_t, padding)
-        loss = criterion(predict, label_t.long())
-        loss.backward()
-        optimizer.step()
+        with autocast():
+            loss = loss_fn(predict, label_t.long())
+        optimizer.zero_grad()
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
+        # loss.backward()
+        # optimizer.step()
         train_loss += loss.item()
         pred_t = predict.max(1, keepdim=True)[
             1
@@ -270,12 +283,10 @@ def train_model(
                 label_v.to(device),
                 padding.to(device),
             )
-            optimizer.zero_grad()
+            # optimizer.zero_grad()
             predict_v = model(data_v, padding)
             # recall = recall_score(y_hat, y)
-            test_loss += criterion(
-                predict_v, label_v.long()
-            ).item()  # sum up batch loss
+            test_loss += loss_fn(predict_v, label_v.long()).item()  # sum up batch loss
             pred_v = predict_v.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
@@ -353,7 +364,7 @@ logging.info("# batch_size = " + str(batch_size))
 logging.info("# learning_rate = " + str(learning_rate))
 logging.info("# num_epochs = " + str(num_epochs))
 logging.info("# padding_size = " + str(padding_size))
-logging.info("# criterion = " + str(criterion))
+logging.info("# loss_fn = " + loss_type)
 logging.info("# scheduler = " + str(scheduler))
 logging.info("# optimizer = " + str(optimizer))
 logging.info("-------------------------------------")

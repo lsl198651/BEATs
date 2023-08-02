@@ -256,5 +256,5 @@ class BEATs_Pre_Train_itere3(nn.Module):
             # mean
             output = output.mean(dim=1)
             # sigmoid
-            output = torch.sigmoid(output)
+            # output = torch.sigmoid(output)
         return output
