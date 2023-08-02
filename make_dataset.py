@@ -250,9 +250,9 @@ def copy_states_data(folder, patient_id, murmur, type):
                 shutil.copytree(subdir_path, din_path + subdir)
 
 
+# ==================================================================== #
 # ========================/ code executive /========================== #
-# ========================/ code executive /========================== #
-# ========================/ code executive /========================== #
+# ==================================================================== #
 
 csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
 # get dataset tag from table
