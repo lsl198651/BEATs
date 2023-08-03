@@ -12,6 +12,7 @@ import torch
 import torch.nn as nn
 from torch.nn import LayerNorm
 import torchaudio.compliance.kaldi as ta_kaldi
+import torchaudio
 
 from backbone import (
     TransformerEncoder,
@@ -157,6 +158,22 @@ class BEATs(nn.Module):
                 frame_length=25,
                 frame_shift=10,
             )
+            freqm = 10
+            timem = 0
+            # SpecAug, not do for eval set
+            freqm = torchaudio.transforms.FrequencyMasking(freqm)
+            timem = torchaudio.transforms.TimeMasking(timem)
+            fbank = torch.transpose(fbank, 0, 1)
+            # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
+            fbank = fbank.unsqueeze(0)
+            if self.freqm != 0:
+                fbank = freqm(fbank)
+            if self.timem != 0:
+                fbank = timem(fbank)
+            # squeeze it back, it is just a trick to satisfy new torchaudio version
+            fbank = fbank.squeeze(0)
+            fbank = torch.transpose(fbank, 0, 1)
+
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         fbank = (fbank - fbank_mean) / (2 * fbank_std)

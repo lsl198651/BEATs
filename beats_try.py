@@ -178,7 +178,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
 batch_size = 128
-learning_rate = 0.001
+learning_rate = 0.0005
 num_epochs = 100
 loss_type = "CE"
 padding_size = train_features.shape[1]  # 3500
