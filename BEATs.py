@@ -12,7 +12,7 @@ import torch
 import torch.nn as nn
 from torch.nn import LayerNorm
 import torchaudio.compliance.kaldi as ta_kaldi
-import torchaudio
+import torchaudio.transforms as TT
 
 from backbone import (
     TransformerEncoder,
@@ -158,17 +158,17 @@ class BEATs(nn.Module):
                 frame_length=25,
                 frame_shift=10,
             )
-            freqm = 10
-            timem = 0
+            freqm = 30  # 横向
+            timem = 1  # 纵向
             # SpecAug, not do for eval set
-            freqm = torchaudio.transforms.FrequencyMasking(freqm)
-            timem = torchaudio.transforms.TimeMasking(timem)
+            freqm = TT.FrequencyMasking(freqm)
+            timem = TT.TimeMasking(timem)
             fbank = torch.transpose(fbank, 0, 1)
             # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
             fbank = fbank.unsqueeze(0)
-            if self.freqm != 0:
+            if freqm != 0:
                 fbank = freqm(fbank)
-            if self.timem != 0:
+            if timem != 0:
                 fbank = timem(fbank)
             # squeeze it back, it is just a trick to satisfy new torchaudio version
             fbank = fbank.squeeze(0)
@@ -261,17 +261,17 @@ class BEATs_Pre_Train_itere3(nn.Module):
         self.last_layer = nn.Linear(768, 2)
 
     def forward(self, x, padding_mask: torch.Tensor = None):
-        with torch.no_grad():
-            x, _ = self.BEATs.extract_features(x, padding_mask)
+        # with torch.no_grad():
+        x, _ = self.BEATs.extract_features(x, padding_mask)
         # dropout
-        with torch.enable_grad():
-            x = self.last_Dropout(x)
-            # FC 修改层数记得修改logging
-            # x = self.fc_layer(x)
-            # add fc layer
-            output = self.last_layer(x)
-            # mean
-            output = output.mean(dim=1)
-            # sigmoid
-            # output = torch.sigmoid(output)
+        # with torch.enable_grad():
+        y = self.last_Dropout(x)
+        # FC 修改层数记得修改logging
+        y = self.fc_layer(y)
+        # add fc layer
+        output = self.last_layer(y)
+        # mean
+        output = output.mean(dim=1)
+        # sigmoid
+        # output = torch.sigmoid(output)
         return output

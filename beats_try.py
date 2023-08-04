@@ -15,7 +15,7 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-# from torch.utils.data.sampler import WeightedRandomSampSler
+from torch.utils.data.sampler import WeightedRandomSampler
 from torch.cuda.amp import autocast, GradScaler
 from sklearn.metrics import confusion_matrix
 from datetime import datetime
@@ -26,7 +26,7 @@ from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedShuffleSplit
 from torch.utils.tensorboard import SummaryWriter
 from BEATs import BEATs_Pre_Train_itere3
-from BEATs_def import (
+from util.BEATs_def import (
     get_patientid,
     get_wav_data,
     copy_wav,
@@ -67,6 +67,8 @@ absent_train_path = r"D:\Shilong\murmur\03_circor_states\trainset\absent"
 absent_test_path = r"D:\Shilong\murmur\03_circor_states\testset\absent"
 present_train_path = r"D:\Shilong\murmur\03_circor_states\trainset\present"
 present_test_path = r"D:\Shilong\murmur\03_circor_states\testset\present"
+present_train_path_8 = r"D:\Shilong\murmur\03_circor_states\trainset\time_stretch0.8"
+present_train_path_12 = r"D:\Shilong\murmur\03_circor_states\trainset\time_stretch1.2"
 
 folder = r"D:\Shilong\murmur\03_circor_statest"
 npy_path = r"D:\Shilong\murmur\03_circor_states\npyFile"
@@ -82,33 +84,58 @@ present_patient_id = get_patientid(present_csv_path)
 Diastolic_murmur_timing = get_patientid(Diastolic_murmur_timing_path)
 Systolic_murmur_timing = get_patientid(Systolic_murmur_timing_path)
 Murmur_locations = get_patientid(Murmur_locations_path)
-"""# ========================/ get wav data, length=10000 /========================== # 
-absent_train_features,absent_train_label = get_wav_data(absent_train_path,absent_train_csv_path)# absent
-absent_test_features,absent_test_label = get_wav_data(absent_test_path,absent_test_csv_path)# absent
-present_train_features,present_train_label= get_wav_data(present_train_path,present_train_csv_path)# present
-present_test_features,present_test_label=get_wav_data(present_test_path,present_test_csv_path)# present
+# ========================/ get wav data, length=10000 /========================== #
+# absent_train_features, absent_train_label = get_wav_data(
+#     absent_train_path, absent_train_csv_path
+# )  # absent
+# absent_test_features, absent_test_label = get_wav_data(
+#     absent_test_path, absent_test_csv_path
+# )  # absent
+# present_train_features, present_train_label = get_wav_data(
+#     present_train_path, present_train_csv_path
+# )  # present
+# present_test_features, present_test_label = get_wav_data(
+#     present_test_path, present_test_csv_path
+# )  # present
+# present_train_features_8, present_train_label_8 = get_wav_data(
+#     present_train_path_8
+# )  # present
+# present_train_features_12, present_train_label_12 = get_wav_data(
+#     present_train_path_12
+# )  # present
+# # # # ========================/ save as npy file /========================== #
+# np.save(npy_path_padded + r"\absent_train_features.npy", absent_train_features)
+# np.save(npy_path_padded + r"\absent_test_features.npy", absent_test_features)
+# np.save(npy_path_padded + r"\present_train_features.npy", present_train_features)
+# np.save(npy_path_padded + r"\present_test_features.npy", present_test_features)
 
-# # # # ========================/ save as npy file /========================== # 
-np.save(npy_path_padded+r'\absent_train_features.npy',absent_train_features)
-np.save(npy_path_padded+r'\absent_test_features.npy',absent_test_features)
-np.save(npy_path_padded+r'\present_train_features.npy',present_train_features)
-np.save(npy_path_padded+r'\present_test_features.npy',present_test_features)
+# np.save(npy_path_padded + r"\absent_train_label.npy", absent_train_label)
+# np.save(npy_path_padded + r"\absent_test_label.npy", absent_test_label)
+# np.save(npy_path_padded + r"\present_train_label.npy", present_train_label)
+# np.save(npy_path_padded + r"\present_test_label.npy", present_test_label)
 
-np.save(npy_path_padded+r'\absent_train_label.npy',absent_train_label)
-np.save(npy_path_padded+r'\absent_test_label.npy',absent_test_label)
-np.save(npy_path_padded+r'\present_train_label.npy',present_train_label)
-np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)"""
-
+# np.save(npy_path_padded + r"\present_train_features_8.npy", present_train_features_8)
+# np.save(npy_path_padded + r"\present_train_features_12.npy", present_train_features_12)
+# np.save(npy_path_padded + r"\present_train_label_8.npy", present_train_label_8)
+# np.save(npy_path_padded + r"\present_train_label_12.npy", present_train_label_12)
 # ========================/ load npy file /========================== #
-# absent_train_features = np.load(npy_path+r'\absent_train_features.npy',allow_pickle=True)
-# absent_test_features = np.load(npy_path+r'\absent_test_features.npy',allow_pickle=True)
-# present_train_features = np.load(npy_path+r'\present_train_features.npy',allow_pickle=True)
-# present_test_features = np.load(npy_path+r'\present_test_features.npy',allow_pickle=True)
+# absent_train_features = np.load(
+#     npy_path + r"\absent_train_features.npy", allow_pickle=True
+# )
+# absent_test_features = np.load(
+#     npy_path + r"\absent_test_features.npy", allow_pickle=True
+# )
+# present_train_features = np.load(
+#     npy_path + r"\present_train_features.npy", allow_pickle=True
+# )
+# present_test_features = np.load(
+#     npy_path + r"\present_test_features.npy", allow_pickle=True
 
-# absent_train_label = np.load(npy_path+r'\absent_train_label.npy',allow_pickle=True)
-# absent_test_label = np.load(npy_path+r'\absent_test_label.npy',allow_pickle=True)
-# present_train_label = np.load(npy_path+r'\present_train_label.npy',allow_pickle=True)
-# present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
+
+# absent_train_label = np.load(npy_path + r"\absent_train_label.npy", allow_pickle=True)
+# absent_test_label = np.load(npy_path + r"\absent_test_label.npy", allow_pickle=True)
+# present_train_label = np.load(npy_path + r"\present_train_label.npy", allow_pickle=True)
+# present_test_label = np.load(npy_path + r"\present_test_label.npy", allow_pickle=True)
 
 # ========================/ load npy padded file /========================== #
 absent_train_features = np.load(
@@ -136,14 +163,26 @@ present_train_label = np.load(
 present_test_label = np.load(
     npy_path_padded + r"\present_test_label.npy", allow_pickle=True
 )
-
+mask = True
+time_stretch = True
+if time_stretch is True:
+    present_train_features_8 = np.load(
+        npy_path_padded + r"\present_train_features_8.npy", allow_pickle=True
+    )
+    present_train_features_12 = np.load(
+        npy_path_padded + r"\present_train_features_12.npy", allow_pickle=True
+    )
+    present_train_label_8 = np.load(
+        npy_path_padded + r"\present_train_label_8.npy", allow_pickle=True
+    )
+    present_train_label_12 = np.load(
+        npy_path_padded + r"\present_train_label_12.npy", allow_pickle=True
+    )
 ap_ratio = 1
 absent_size = int(present_train_features.shape[0] * ap_ratio)
-
-
 List_train = random.sample(range(1, absent_train_features.shape[0]), absent_size)
-absent_train_features = absent_train_features[List_train]
-absent_train_label = absent_train_label[List_train]
+# absent_train_features = absent_train_features[List_train]
+# absent_train_label = absent_train_label[List_train]
 # List_test = random.sample(range(1, absent_test_features.shape[0]), test_absent_size)
 # absent_test_features = absent_test_features[List_test]
 # absent_test_label = absent_test_label[List_test]
@@ -154,24 +193,47 @@ absent_train_label = absent_train_label[List_train]
 train_features,train_label=get_mel_features(train_path,absent_patient_id,present_patient_id)
 test_features,test_label=get_mel_features(test_path,absent_patient_id,present_patient_id)
 """
-train_present_size = present_train_features.shape[0]
-train_absent_size = absent_train_features.shape[0]
-test_present_size = present_test_features.shape[0]
-test_absent_size = absent_test_features.shape[0]
+
 
 # ========================/ label encoder /========================== #
-train_label = np.hstack((absent_train_label, present_train_label))
+train_label = np.hstack(
+    (
+        absent_train_label,
+        present_train_label,
+        present_train_label_8,
+        present_train_label_12,
+    )
+)
+
+train_features = np.vstack(
+    (
+        absent_train_features,
+        present_train_features,
+        present_train_features_8,
+        present_train_features_12,
+    )
+)
 test_label = np.hstack((absent_test_label, present_test_label))
-train_features = np.vstack((absent_train_features, present_train_features))
-test_features = np.vstack((absent_test_features, present_test_features))
+test_features = np.vstack(
+    (
+        absent_test_features,
+        present_test_features,
+    )
+)
+
 
 # ========================/ train test /========================== #
 train_features = train_features.astype(float)
 train_label = train_label.astype(int)
 test_features = test_features.astype(float)
 test_label = test_label.astype(int)
-trainset_size = train_features.shape[0]
-testset_size = test_features.shape[0]
+
+train_present_size = np.sum(train_label == 1)
+train_absent_size = np.sum(train_label == 0)
+test_present_size = np.sum(test_label == 1)
+test_absent_size = np.sum(test_label == 0)
+trainset_size = train_label.shape[0]
+testset_size = test_label.shape[0]
 # ========================/ MyDataset /========================== #
 train_set = MyDataset(wavlabel=train_label, wavdata=train_features)
 test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
@@ -180,6 +242,8 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 batch_size = 128
 learning_rate = 0.0005
 num_epochs = 100
+grad_flag = True
+weight_decay = 0.01
 loss_type = "CE"
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
@@ -189,14 +253,17 @@ padding_mask = torch.Tensor(padding)
 
 # ========================/ dataloader /========================== #
 # 如果label为1，那么对应的该类别被取出来的概率是另外一个类别的2倍
-# weights = [9 if label == 1 else 1 for data, label in train_set]
-# Data_sampler = WeightedRandomSampler(weights, num_samples=9, replacement=True)
+weights = [3 if label == 1 else 1 for data, label in train_set]
+Data_sampler = WeightedRandomSampler(
+    weights, num_samples=len(weights), replacement=True
+)
 
 train_loader = DataLoader(
     train_set,
+    sampler=Data_sampler,
     batch_size=batch_size,
     drop_last=True,
-    shuffle=True,
+    # shuffle=True,
 )
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=True)
 print("Dataloader is ok")  # 最后再打印一下新的模型
@@ -204,20 +271,28 @@ print("Dataloader is ok")  # 最后再打印一下新的模型
 # ========================/ load model /========================== #
 MyModel = BEATs_Pre_Train_itere3()
 
-# ========================/ model add fc-layer /========================== #
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = MyModel.to(DEVICE)  # 放到设备中
-
+# ========================/ model Loss fn /========================== #
 if loss_type == "BCE":
     loss_fn = nn.BCEWithLogitsLoss()
 elif loss_type == "CE":
     loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.AdamW(
-    [{"params": MyModel.last_layer.parameters()}],
-    lr=learning_rate,
-    betas=(0.9, 0.999),
-)  # 指定 新加的fc层的学习率
 
+# ========================/ setup optimizer /========================== #
+if grad_flag == True:
+    for param in MyModel.BEATs.parameters():
+        param.requires_grad = False
+    optimizer = torch.optim.AdamW(
+        filter(lambda p: p.requires_grad, MyModel.parameters()),
+        lr=learning_rate,
+        betas=(0.9, 0.98),
+        weight_decay=weight_decay,
+    )
+else:
+    optimizer = torch.optim.AdamW(
+        [{"params": MyModel.parameters()}],
+        lr=learning_rate,
+        betas=(0.9, 0.999),
+    )
 # ========================/ setup warmup lr /========================== #
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
@@ -235,7 +310,6 @@ scheduler = None
 # 定义训练函数
 def train_model(
     model,
-    device,
     train_loader,
     test_loader,
     padding,
@@ -244,21 +318,24 @@ def train_model(
     max_test_acc=[],
     max_train_acc=[],
 ):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = MyModel.to(device)  # 放到设备中
     # train model
     train_loss = 0
     correct_t = 0
     # for amp
     scaler = GradScaler()
     model.train()
+    optimizer.zero_grad()
     for data_t, label_t in train_loader:
         data_t, label_t = data_t.to(device), label_t.to(device)
         padding = padding.to(device)
 
         # with torch.cuda.amp.autocast():
-        predict = model(data_t, padding)
         with autocast():
+            predict = model(data_t, padding)
             loss = loss_fn(predict, label_t.long())
-        optimizer.zero_grad()
+
         scaler.scale(loss).backward()
         scaler.step(optimizer)
         scaler.update()
@@ -318,16 +395,16 @@ def train_model(
     tb_writer.add_scalar("learning_rate", lr_now, epochs)
 
     # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
-    logging.info(f"epoch: " + str(epochs + 1) + "/" + str(num_epochs))
-    logging.info(f"learning_rate: " + str("{:.4f}".format(lr_now)))
+    logging.info("epoch: " + str(epochs + 1) + "/" + str(num_epochs))
+    logging.info("learning_rate: " + str("{:.4f}".format(lr_now)))
     logging.info(
-        f"train_acc: "
+        "train_acc: "
         + str("{:.3%}".format(train_acc))
         + ", train_loss: "
         + str("{:.4f}".format(train_loss))
     )
     logging.info(
-        f"test_acc: "
+        "test_acc: "
         + str("{:.3%}".format(test_acc))
         + ", test_loss: "
         + str("{:.4f}".format(test_loss))
@@ -335,7 +412,7 @@ def train_model(
     logging.info(f"max_train_acc: " + str("{:.3%}".format(max_train_acc)))
     logging.info(f"max_test_acc: " + str("{:.3%}".format(max_test_acc)))
     logging.info(
-        f"max_lr: "
+        "max_lr: "
         + str("{:.4f}".format(max(lr)))
         + ", min_lr: "
         + str("{:.4f}".format(min(lr)))
@@ -355,13 +432,18 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " - 1 fc layer >>> ")
+logging.info("<<< " + model_name + " - 2 fc layer >>> ")
+if mask is True:
+    logging.info("Add FrequencyMasking and TimeMasking")
+if time_stretch is True:
+    logging.info("Add time_stretch 0.8 and time_stretch 1.2")
 logging.info("# trainset_size = " + str(trainset_size))
 logging.info("# testset_size = " + str(testset_size))
 logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
 logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
 logging.info("# batch_size = " + str(batch_size))
 logging.info("# learning_rate = " + str(learning_rate))
+logging.info("# weight_decay = " + str(weight_decay))
 logging.info("# num_epochs = " + str(num_epochs))
 logging.info("# padding_size = " + str(padding_size))
 logging.info("# loss_fn = " + loss_type)
@@ -378,7 +460,6 @@ tb_writer = SummaryWriter(
 for epoch in range(num_epochs):
     train_model(
         model=MyModel,
-        device=DEVICE,
         train_loader=train_loader,
         test_loader=test_loader,
         padding=padding_mask,

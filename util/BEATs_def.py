@@ -42,7 +42,7 @@ def get_patientid(csv_path):
 
 
 # 读取数据并打标签
-def get_wav_data(dir_path, csv_path):
+def get_wav_data(dir_path):
     wav = []
     label = []
     # if not os.path.exists(csv_path):
