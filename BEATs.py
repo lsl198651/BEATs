@@ -158,8 +158,8 @@ class BEATs(nn.Module):
                 frame_length=25,
                 frame_shift=10,
             )
-            freqm = 30  # 横向
-            timem = 1  # 纵向
+            freqm = 0  # 横向
+            timem = 0  # 纵向
             # SpecAug, not do for eval set
             freqm = TT.FrequencyMasking(freqm)
             timem = TT.TimeMasking(timem)
@@ -267,7 +267,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # with torch.enable_grad():
         y = self.last_Dropout(x)
         # FC 修改层数记得修改logging
-        y = self.fc_layer(y)
+        # y = self.fc_layer(y)
         # add fc layer
         output = self.last_layer(y)
         # mean

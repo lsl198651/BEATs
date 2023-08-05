@@ -24,32 +24,6 @@ Parameter Group 0
     weight_decay: 0.01
 )
 [2023-0803 1538 - INFO] -------------------------------------
-[2023-0803 1538 - INFO] <<< BEATs_iter3_plus_AS2M - 1 fc layer >>> 
-[2023-0803 1538 - INFO] Add FrequencyMasking and TimeMasking
-[2023-0803 1538 - INFO] # trainset_size = 17010
-[2023-0803 1538 - INFO] # testset_size = 22970
-[2023-0803 1538 - INFO] # train_a/p = 8505/8505
-[2023-0803 1538 - INFO] # test_a/p = 20920/2050
-[2023-0803 1538 - INFO] # batch_size = 128
-[2023-0803 1538 - INFO] # learning_rate = 0.0005
-[2023-0803 1538 - INFO] # num_epochs = 100
-[2023-0803 1538 - INFO] # padding_size = 3500
-[2023-0803 1538 - INFO] # loss_fn = CE
-[2023-0803 1538 - INFO] # scheduler = None
-[2023-0803 1538 - INFO] # optimizer = AdamW (
-Parameter Group 0
-    amsgrad: False
-    betas: (0.9, 0.999)
-    capturable: False
-    differentiable: False
-    eps: 1e-08
-    foreach: None
-    fused: None
-    lr: 0.0005
-    maximize: False
-    weight_decay: 0.01
-)
-[2023-0803 1538 - INFO] -------------------------------------
 [2023-0803 1540 - INFO] epoch: 1/100
 [2023-0803 1540 - INFO] learning_rate: 0.0005
 [2023-0803 1540 - INFO] train_acc: 69.200%, train_loss: 0.0046

@@ -18,6 +18,7 @@ import pandas as pd
 
 # import wfdb
 from pydub import AudioSegment
+from util.BEATs_def import get_wav_data
 
 
 # ========================/ functions define /========================== #
@@ -361,3 +362,94 @@ copy_states_data(folder, present_test_id, "\\Present\\", "\\test")
 # pd.DataFrame(present_train_id).to_csv(present_train_id_path, index=False, header=False)
 # pd.DataFrame(absent_test_id).to_csv(absent_test_id_path, index=False, header=False)
 # pd.DataFrame(present_test_id).to_csv(present_test_id_path, index=False, header=False)
+
+
+# ========================/ parameteres define /========================== #
+murmur_positoin = ["_AV", "_MV", "_PV", "_TV"]
+murmur_ap = ["Absent\\", "Present\\"]
+period = ["Systolic", "Diastolic"]
+
+# ========================/ file path /========================== #
+# get absent / present patient_id
+id_data_path = r"D:\Shilong\murmur\03_circor_states\id_data.csv"
+absent_csv_path = r"D:\Shilong\murmur\03_circor_states\absent_id.csv"
+present_csv_path = r"D:\Shilong\murmur\03_circor_states\present_id.csv"
+Diastolic_murmur_timing_path = (
+    r"D:\Shilong\murmur\03_circor_states\Diastolic_murmur_timing.csv"
+)
+Systolic_murmur_timing_path = (
+    r"D:\Shilong\murmur\03_circor_states\Systolic_murmur_timing.csv"
+)
+Murmur_locations_path = r"D:\Shilong\murmur\03_circor_states\Murmur_locations.csv"
+
+
+filepath = r"D:\Shilong\murmur\03_circor_states"
+absent_train_path = r"D:\Shilong\murmur\03_circor_states\trainset\absent"
+absent_test_path = r"D:\Shilong\murmur\03_circor_states\testset\absent"
+present_train_path = r"D:\Shilong\murmur\03_circor_states\trainset\present"
+present_test_path = r"D:\Shilong\murmur\03_circor_states\testset\present"
+present_train_path_8 = r"D:\Shilong\murmur\03_circor_states\trainset\time_stretch0.8"
+present_train_path_12 = r"D:\Shilong\murmur\03_circor_states\trainset\time_stretch1.2"
+
+folder = r"D:\Shilong\murmur\03_circor_statest"
+npy_path = r"D:\Shilong\murmur\03_circor_states\npyFile"
+
+path = r"D:\Shilong\murmur\03_circor_states\csv"
+train_path = r"D:\Shilong\murmur\03_circor_states\train_csv"
+test_path = r"D:\Shilong\murmur\03_circor_states\test_csv"
+# ========================/ get lists /========================== #
+id_data = get_patientid(id_data_path)
+absent_patient_id = get_patientid(absent_csv_path)
+present_patient_id = get_patientid(present_csv_path)
+Diastolic_murmur_timing = get_patientid(Diastolic_murmur_timing_path)
+Systolic_murmur_timing = get_patientid(Systolic_murmur_timing_path)
+Murmur_locations = get_patientid(Murmur_locations_path)
+
+absent_train_csv_path = r"D:\Shilong\murmur\03_circor_states\train_csv"
+absent_test_csv_path = r"D:\Shilong\murmur\03_circor_states\test_csv"
+present_train_csv_path = r"D:\Shilong\murmur\03_circor_states\train_csv"
+present_test_csv_path = r"D:\Shilong\murmur\03_circor_states\test_csv"
+
+filepath = r"D:\Shilong\murmur\03_circor_states"
+absent_train_path = r"D:\Shilong\murmur\03_circor_states\trainset\absent"
+absent_test_path = r"D:\Shilong\murmur\03_circor_states\testset\absent"
+present_train_path = r"D:\Shilong\murmur\03_circor_states\trainset\present"
+present_test_path = r"D:\Shilong\murmur\03_circor_states\testset\present"
+present_train_path_8 = r"D:\Shilong\murmur\03_circor_states\trainset\time_stretch0.8"
+present_train_path_12 = r"D:\Shilong\murmur\03_circor_states\trainset\time_stretch1.2"
+npy_path_padded = r"D:\Shilong\murmur\03_circor_states\npyFile_padded"
+
+
+absent_train_features, absent_train_label = get_wav_data(
+    absent_train_path, absent_train_csv_path
+)  # absent
+absent_test_features, absent_test_label = get_wav_data(
+    absent_test_path, absent_test_csv_path
+)  # absent
+present_train_features, present_train_label = get_wav_data(
+    present_train_path, present_train_csv_path
+)  # present
+present_test_features, present_test_label = get_wav_data(
+    present_test_path, present_test_csv_path
+)  # present
+present_train_features_8, present_train_label_8 = get_wav_data(
+    present_train_path_8
+)  # present
+present_train_features_12, present_train_label_12 = get_wav_data(
+    present_train_path_12
+)  # present
+# # # ========================/ save as npy file /========================== #
+np.save(npy_path_padded + r"\absent_train_features.npy", absent_train_features)
+np.save(npy_path_padded + r"\absent_test_features.npy", absent_test_features)
+np.save(npy_path_padded + r"\present_train_features.npy", present_train_features)
+np.save(npy_path_padded + r"\present_test_features.npy", present_test_features)
+
+np.save(npy_path_padded + r"\absent_train_label.npy", absent_train_label)
+np.save(npy_path_padded + r"\absent_test_label.npy", absent_test_label)
+np.save(npy_path_padded + r"\present_train_label.npy", present_train_label)
+np.save(npy_path_padded + r"\present_test_label.npy", present_test_label)
+
+np.save(npy_path_padded + r"\present_train_features_8.npy", present_train_features_8)
+np.save(npy_path_padded + r"\present_train_features_12.npy", present_train_features_12)
+np.save(npy_path_padded + r"\present_train_label_8.npy", present_train_label_8)
+np.save(npy_path_padded + r"\present_train_label_12.npy", present_train_label_12)
