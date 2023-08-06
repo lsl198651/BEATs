@@ -42,6 +42,16 @@ from util.BEATs_def import (
 # ========================/ load npy padded file /========================== #
 mask = True
 time_stretch = True
+Data_Enhancement = False
+testset_bal = True
+batch_size = 128
+learning_rate = 0.001
+num_epochs = 100
+grad_flag = True
+# weight_decay = 0.01
+loss_type = "CE"
+scheduler = None
+
 
 npy_path_padded = r"D:\Shilong\murmur\03_circor_states\npyFile_padded"
 # ========================/ load npy padded file /========================== #
@@ -93,8 +103,7 @@ train_features,train_label=get_mel_features(train_path,absent_patient_id,present
 test_features,test_label=get_mel_features(test_path,absent_patient_id,present_patient_id)
 """
 ap_ratio = 1
-Data_Enhancement = False
-testset_bal = False
+
 if Data_Enhancement is True:
     absent_size = int(
         (
@@ -174,13 +183,7 @@ trainset_size = train_label.shape[0]
 testset_size = test_label.shape[0]
 
 # ========================/ HyperParameters /========================== #
-batch_size = 128
-learning_rate = 0.001
-num_epochs = 100
-grad_flag = True
-# weight_decay = 0.01
-loss_type = "CE"
-scheduler = None
+
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -219,21 +222,28 @@ elif loss_type == "CE":
     loss_fn = nn.CrossEntropyLoss()
 
 # ========================/ setup optimizer /========================== #
-for param in MyModel.BEATs.parameters():
-    param.requires_grad = False
+if grad_flag is True:
+    for param in MyModel.BEATs.parameters():
+        param.requires_grad = False
 
-optimizer = torch.optim.AdamW(
-    filter(lambda p: p.requires_grad, MyModel.parameters()),
-    lr=learning_rate,
-    betas=(0.9, 0.999),
-    # weight_decay=weight_decay,
-)
-
+    optimizer = torch.optim.AdamW(
+        filter(lambda p: p.requires_grad, MyModel.parameters()),
+        lr=learning_rate,
+        betas=(0.9, 0.999),
+        # weight_decay=weight_decay,
+    )
+else:
+    optimizer = torch.optim.AdamW(
+        MyModel.parameters(),
+        lr=learning_rate,
+        betas=(0.9, 0.999),
+        # weight_decay=weight_decay,
+    )
 # ========================/ setup warmup lr /========================== #
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
 
-if scheduler is None:
+if scheduler is not None:
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
     # scheduler = optimization.get_cosine_schedule_with_warmup(
     #     optimizer,
@@ -267,10 +277,9 @@ def train_model(
         data_t, label_t = data_t.to(device), label_t.to(device)
         padding = padding.to(device)
 
-        # with torch.cuda.amp.autocast():
-        with autocast():
-            predict = model(data_t, padding)
-            loss = loss_fn(predict, label_t.long())
+        # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
+        predict = model(data_t, padding)
+        loss = loss_fn(predict, label_t.long())
 
         scaler.scale(loss).backward()
         scaler.step(optimizer)
@@ -368,7 +377,7 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " - 2 fc layer >>> ")
+logging.info("<<< " + model_name + " - 1 fc layer >>> ")
 if mask is True:
     logging.info("Add FrequencyMasking and TimeMasking")
 if time_stretch is True:
