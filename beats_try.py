@@ -22,7 +22,8 @@ from datetime import datetime
 from torch import optim
 from transformers import optimization
 from torch.utils.data import DataLoader
-from sklearn.metrics import recall_score
+
+# from sklearn.metrics import recall_scorefrom, accuracy_score
 from sklearn.model_selection import StratifiedShuffleSplit
 from torch.utils.tensorboard import SummaryWriter
 from BEATs import BEATs_Pre_Train_itere3
@@ -44,7 +45,7 @@ batch_size = 128
 learning_rate = 0.001
 num_epochs = 100
 # weight_decay = 0.01
-loss_type = "CE"  # "CE" or "BCE"
+loss_type = "BCE"  # "CE" or "BCE"
 scheduler_flag = "cos"  # 'cos' or 'cos_warmup'
 mask = False  # True: mask the data
 time_stretch = True  # True: time stretch the data
@@ -215,9 +216,10 @@ MyModel = BEATs_Pre_Train_itere3()
 
 # ========================/ model Loss fn /========================== #
 if loss_type == "BCE":
-    loss_fn = nn.BCEWithLogitsLoss()
+    loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
+
 elif loss_type == "CE":
-    loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
 
 # ========================/ setup optimizer /========================== #
 if grad_flag is True:
@@ -278,7 +280,11 @@ def train_model(
 
         # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
         predict = model(data_t, padding)
-        loss = loss_fn(predict, label_t.long())
+        if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
+            pred = torch.max(predict, dim=1)[0]
+            loss = loss_fn(predict[:, 1], label_t.float())
+        else:
+            loss = loss_fn(predict, label_t.long())
 
         scaler.scale(loss).backward()
         scaler.step(optimizer)
@@ -290,6 +296,8 @@ def train_model(
             1
         ]  # get the index of the max log-probability
         correct_t += pred_t.eq(label_t.view_as(pred_t)).sum().item()
+    if scheduler is not None:
+        scheduler.step()
 
     # evaluate model
     model.eval()
@@ -307,15 +315,17 @@ def train_model(
             # optimizer.zero_grad()
             predict_v = model(data_v, padding)
             # recall = recall_score(y_hat, y)
-            test_loss += loss_fn(predict_v, label_v.long()).item()  # sum up batch loss
+            if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
+                # pred_v = torch.max(predict_v, dim=1)[0]
+                loss = loss_fn(predict_v[:, 1], label_t.float())
+            else:
+                loss = loss_fn(predict_v, label_t.long())
             pred_v = predict_v.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
             correct_v += pred_v.eq(label_v.view_as(pred_v)).sum().item()
             pred.extend(pred_v.cpu().tolist())
             label.extend(label_v.cpu().tolist())
-    if scheduler is not None:
-        scheduler.step()
 
     for group in optimizer.param_groups:
         lr_now = group["lr"]
@@ -326,6 +336,7 @@ def train_model(
     train_loss /= len(train_loader.dataset.label)
     train_acc = correct_t / len(train_loader.dataset.label)
     test_acc = correct_v / len(test_loader.dataset.label)
+    # acc = accuracy_score(pred , target)
 
     max_train_acc.append(train_acc)
     max_test_acc.append(test_acc)
@@ -376,26 +387,22 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " - 1 fc layer >>> ")
+logging.info("<<< " + model_name + " - 2 fc layer >>> ")
 
-logging.info("# batch_size = " + str(batch_size))
-logging.info("# num_epochs = " + str(num_epochs))
-logging.info("# learning_rate = " + str(learning_rate))
+logging.info("# Batch_size = " + str(batch_size))
+logging.info("# Num_epochs = " + str(num_epochs))
+logging.info("# Learning_rate = " + str(learning_rate))
 logging.info("# lr_scheduler = " + str(scheduler_flag))
-# logging.info("# weight_decay = " + str(weight_decay))
-logging.info("# padding_size = " + str(padding_size))
-logging.info("# loss_fn = " + loss_type)
+logging.info("# Padding_size = " + str(padding_size))
+logging.info("# Loss_fn = " + loss_type)
 logging.info("# Data Augmentation = " + str(Data_Augmentation))
-logging.info("# testset_balance = " + str(testset_balance))
-if mask is True:
-    logging.info("Add FrequencyMasking and TimeMasking")
-if Data_Augmentation is True:
-    logging.info("Add time_stretch 0.8 and 1.2")
-logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
-logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
-logging.info("# trainset_size = " + str(trainset_size))
-logging.info("# testset_size = " + str(testset_size))
-logging.info("# optimizer = " + str(optimizer))
+logging.info("# Testset_balance = " + str(testset_balance))
+logging.info("# Masking" + str(mask))
+logging.info("# Train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
+logging.info("# Test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
+logging.info("# Trainset_size = " + str(trainset_size))
+logging.info("# Testset_size = " + str(testset_size))
+logging.info("# Optimizer = " + str(optimizer))
 logging.info("# Notes : ")
 logging.info("-------------------------------------")
 confusion_matrix_path = r"./confusion_matrix/" + str(
