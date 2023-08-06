@@ -40,21 +40,21 @@ from util.BEATs_def import (
 )
 
 # ========================/ load npy padded file /========================== #
-mask = True
-time_stretch = True
-Data_Enhancement = False
-testset_bal = True
 batch_size = 128
 learning_rate = 0.001
 num_epochs = 100
-grad_flag = True
 # weight_decay = 0.01
-loss_type = "CE"
-scheduler = None
+loss_type = "CE"  # "CE" or "BCE"
+scheduler_flag = "cos"  # 'cos' or 'cos_warmup'
+mask = False  # True: mask the data
+time_stretch = True  # True: time stretch the data
+Data_Augmentation = True  # True: data augmentation
+testset_balance = True  # True: balance the testset
+grad_flag = True  # True: use grad_no_required
 
 
-npy_path_padded = r"D:\Shilong\murmur\03_circor_states\npyFile_padded"
 # ========================/ load npy padded file /========================== #
+npy_path_padded = r"D:\Shilong\murmur\03_circor_states\npyFile_padded"
 absent_train_features = np.load(
     npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
 )
@@ -104,7 +104,7 @@ test_features,test_label=get_mel_features(test_path,absent_patient_id,present_pa
 """
 ap_ratio = 1
 
-if Data_Enhancement is True:
+if Data_Augmentation is True:
     absent_size = int(
         (
             present_train_features.shape[0]
@@ -151,7 +151,7 @@ else:
             present_train_features,
         )
     )
-if testset_bal is True:
+if testset_balance is True:
     absent_size = int(present_test_features.shape[0] * ap_ratio)
     List_test = random.sample(range(1, absent_test_features.shape[0]), absent_size)
     absent_test_features = absent_test_features[List_test]
@@ -241,13 +241,14 @@ else:
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
 
-if scheduler is not None:
+if scheduler_flag == "cos":
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
-    # scheduler = optimization.get_cosine_schedule_with_warmup(
-    #     optimizer,
-    #     num_warmup_steps=warm_up_ratio * total_steps,
-    #     num_training_steps=total_steps,
-    # )
+elif scheduler_flag == "cos_warmup":
+    scheduler = optimization.get_cosine_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=warm_up_ratio * total_steps,
+        num_training_steps=total_steps,
+    )
 
 
 # ========================/ train model /========================== #
@@ -375,24 +376,27 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " - 2 fc layer >>> ")
-if mask is True:
-    logging.info("Add FrequencyMasking and TimeMasking")
-if time_stretch is True:
-    logging.info("Add time_stretch 0.8 and time_stretch 1.2")
-logging.info("# trainset_size = " + str(trainset_size))
-logging.info("# testset_size = " + str(testset_size))
-logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
-logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
+logging.info("<<< " + model_name + " - 1 fc layer >>> ")
+
 logging.info("# batch_size = " + str(batch_size))
-logging.info("# learning_rate = " + str(learning_rate))
-# logging.info("# weight_decay = " + str(weight_decay))
 logging.info("# num_epochs = " + str(num_epochs))
+logging.info("# learning_rate = " + str(learning_rate))
+logging.info("# lr_scheduler = " + str(scheduler_flag))
+# logging.info("# weight_decay = " + str(weight_decay))
 logging.info("# padding_size = " + str(padding_size))
 logging.info("# loss_fn = " + loss_type)
-logging.info("# scheduler = " + str(scheduler))
+logging.info("# Data Augmentation = " + str(Data_Augmentation))
+logging.info("# testset_balance = " + str(testset_balance))
+if mask is True:
+    logging.info("Add FrequencyMasking and TimeMasking")
+if Data_Augmentation is True:
+    logging.info("Add time_stretch 0.8 and 1.2")
+logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
+logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
+logging.info("# trainset_size = " + str(trainset_size))
+logging.info("# testset_size = " + str(testset_size))
 logging.info("# optimizer = " + str(optimizer))
-logging.info("# comments : ")
+logging.info("# Notes : ")
 logging.info("-------------------------------------")
 confusion_matrix_path = r"./confusion_matrix/" + str(
     datetime.now().strftime("%Y-%m%d %H%M")
