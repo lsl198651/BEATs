@@ -94,7 +94,7 @@ test_features,test_label=get_mel_features(test_path,absent_patient_id,present_pa
 """
 ap_ratio = 1
 Data_Enhancement = False
-testset_bal = True
+testset_bal = False
 if Data_Enhancement is True:
     absent_size = int(
         (
@@ -178,8 +178,9 @@ batch_size = 128
 learning_rate = 0.001
 num_epochs = 100
 grad_flag = True
-weight_decay = 0.01
+# weight_decay = 0.01
 loss_type = "CE"
+scheduler = None
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -224,21 +225,21 @@ for param in MyModel.BEATs.parameters():
 optimizer = torch.optim.AdamW(
     filter(lambda p: p.requires_grad, MyModel.parameters()),
     lr=learning_rate,
-    betas=(0.9, 0.98),
-    weight_decay=weight_decay,
+    betas=(0.9, 0.999),
+    # weight_decay=weight_decay,
 )
 
 # ========================/ setup warmup lr /========================== #
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * num_epochs
 
-scheduler = None
-# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
-# scheduler = optimization.get_cosine_schedule_with_warmup(
-#     optimizer,
-#     num_warmup_steps=warm_up_ratio * total_steps,
-#     num_training_steps=total_steps,
-# )
+if scheduler is None:
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
+    # scheduler = optimization.get_cosine_schedule_with_warmup(
+    #     optimizer,
+    #     num_warmup_steps=warm_up_ratio * total_steps,
+    #     num_training_steps=total_steps,
+    # )
 
 
 # ========================/ train model /========================== #
@@ -367,7 +368,7 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " - 1 fc layer >>> ")
+logging.info("<<< " + model_name + " - 2 fc layer >>> ")
 if mask is True:
     logging.info("Add FrequencyMasking and TimeMasking")
 if time_stretch is True:
@@ -378,7 +379,7 @@ logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_
 logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
 logging.info("# batch_size = " + str(batch_size))
 logging.info("# learning_rate = " + str(learning_rate))
-logging.info("# weight_decay = " + str(weight_decay))
+# logging.info("# weight_decay = " + str(weight_decay))
 logging.info("# num_epochs = " + str(num_epochs))
 logging.info("# padding_size = " + str(padding_size))
 logging.info("# loss_fn = " + loss_type)
