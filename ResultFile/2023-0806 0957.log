@@ -1,0 +1,60 @@
+[2023-0806 0957 - INFO] <<< BEATs_iter3_plus_AS2M - 1 fc layer >>> 
+[2023-0806 0957 - INFO] Add FrequencyMasking and TimeMasking
+[2023-0806 0957 - INFO] Add time_stretch 0.8 and time_stretch 1.2
+[2023-0806 0957 - INFO] # trainset_size = 17010
+[2023-0806 0957 - INFO] # testset_size = 4100
+[2023-0806 0957 - INFO] # train_a/p = 8505/8505
+[2023-0806 0957 - INFO] # test_a/p = 2050/2050
+[2023-0806 0957 - INFO] # batch_size = 128
+[2023-0806 0957 - INFO] # learning_rate = 0.001
+[2023-0806 0957 - INFO] # num_epochs = 100
+[2023-0806 0957 - INFO] # padding_size = 3500
+[2023-0806 0957 - INFO] # loss_fn = CE
+[2023-0806 0957 - INFO] # scheduler = None
+[2023-0806 0957 - INFO] # optimizer = AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.001
+    maximize: False
+    weight_decay: 0.01
+)
+[2023-0806 0957 - INFO] # comments : 
+[2023-0806 0957 - INFO] -------------------------------------
+[2023-0806 0957 - INFO] epoch: 1/100
+[2023-0806 0957 - INFO] learning_rate: 0.0010
+[2023-0806 0957 - INFO] train_acc: 71.805%, train_loss: 0.0043
+[2023-0806 0957 - INFO] test_acc: 78.488%, test_loss: 0.0035
+[2023-0806 0957 - INFO] max_train_acc: 71.805%
+[2023-0806 0957 - INFO] max_test_acc: 78.488%
+[2023-0806 0957 - INFO] max_lr: 0.0010, min_lr: 0.0010
+[2023-0806 0957 - INFO] ======================================
+[2023-0806 0958 - INFO] epoch: 2/100
+[2023-0806 0958 - INFO] learning_rate: 0.0010
+[2023-0806 0958 - INFO] train_acc: 74.721%, train_loss: 0.0039
+[2023-0806 0958 - INFO] test_acc: 78.707%, test_loss: 0.0034
+[2023-0806 0958 - INFO] max_train_acc: 74.721%
+[2023-0806 0958 - INFO] max_test_acc: 78.707%
+[2023-0806 0958 - INFO] max_lr: 0.0010, min_lr: 0.0010
+[2023-0806 0958 - INFO] ======================================
+[2023-0806 0958 - INFO] epoch: 3/100
+[2023-0806 0958 - INFO] learning_rate: 0.0010
+[2023-0806 0958 - INFO] train_acc: 75.138%, train_loss: 0.0039
+[2023-0806 0958 - INFO] test_acc: 78.829%, test_loss: 0.0033
+[2023-0806 0958 - INFO] max_train_acc: 75.138%
+[2023-0806 0958 - INFO] max_test_acc: 78.829%
+[2023-0806 0958 - INFO] max_lr: 0.0010, min_lr: 0.0010
+[2023-0806 0958 - INFO] ======================================
+[2023-0806 0959 - INFO] epoch: 4/100
+[2023-0806 0959 - INFO] learning_rate: 0.0010
+[2023-0806 0959 - INFO] train_acc: 75.373%, train_loss: 0.0039
+[2023-0806 0959 - INFO] test_acc: 79.585%, test_loss: 0.0033
+[2023-0806 0959 - INFO] max_train_acc: 75.373%
+[2023-0806 0959 - INFO] max_test_acc: 79.585%
+[2023-0806 0959 - INFO] max_lr: 0.0010, min_lr: 0.0010
+[2023-0806 0959 - INFO] ======================================

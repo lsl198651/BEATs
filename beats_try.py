@@ -159,8 +159,6 @@ if testset_bal is True:
 else:
     pass
 
-# ========================/ label encoder /========================== #
-
 test_label = np.hstack((absent_test_label, present_test_label))
 test_features = np.vstack(
     (
@@ -377,7 +375,7 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " - 1 fc layer >>> ")
+logging.info("<<< " + model_name + " - 2 fc layer >>> ")
 if mask is True:
     logging.info("Add FrequencyMasking and TimeMasking")
 if time_stretch is True:
