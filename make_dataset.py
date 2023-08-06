@@ -333,8 +333,26 @@ for mur in murmur:
         pos_dir_make(dir_path, patient_id, positoin)
 
 # 切数据，命名格式为：id+pos+state+num
-# period_div(folder_path,murmur,absent_patient_id,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing)
-# period_div(folder_path,murmur,present_patient_id,positoin,id_data,Murmur_locations,Systolic_murmur_timing,Diastolic_murmur_timing)
+period_div(
+    folder_path,
+    murmur,
+    absent_patient_id,
+    positoin,
+    id_data,
+    Murmur_locations,
+    Systolic_murmur_timing,
+    Diastolic_murmur_timing,
+)
+period_div(
+    folder_path,
+    murmur,
+    present_patient_id,
+    positoin,
+    id_data,
+    Murmur_locations,
+    Systolic_murmur_timing,
+    Diastolic_murmur_timing,
+)
 
 absent_train_id_path = r"D:\Shilong\murmur\03_circor_states\absent_train_id.csv"
 absent_test_id_path = r"D:\Shilong\murmur\03_circor_states\absent_test_id.csv"
