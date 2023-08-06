@@ -163,15 +163,13 @@ class BEATs(nn.Module):
                 freqm_value = 30  # 横向
                 timem_value = 1  # 纵向
                 # SpecAug, not do for eval set
-                freqm = TT.FrequencyMasking(freqm_value)
-                timem = TT.TimeMasking(timem_value)
+                freqm = TT.FrequencyMasking(freq_mask_param=freqm_value)
+                timem = TT.TimeMasking(time_mask_param=timem_value)
                 fbank = torch.transpose(fbank, 0, 1)
                 # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
                 fbank = fbank.unsqueeze(0)
-                if freqm != 0:
-                    fbank = freqm(fbank)
-                if timem != 0:
-                    fbank = timem(fbank)
+                fbank = freqm(fbank)
+                fbank = timem(fbank)
                 # squeeze it back, it is just a trick to satisfy new torchaudio version
                 fbank = fbank.squeeze(0)
                 fbank = torch.transpose(fbank, 0, 1)
