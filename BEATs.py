@@ -160,11 +160,11 @@ class BEATs(nn.Module):
                 frame_shift=10,
             )
             if mask is True:
-                freqm = 0  # 横向
-                timem = 0  # 纵向
+                freqm_value = 30  # 横向
+                timem_value = 1  # 纵向
                 # SpecAug, not do for eval set
-                freqm = TT.FrequencyMasking(freqm)
-                timem = TT.TimeMasking(timem)
+                freqm = TT.FrequencyMasking(freqm_value)
+                timem = TT.TimeMasking(timem_value)
                 fbank = torch.transpose(fbank, 0, 1)
                 # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
                 fbank = fbank.unsqueeze(0)
@@ -190,7 +190,9 @@ class BEATs(nn.Module):
     ):
         # wav提取fbank系数
         fbank = self.preprocess(
-            source, fbank_mean=fbank_mean, fbank_std=fbank_std, mask=False
+            source,
+            fbank_mean=fbank_mean,
+            fbank_std=fbank_std,
         )
         # 如果有padding-mask的话进行forward-padding-mask
         # 返回一个值？？？
