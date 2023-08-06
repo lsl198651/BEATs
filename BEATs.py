@@ -147,6 +147,7 @@ class BEATs(nn.Module):
         source: torch.Tensor,
         fbank_mean: float = 15.41663,
         fbank_std: float = 6.55582,
+        mask: bool = False,
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
@@ -158,21 +159,22 @@ class BEATs(nn.Module):
                 frame_length=25,
                 frame_shift=10,
             )
-            freqm = 0  # 横向
-            timem = 0  # 纵向
-            # SpecAug, not do for eval set
-            freqm = TT.FrequencyMasking(freqm)
-            timem = TT.TimeMasking(timem)
-            fbank = torch.transpose(fbank, 0, 1)
-            # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
-            fbank = fbank.unsqueeze(0)
-            if freqm != 0:
-                fbank = freqm(fbank)
-            if timem != 0:
-                fbank = timem(fbank)
-            # squeeze it back, it is just a trick to satisfy new torchaudio version
-            fbank = fbank.squeeze(0)
-            fbank = torch.transpose(fbank, 0, 1)
+            if mask is True:
+                freqm = 0  # 横向
+                timem = 0  # 纵向
+                # SpecAug, not do for eval set
+                freqm = TT.FrequencyMasking(freqm)
+                timem = TT.TimeMasking(timem)
+                fbank = torch.transpose(fbank, 0, 1)
+                # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
+                fbank = fbank.unsqueeze(0)
+                if freqm != 0:
+                    fbank = freqm(fbank)
+                if timem != 0:
+                    fbank = timem(fbank)
+                # squeeze it back, it is just a trick to satisfy new torchaudio version
+                fbank = fbank.squeeze(0)
+                fbank = torch.transpose(fbank, 0, 1)
 
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
@@ -187,7 +189,9 @@ class BEATs(nn.Module):
         fbank_std: float = 6.55582,
     ):
         # wav提取fbank系数
-        fbank = self.preprocess(source, fbank_mean=fbank_mean, fbank_std=fbank_std)
+        fbank = self.preprocess(
+            source, fbank_mean=fbank_mean, fbank_std=fbank_std, mask=False
+        )
         # 如果有padding-mask的话进行forward-padding-mask
         # 返回一个值？？？
         if padding_mask is not None:
