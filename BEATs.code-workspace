@@ -8,7 +8,7 @@
 		"[python]": {
 			"editor.defaultFormatter": "ms-python.black-formatter"
 		},
-		"python.formatting.provider": "yapf",
+		"python.formatting.provider": "autopep8",
 		"editor.formatOnType": true,
 		"editor.formatOnSave": true,
 		"editor.formatOnPaste": true,
