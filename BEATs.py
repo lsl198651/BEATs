@@ -243,8 +243,9 @@ class BEATs(nn.Module):
 
 
 class BEATs_Pre_Train_itere3(nn.Module):
-    def __init__(self, model_name="BEATs_iter3_plus_AS2M"):
-        self.model_name = model_name
+    def __init__(self, args):
+        self.model_name = args.model
+        self.layers = args.layers
         super(BEATs_Pre_Train_itere3, self).__init__()
 
         checkpoint = torch.load(
@@ -271,7 +272,8 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # with torch.enable_grad():
         y = self.last_Dropout(x)
         # FC 修改层数记得修改logging
-        y = self.fc_layer(y)
+        if self.layers == 2:
+            y = self.fc_layer(y)
         # add fc layer
         output = self.last_layer(y)
         # mean

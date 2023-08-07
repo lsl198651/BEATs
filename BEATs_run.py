@@ -1,60 +1,197 @@
 import argparse
-import os
-import ast
-import pickle
-import sys
-import time
 import torch
-from torch.utils.data import WeightedRandomSampler
-import beats_try
-import util.BEATs_def as BEATs_def
-from BEATs import BEATs_Pre_Train_itere3
+import torch.profiler
 import logging
 import numpy as np
-
+from torch.utils.data.sampler import WeightedRandomSampler
+from datetime import datetime
+from torch import optim
+from transformers import optimization
+from torch.utils.data import DataLoader
+from BEATs import BEATs_Pre_Train_itere3
+from torch.utils.tensorboard import SummaryWriter
+from util.dataloaders import get_features
+from traintest import train_test
+from util.BEATs_def import (
+    MyDataset,
+    logger_init,
+)
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--batch_size", type=int, default=128, help="batch_size for training")
-parser.add_argument("--learning_rate", type=float, default=0.0005, help="learning_rate for training")
+parser.add_argument(
+    "--batch_size", type=int, default=128, help="args.batch_size for training"
+)
+parser.add_argument(
+    "--learning_rate", type=float, default=0.0005, help="learning_rate for training"
+)
 parser.add_argument("--num_epochs", type=int, default=100, help="num_epochs")
-parser.add_argument("--loss_type", type=str, default=None, help="loss function", choices=["BCE", "CE"])
-parser.add_argument("--dataset", type=str, default="audioset", help="the dataset used")
-parser.add_argument('--freqm', help='frequency mask max length', type=int, default=0)
-parser.add_argument('--timem', help='time mask max length', type=int, default=0)
-parser.add_argument("--n_class", type=int, default=527, help="number of classes")
-parser.add_argument("--DataBalance", type=str, default=None, help="Dataset balance or not")
-
-parser.add_argument("--label-csv", type=str, default='', help="csv with class labels")
-parser.add_argument("--model", type=str, default='ast', help="the model used")
-parser.add_argument("--lrscheduler_decay", type=float, default=0.5, help="the learning rate decay rate at each step")
-parser.add_argument("--batch-size", type=int, default=32, help="batch size")
+parser.add_argument("--layers", type=int, default=1, help="layers number")
+parser.add_argument(
+    "--loss_type", type=str, default="CE", help="loss function", choices=["BCE", "CE"]
+)
+parser.add_argument(
+    "--scheduler_flag",
+    type=str,
+    default=None,
+    help="the dataset used",
+    choices=["cos", "cos_warmup"],
+)
+parser.add_argument("--freqm", help="frequency mask max length", type=int, default=0)
+parser.add_argument("--timem", help="time mask max length", type=int, default=0)
+parser.add_argument(
+    "--mask", type=bool, default=False, help="number of classes", choices=[True, False]
+)
+parser.add_argument(
+    "--testset_balance",
+    type=bool,
+    default=False,
+    help="balance absent and present in testset",
+    choices=[True, False],
+)
+parser.add_argument(
+    "--Data_Augmentation",
+    type=bool,
+    default=False,
+    help="Add data augmentation",
+    choices=[True, False],
+)
+parser.add_argument(
+    "--grad_flag",
+    type=bool,
+    default=False,
+    help="use grad_no_requiredn",
+    choices=[True, False],
+)
+parser.add_argument(
+    "--samplerWeight",
+    type=bool,
+    default=False,
+    help="use balanced sampler",
+    choices=[True, False],
+)
+parser.add_argument(
+    "--model", type=str, default="BEATs_iter3_plus_AS20K", help="the model used"
+)
+parser.add_argument(
+    "--ap_ratio", type=float, default=1.0, help="ratio of absent and present"
+)
+parser.add_argument(
+    "--layers", type=float, default=1.0, help="ratio of absent and present"
+)
+parser.add_argument(
+    "--confusion_matrix_path",
+    type=float,
+    default=1.0,
+    help="ratio of absent and present",
+)
+parser.add_argument("--beta", type=float, default=(0.9, 0.99), help="beta")
 args = parser.parse_args()
 
-
-if args.DataBalance == 'bal':
-    logging.info('balanced sampler is being used')
-    samples_weight = [9 if label == 1 else 1 for data, label in train_set]
-    sampler = WeightedRandomSampler(samples_weight, len(samples_weight), replacement=True)
-
-    train_loader = torch.utils.data.DataLoader(BEATs_def.MyDataset(wavlabel=train_label, wavdata=train_features),
-                                            batch_size=args.batch_size, sampler=sampler,drop_last=True,)
+train_features, train_label, test_features, test_label = get_features(args=args)
+# ========================/ setup loader /========================== #
+if args.samplerWeight == True:
+    weights = [3 if label == 1 else 1 for label in train_label]
+    Data_sampler = WeightedRandomSampler(
+        weights, num_samples=len(weights), replacement=True
+    )
+    train_loader = DataLoader(
+        MyDataset(wavlabel=train_label, wavdata=train_features),
+        sampler=Data_sampler,
+        batch_size=args.args.batch_size,
+        drop_last=True,
+    )
 else:
-    logging.info('balanced sampler is not used')
-    train_loader = torch.utils.data.DataLoader(
-        BEATs_def.MyDataset(wavlabel=train_label, wavdata=train_features),
-        batch_size=args.batch_size, drop_last=True,shuffle=True pin_memory=True)        
-val_loader = torch.utils.data.DataLoader(
-        BEATs_def.MyDataset(wavlabel=test_label, wavdata=test_features),
-        batch_size=args.batch_size*2, shuffle=True, drop_last=True, pin_memory=True)
+    train_loader = DataLoader(
+        MyDataset(wavlabel=train_label, wavdata=train_features),
+        batch_size=args.batch_size,
+        drop_last=True,
+        shuffle=True,
+        pin_memory=True,
+    )
 
-MyModel = BEATs_Pre_Train_itere3()
+val_loader = DataLoader(
+    MyDataset(wavlabel=test_label, wavdata=test_features),
+    batch_size=args.batch_size,
+    shuffle=True,
+    drop_last=True,
+    pin_memory=True,
+)
 
+# ========================/ dataset size /========================== #
+train_present_size = np.sum(train_label == 1)
+train_absent_size = np.sum(train_label == 0)
+test_present_size = np.sum(test_label == 1)
+test_absent_size = np.sum(test_label == 0)
+trainset_size = train_label.shape[0]
+testset_size = test_label.shape[0]
+
+# ========================/ setup padding /========================== #
+padding_size = train_features.shape[1]  # 3500
+padding = torch.zeros(
+    args.batch_size, padding_size
+).bool()  # we randomly mask 75% of the input patches,
+padding_mask = torch.Tensor(padding)
+
+MyModel = BEATs_Pre_Train_itere3(args=args)
+
+# ========================/ setup optimizer /========================== #
+for param in MyModel.BEATs.parameters():
+    param.requires_grad = False
+optimizer = torch.optim.AdamW(
+    filter(lambda p: p.requires_grad, MyModel.parameters()),
+    lr=args.learning_rate,
+    betas=args.beta,
+)
+# ========================/ setup warmup lr /========================== #
+warm_up_ratio = 0.1
+total_steps = len(train_loader) * args.num_epochs
+
+if args.scheduler_flag == "cos":
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
+elif args.scheduler_flag == "cos_warmup":
+    scheduler = optimization.get_cosine_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=warm_up_ratio * total_steps,
+        num_training_steps=total_steps,
+    )
+
+# ========================/ setup scaler /========================== #
+logger_init()
+model_name = MyModel.model_name
+logging.info(f"<<< " + model_name + " - {args.layers} fc layer >>> ")
+
+logging.info("# Batch_size = " + str(args.batch_size))
+logging.info("# Num_epochs = " + str(args.num_epochs))
+logging.info("# Learning_rate = " + str(args.learning_rate))
+logging.info("# lr_scheduler = " + str(args.scheduler_flag))
+logging.info("# Padding_size = " + str(padding_size))
+logging.info("# Loss_fn = " + args.loss_type)
+logging.info("# Data Augmentation = " + str(args.Data_Augmentation))
+logging.info("# Testset_balance = " + str(args.testset_balance))
+logging.info("# Masking" + str(args.mask))
+logging.info("# Train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
+logging.info("# Test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
+logging.info("# Trainset_size = " + str(trainset_size))
+logging.info("# Testset_size = " + str(testset_size))
+logging.info("# Optimizer = " + str(optimizer))
+logging.info("# Notes : ")
+logging.info("-------------------------------------")
+confusion_matrix_path = r"./confusion_matrix/" + str(
+    datetime.now().strftime("%Y-%m%d %H%M")
+)
+tb_writer = SummaryWriter(
+    r"./tensorboard/" + str(datetime.now().strftime("%Y-%m%d %H%M"))
+)
 
 for epoch in range(args.num_epochs):
-    beats_try.train_model(
+    train_test(
         model=MyModel,
         train_loader=train_loader,
         test_loader=val_loader,
         padding=padding_mask,
         epochs=epoch,
+        optimizer=optimizer,
+        args=args,
+        tb_writer=tb_writer,
+        matrix_path=confusion_matrix_path,
     )
