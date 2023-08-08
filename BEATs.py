@@ -35,25 +35,41 @@ class BEATsConfig:
         self.encoder_attention_heads: int = 12  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
 
-        self.layer_wise_gradient_decay_ratio: float = 1.0  # ratio for layer-wise gradient decay
+        self.layer_wise_gradient_decay_ratio: float = (
+            1.0  # ratio for layer-wise gradient decay
+        )
         self.layer_norm_first: bool = False  # apply layernorm first in the transformer
         self.deep_norm: bool = False  # apply deep_norm first in the transformer
 
         # dropouts
         self.dropout: float = 0.1  # dropout probability for the transformer
         self.attention_dropout: float = 0.1  # dropout probability for attention weights
-        self.activation_dropout: float = 0.0  # dropout probability after activation in FFN
-        self.encoder_layerdrop: float = 0.0  # probability of dropping a tarnsformer layer
-        self.dropout_input: float = 0.0  # dropout to apply to the input (after feat extr)
+        self.activation_dropout: float = (
+            0.0  # dropout probability after activation in FFN
+        )
+        self.encoder_layerdrop: float = (
+            0.0  # probability of dropping a tarnsformer layer
+        )
+        self.dropout_input: float = (
+            0.0  # dropout to apply to the input (after feat extr)
+        )
 
         # positional embeddings
-        self.conv_pos: int = 128  # number of filters for convolutional positional embeddings
-        self.conv_pos_groups: int = 16  # number of groups for convolutional positional embedding
+        self.conv_pos: int = (
+            128  # number of filters for convolutional positional embeddings
+        )
+        self.conv_pos_groups: int = (
+            16  # number of groups for convolutional positional embedding
+        )
 
         # relative position embedding
-        self.relative_position_embedding: bool = False  # apply relative position embedding
+        self.relative_position_embedding: bool = (
+            False  # apply relative position embedding
+        )
         self.num_buckets: int = 320  # number of buckets for relative position embedding
-        self.max_distance: int = 1280  # maximum distance for relative position embedding
+        self.max_distance: int = (
+            1280  # maximum distance for relative position embedding
+        )
         self.gru_rel_pos: bool = False  # apply gated relative position embedding
 
         # label predictor
@@ -70,8 +86,8 @@ class BEATsConfig:
 
 class BEATs(nn.Module):
     def __init__(
-            self,
-            cfg: BEATsConfig,
+        self,
+        cfg: BEATsConfig,
     ) -> None:
         super().__init__()
         logger.info(f"BEATs Config: {cfg.__dict__}")
@@ -89,8 +105,13 @@ class BEATs(nn.Module):
 
         self.input_patch_size = cfg.input_patch_size
         # layer 2
-        self.patch_embedding = nn.Conv2d(1, self.embed, kernel_size=self.input_patch_size, stride=self.input_patch_size,
-                                         bias=cfg.conv_bias)
+        self.patch_embedding = nn.Conv2d(
+            1,
+            self.embed,
+            kernel_size=self.input_patch_size,
+            stride=self.input_patch_size,
+            bias=cfg.conv_bias,
+        )
         # layer 3
         self.dropout_input = nn.Dropout(cfg.dropout_input)
 
@@ -105,44 +126,48 @@ class BEATs(nn.Module):
             self.predictor = None
 
     def forward_padding_mask(
-            self,
-            features: torch.Tensor,
-            padding_mask: torch.Tensor,
+        self,
+        features: torch.Tensor,
+        padding_mask: torch.Tensor,
     ) -> torch.Tensor:
         # 计算padding-mask和feature-mask之间的列长度的余数extra
         # 余数extra值大于0则将前extra列作为padding-mask
         # 最后将padding-mask reshape到行数不变，列数与features相同
-        extra = padding_mask.size(1) % features.size(1) 
+        extra = padding_mask.size(1) % features.size(1)
         if extra > 0:
             padding_mask = padding_mask[:, :-extra]
-        padding_mask = padding_mask.view(
-            padding_mask.size(0), features.size(1), -1
-        )
+        padding_mask = padding_mask.view(padding_mask.size(0), features.size(1), -1)
         padding_mask = padding_mask.all(-1)
         return padding_mask
 
-# calculate fbank value
+    # calculate fbank value
     def preprocess(
-            self,
-            source: torch.Tensor,
-            fbank_mean: float = 15.41663,
-            fbank_std: float = 6.55582,
+        self,
+        source: torch.Tensor,
+        fbank_mean: float = 15.41663,
+        fbank_std: float = 6.55582,
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
-            waveform = waveform.unsqueeze(0) * 2 ** 15
-            fbank = ta_kaldi.fbank(waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            waveform = waveform.unsqueeze(0) * 2**15
+            fbank = ta_kaldi.fbank(
+                waveform,
+                num_mel_bins=128,
+                sample_frequency=16000,
+                frame_length=25,
+                frame_shift=10,
+            )
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         fbank = (fbank - fbank_mean) / (2 * fbank_std)
         return fbank
 
     def extract_features(
-            self,
-            source: torch.Tensor,
-            padding_mask: Optional[torch.Tensor] = None,
-            fbank_mean: float = 15.41663,
-            fbank_std: float = 6.55582,
+        self,
+        source: torch.Tensor,
+        padding_mask: Optional[torch.Tensor] = None,
+        fbank_mean: float = 15.41663,
+        fbank_std: float = 6.55582,
     ):
         # wav提取fbank系数
         fbank = self.preprocess(source, fbank_mean=fbank_mean, fbank_std=fbank_std)
@@ -183,7 +208,9 @@ class BEATs(nn.Module):
             if padding_mask is not None and padding_mask.any():
                 logits[padding_mask] = 0
                 logits = logits.sum(dim=1)
-                logits = logits / (~padding_mask).sum(dim=1).unsqueeze(-1).expand_as(logits)
+                logits = logits / (~padding_mask).sum(dim=1).unsqueeze(-1).expand_as(
+                    logits
+                )
             else:
                 logits = logits.mean(dim=1)
 
@@ -192,34 +219,42 @@ class BEATs(nn.Module):
             return lprobs, padding_mask
         else:
             return x, padding_mask
-        
+
 
 class BEATs_Pre_Train_itere3(nn.Module):
-    def __init__(self,nums_class=2):
-        super(BEATs_Pre_Train_itere3,self).__init__()
-        
-        checkpoint=torch.load(r'E:\Shilong\murmur\03_Classifier\LM\LM_Model\BEATs\BEATs_iter3.pt')
-        cfg=BEATsConfig(checkpoint['cfg'])
-        BEATs_model=BEATs(cfg)
-        BEATs_model.load_state_dict(checkpoint['model'])
+    def __init__(self, model_name="BEATs_iter3_plus_AS2M"):
+        self.model_name = model_name
+        super(BEATs_Pre_Train_itere3, self).__init__()
+
+        checkpoint = torch.load(
+            r"D:\Shilong\murmur\00_Code\LM\LM_Model\BEATs"
+            + "\\"
+            + self.model_name
+            + ".pt"
+        )
+        cfg = BEATsConfig(checkpoint["cfg"])
+        BEATs_model = BEATs(cfg)
+        BEATs_model.load_state_dict(checkpoint["model"])
         # BEATs
-        self.BEATs=BEATs_model
+        self.BEATs = BEATs_model
         # Dropout
-        self.last_Dropout=nn.Dropout(0.1)
+        self.last_Dropout = nn.Dropout(0.1)
         # fc
-        self.last_layer= nn.Linear(768,2)
-        
-    def forward(self,x,padding_mask: torch.Tensor =None):
+        self.fc_layer = nn.Linear(768, 768)
+        self.last_layer = nn.Linear(768, 2)
+
+    def forward(self, x, padding_mask: torch.Tensor = None):
         with torch.no_grad():
-            x,_=self.BEATs.extract_features(x,padding_mask)
+            x, _ = self.BEATs.extract_features(x, padding_mask)
         # dropout
-        x=self.last_Dropout(x)
-        # FC
-        output=self.last_layer(x)
-        # mean
-        output=output.mean(dim=1)
-        # sigmoid
-        output=torch.sigmoid(output)
+        with torch.enable_grad():
+            x = self.last_Dropout(x)
+            # FC 修改层数记得修改logging
+            # x = self.fc_layer(x)
+            # add fc layer
+            output = self.last_layer(x)
+            # mean
+            output = output.mean(dim=1)
+            # sigmoid
+            # output = torch.sigmoid(output)
         return output
-        
-            

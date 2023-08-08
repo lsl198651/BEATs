@@ -1,0 +1,825 @@
+[2023-0728 1459 - INFO] <<< BEATs_iter3_plus_AS2M >>>
+[2023-0728 1459 - INFO] # trainset_size = 17010
+[2023-0728 1459 - INFO] # testset_size = 22970
+[2023-0728 1459 - INFO] # train_a/p = 8505/8505
+[2023-0728 1459 - INFO] # test_a/p = 20920/2050
+[2023-0728 1459 - INFO] # batch_size = 64
+[2023-0728 1459 - INFO] # learning_rate = 0.0001
+[2023-0728 1459 - INFO] # num_epochs = 100
+[2023-0728 1459 - INFO] # padding_size = 3500
+[2023-0728 1459 - INFO] # criterion = CrossEntropyLoss()
+[2023-0728 1459 - INFO] # scheduler = None
+[2023-0728 1459 - INFO] # optimizer = AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.0001
+    maximize: False
+    weight_decay: 0.01
+)
+[2023-0728 1459 - INFO] -------------------------------
+[2023-0728 1500 - INFO] epoch: 1/100
+[2023-0728 1500 - INFO] learning_rate: 0.0001
+[2023-0728 1500 - INFO] train_acc: 66.044%, train_loss: 0.0105
+[2023-0728 1500 - INFO] test_acc: 66.648%, test_loss: 0.0103
+[2023-0728 1500 - INFO] max_train_acc: 66.044%
+[2023-0728 1500 - INFO] max_test_acc: 66.648%
+[2023-0728 1500 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1500 - INFO] ======================================
+[2023-0728 1501 - INFO] epoch: 2/100
+[2023-0728 1501 - INFO] learning_rate: 0.0001
+[2023-0728 1501 - INFO] train_acc: 69.536%, train_loss: 0.0100
+[2023-0728 1501 - INFO] test_acc: 66.661%, test_loss: 0.0099
+[2023-0728 1501 - INFO] max_train_acc: 69.536%
+[2023-0728 1501 - INFO] max_test_acc: 66.661%
+[2023-0728 1501 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1501 - INFO] ======================================
+[2023-0728 1502 - INFO] epoch: 3/100
+[2023-0728 1502 - INFO] learning_rate: 0.0001
+[2023-0728 1502 - INFO] train_acc: 69.653%, train_loss: 0.0097
+[2023-0728 1502 - INFO] test_acc: 66.700%, test_loss: 0.0097
+[2023-0728 1502 - INFO] max_train_acc: 69.653%
+[2023-0728 1502 - INFO] max_test_acc: 66.700%
+[2023-0728 1502 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1502 - INFO] ======================================
+[2023-0728 1503 - INFO] epoch: 4/100
+[2023-0728 1503 - INFO] learning_rate: 0.0001
+[2023-0728 1503 - INFO] train_acc: 69.724%, train_loss: 0.0095
+[2023-0728 1503 - INFO] test_acc: 66.731%, test_loss: 0.0096
+[2023-0728 1503 - INFO] max_train_acc: 69.724%
+[2023-0728 1503 - INFO] max_test_acc: 66.731%
+[2023-0728 1503 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1503 - INFO] ======================================
+[2023-0728 1504 - INFO] epoch: 5/100
+[2023-0728 1504 - INFO] learning_rate: 0.0001
+[2023-0728 1504 - INFO] train_acc: 69.741%, train_loss: 0.0094
+[2023-0728 1504 - INFO] test_acc: 66.835%, test_loss: 0.0095
+[2023-0728 1504 - INFO] max_train_acc: 69.741%
+[2023-0728 1504 - INFO] max_test_acc: 66.835%
+[2023-0728 1504 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1504 - INFO] ======================================
+[2023-0728 1505 - INFO] epoch: 6/100
+[2023-0728 1505 - INFO] learning_rate: 0.0001
+[2023-0728 1505 - INFO] train_acc: 69.824%, train_loss: 0.0094
+[2023-0728 1505 - INFO] test_acc: 66.896%, test_loss: 0.0095
+[2023-0728 1505 - INFO] max_train_acc: 69.824%
+[2023-0728 1505 - INFO] max_test_acc: 66.896%
+[2023-0728 1505 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1505 - INFO] ======================================
+[2023-0728 1506 - INFO] epoch: 7/100
+[2023-0728 1506 - INFO] learning_rate: 0.0001
+[2023-0728 1506 - INFO] train_acc: 69.941%, train_loss: 0.0093
+[2023-0728 1506 - INFO] test_acc: 67.000%, test_loss: 0.0094
+[2023-0728 1506 - INFO] max_train_acc: 69.941%
+[2023-0728 1506 - INFO] max_test_acc: 67.000%
+[2023-0728 1506 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1506 - INFO] ======================================
+[2023-0728 1507 - INFO] epoch: 8/100
+[2023-0728 1507 - INFO] learning_rate: 0.0001
+[2023-0728 1507 - INFO] train_acc: 70.223%, train_loss: 0.0093
+[2023-0728 1507 - INFO] test_acc: 67.292%, test_loss: 0.0092
+[2023-0728 1507 - INFO] max_train_acc: 70.223%
+[2023-0728 1507 - INFO] max_test_acc: 67.292%
+[2023-0728 1507 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1507 - INFO] ======================================
+[2023-0728 1508 - INFO] epoch: 9/100
+[2023-0728 1508 - INFO] learning_rate: 0.0001
+[2023-0728 1508 - INFO] train_acc: 70.270%, train_loss: 0.0092
+[2023-0728 1508 - INFO] test_acc: 67.662%, test_loss: 0.0092
+[2023-0728 1508 - INFO] max_train_acc: 70.270%
+[2023-0728 1508 - INFO] max_test_acc: 67.662%
+[2023-0728 1508 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1508 - INFO] ======================================
+[2023-0728 1509 - INFO] epoch: 10/100
+[2023-0728 1509 - INFO] learning_rate: 0.0001
+[2023-0728 1509 - INFO] train_acc: 70.312%, train_loss: 0.0092
+[2023-0728 1509 - INFO] test_acc: 68.450%, test_loss: 0.0090
+[2023-0728 1509 - INFO] max_train_acc: 70.312%
+[2023-0728 1509 - INFO] max_test_acc: 68.450%
+[2023-0728 1509 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1509 - INFO] ======================================
+[2023-0728 1510 - INFO] epoch: 11/100
+[2023-0728 1510 - INFO] learning_rate: 0.0001
+[2023-0728 1510 - INFO] train_acc: 70.747%, train_loss: 0.0091
+[2023-0728 1510 - INFO] test_acc: 68.899%, test_loss: 0.0090
+[2023-0728 1510 - INFO] max_train_acc: 70.747%
+[2023-0728 1510 - INFO] max_test_acc: 68.899%
+[2023-0728 1510 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1510 - INFO] ======================================
+[2023-0728 1511 - INFO] epoch: 12/100
+[2023-0728 1511 - INFO] learning_rate: 0.0001
+[2023-0728 1511 - INFO] train_acc: 71.076%, train_loss: 0.0091
+[2023-0728 1511 - INFO] test_acc: 69.813%, test_loss: 0.0090
+[2023-0728 1511 - INFO] max_train_acc: 71.076%
+[2023-0728 1511 - INFO] max_test_acc: 69.813%
+[2023-0728 1511 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1511 - INFO] ======================================
+[2023-0728 1512 - INFO] epoch: 13/100
+[2023-0728 1512 - INFO] learning_rate: 0.0001
+[2023-0728 1512 - INFO] train_acc: 71.446%, train_loss: 0.0091
+[2023-0728 1512 - INFO] test_acc: 70.910%, test_loss: 0.0089
+[2023-0728 1512 - INFO] max_train_acc: 71.446%
+[2023-0728 1512 - INFO] max_test_acc: 70.910%
+[2023-0728 1512 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1512 - INFO] ======================================
+[2023-0728 1513 - INFO] epoch: 14/100
+[2023-0728 1513 - INFO] learning_rate: 0.0001
+[2023-0728 1513 - INFO] train_acc: 71.623%, train_loss: 0.0090
+[2023-0728 1513 - INFO] test_acc: 71.406%, test_loss: 0.0089
+[2023-0728 1513 - INFO] max_train_acc: 71.623%
+[2023-0728 1513 - INFO] max_test_acc: 71.406%
+[2023-0728 1513 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1513 - INFO] ======================================
+[2023-0728 1514 - INFO] epoch: 15/100
+[2023-0728 1514 - INFO] learning_rate: 0.0001
+[2023-0728 1514 - INFO] train_acc: 71.881%, train_loss: 0.0090
+[2023-0728 1514 - INFO] test_acc: 72.229%, test_loss: 0.0088
+[2023-0728 1514 - INFO] max_train_acc: 71.881%
+[2023-0728 1514 - INFO] max_test_acc: 72.229%
+[2023-0728 1514 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1514 - INFO] ======================================
+[2023-0728 1515 - INFO] epoch: 16/100
+[2023-0728 1515 - INFO] learning_rate: 0.0001
+[2023-0728 1515 - INFO] train_acc: 72.116%, train_loss: 0.0090
+[2023-0728 1515 - INFO] test_acc: 73.291%, test_loss: 0.0088
+[2023-0728 1515 - INFO] max_train_acc: 72.116%
+[2023-0728 1515 - INFO] max_test_acc: 73.291%
+[2023-0728 1515 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1515 - INFO] ======================================
+[2023-0728 1516 - INFO] epoch: 17/100
+[2023-0728 1516 - INFO] learning_rate: 0.0001
+[2023-0728 1516 - INFO] train_acc: 72.316%, train_loss: 0.0090
+[2023-0728 1516 - INFO] test_acc: 74.084%, test_loss: 0.0087
+[2023-0728 1516 - INFO] max_train_acc: 72.316%
+[2023-0728 1516 - INFO] max_test_acc: 74.084%
+[2023-0728 1516 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1516 - INFO] ======================================
+[2023-0728 1517 - INFO] epoch: 18/100
+[2023-0728 1517 - INFO] learning_rate: 0.0001
+[2023-0728 1517 - INFO] train_acc: 72.475%, train_loss: 0.0090
+[2023-0728 1517 - INFO] test_acc: 74.623%, test_loss: 0.0087
+[2023-0728 1517 - INFO] max_train_acc: 72.475%
+[2023-0728 1517 - INFO] max_test_acc: 74.623%
+[2023-0728 1517 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1517 - INFO] ======================================
+[2023-0728 1518 - INFO] epoch: 19/100
+[2023-0728 1518 - INFO] learning_rate: 0.0001
+[2023-0728 1518 - INFO] train_acc: 72.951%, train_loss: 0.0089
+[2023-0728 1518 - INFO] test_acc: 75.503%, test_loss: 0.0086
+[2023-0728 1518 - INFO] max_train_acc: 72.951%
+[2023-0728 1518 - INFO] max_test_acc: 75.503%
+[2023-0728 1518 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1518 - INFO] ======================================
+[2023-0728 1519 - INFO] epoch: 20/100
+[2023-0728 1519 - INFO] learning_rate: 0.0001
+[2023-0728 1519 - INFO] train_acc: 72.963%, train_loss: 0.0089
+[2023-0728 1519 - INFO] test_acc: 76.003%, test_loss: 0.0085
+[2023-0728 1519 - INFO] max_train_acc: 72.963%
+[2023-0728 1519 - INFO] max_test_acc: 76.003%
+[2023-0728 1519 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1519 - INFO] ======================================
+[2023-0728 1520 - INFO] epoch: 21/100
+[2023-0728 1520 - INFO] learning_rate: 0.0001
+[2023-0728 1520 - INFO] train_acc: 73.081%, train_loss: 0.0089
+[2023-0728 1520 - INFO] test_acc: 76.082%, test_loss: 0.0085
+[2023-0728 1520 - INFO] max_train_acc: 73.081%
+[2023-0728 1520 - INFO] max_test_acc: 76.082%
+[2023-0728 1520 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1520 - INFO] ======================================
+[2023-0728 1521 - INFO] epoch: 22/100
+[2023-0728 1521 - INFO] learning_rate: 0.0001
+[2023-0728 1521 - INFO] train_acc: 73.357%, train_loss: 0.0089
+[2023-0728 1521 - INFO] test_acc: 75.668%, test_loss: 0.0086
+[2023-0728 1521 - INFO] max_train_acc: 73.357%
+[2023-0728 1521 - INFO] max_test_acc: 76.082%
+[2023-0728 1521 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1521 - INFO] ======================================
+[2023-0728 1522 - INFO] epoch: 23/100
+[2023-0728 1522 - INFO] learning_rate: 0.0001
+[2023-0728 1522 - INFO] train_acc: 73.398%, train_loss: 0.0088
+[2023-0728 1522 - INFO] test_acc: 76.099%, test_loss: 0.0086
+[2023-0728 1522 - INFO] max_train_acc: 73.398%
+[2023-0728 1522 - INFO] max_test_acc: 76.099%
+[2023-0728 1522 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1522 - INFO] ======================================
+[2023-0728 1523 - INFO] epoch: 24/100
+[2023-0728 1523 - INFO] learning_rate: 0.0001
+[2023-0728 1523 - INFO] train_acc: 73.339%, train_loss: 0.0088
+[2023-0728 1523 - INFO] test_acc: 76.051%, test_loss: 0.0086
+[2023-0728 1523 - INFO] max_train_acc: 73.398%
+[2023-0728 1523 - INFO] max_test_acc: 76.099%
+[2023-0728 1523 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1523 - INFO] ======================================
+[2023-0728 1524 - INFO] epoch: 25/100
+[2023-0728 1524 - INFO] learning_rate: 0.0001
+[2023-0728 1524 - INFO] train_acc: 73.721%, train_loss: 0.0088
+[2023-0728 1524 - INFO] test_acc: 76.613%, test_loss: 0.0085
+[2023-0728 1524 - INFO] max_train_acc: 73.721%
+[2023-0728 1524 - INFO] max_test_acc: 76.613%
+[2023-0728 1524 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1524 - INFO] ======================================
+[2023-0728 1525 - INFO] epoch: 26/100
+[2023-0728 1525 - INFO] learning_rate: 0.0001
+[2023-0728 1525 - INFO] train_acc: 73.574%, train_loss: 0.0088
+[2023-0728 1525 - INFO] test_acc: 76.900%, test_loss: 0.0085
+[2023-0728 1525 - INFO] max_train_acc: 73.721%
+[2023-0728 1525 - INFO] max_test_acc: 76.900%
+[2023-0728 1525 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1525 - INFO] ======================================
+[2023-0728 1526 - INFO] epoch: 27/100
+[2023-0728 1526 - INFO] learning_rate: 0.0001
+[2023-0728 1526 - INFO] train_acc: 73.715%, train_loss: 0.0088
+[2023-0728 1526 - INFO] test_acc: 77.236%, test_loss: 0.0084
+[2023-0728 1526 - INFO] max_train_acc: 73.721%
+[2023-0728 1526 - INFO] max_test_acc: 77.236%
+[2023-0728 1526 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1526 - INFO] ======================================
+[2023-0728 1527 - INFO] epoch: 28/100
+[2023-0728 1527 - INFO] learning_rate: 0.0001
+[2023-0728 1527 - INFO] train_acc: 73.698%, train_loss: 0.0088
+[2023-0728 1527 - INFO] test_acc: 77.989%, test_loss: 0.0083
+[2023-0728 1527 - INFO] max_train_acc: 73.721%
+[2023-0728 1527 - INFO] max_test_acc: 77.989%
+[2023-0728 1527 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1527 - INFO] ======================================
+[2023-0728 1528 - INFO] epoch: 29/100
+[2023-0728 1528 - INFO] learning_rate: 0.0001
+[2023-0728 1528 - INFO] train_acc: 74.109%, train_loss: 0.0088
+[2023-0728 1528 - INFO] test_acc: 77.706%, test_loss: 0.0083
+[2023-0728 1528 - INFO] max_train_acc: 74.109%
+[2023-0728 1528 - INFO] max_test_acc: 77.989%
+[2023-0728 1528 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1528 - INFO] ======================================
+[2023-0728 1529 - INFO] epoch: 30/100
+[2023-0728 1529 - INFO] learning_rate: 0.0001
+[2023-0728 1529 - INFO] train_acc: 74.098%, train_loss: 0.0088
+[2023-0728 1529 - INFO] test_acc: 78.006%, test_loss: 0.0083
+[2023-0728 1529 - INFO] max_train_acc: 74.109%
+[2023-0728 1529 - INFO] max_test_acc: 78.006%
+[2023-0728 1529 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1529 - INFO] ======================================
+[2023-0728 1530 - INFO] epoch: 31/100
+[2023-0728 1530 - INFO] learning_rate: 0.0001
+[2023-0728 1530 - INFO] train_acc: 74.521%, train_loss: 0.0087
+[2023-0728 1530 - INFO] test_acc: 77.571%, test_loss: 0.0084
+[2023-0728 1530 - INFO] max_train_acc: 74.521%
+[2023-0728 1530 - INFO] max_test_acc: 78.006%
+[2023-0728 1530 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1530 - INFO] ======================================
+[2023-0728 1531 - INFO] epoch: 32/100
+[2023-0728 1531 - INFO] learning_rate: 0.0001
+[2023-0728 1531 - INFO] train_acc: 74.174%, train_loss: 0.0087
+[2023-0728 1531 - INFO] test_acc: 77.680%, test_loss: 0.0083
+[2023-0728 1531 - INFO] max_train_acc: 74.521%
+[2023-0728 1531 - INFO] max_test_acc: 78.006%
+[2023-0728 1531 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1531 - INFO] ======================================
+[2023-0728 1532 - INFO] epoch: 33/100
+[2023-0728 1532 - INFO] learning_rate: 0.0001
+[2023-0728 1532 - INFO] train_acc: 74.286%, train_loss: 0.0087
+[2023-0728 1532 - INFO] test_acc: 77.919%, test_loss: 0.0083
+[2023-0728 1532 - INFO] max_train_acc: 74.521%
+[2023-0728 1532 - INFO] max_test_acc: 78.006%
+[2023-0728 1532 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1532 - INFO] ======================================
+[2023-0728 1533 - INFO] epoch: 34/100
+[2023-0728 1533 - INFO] learning_rate: 0.0001
+[2023-0728 1533 - INFO] train_acc: 74.221%, train_loss: 0.0087
+[2023-0728 1533 - INFO] test_acc: 78.350%, test_loss: 0.0082
+[2023-0728 1533 - INFO] max_train_acc: 74.521%
+[2023-0728 1533 - INFO] max_test_acc: 78.350%
+[2023-0728 1533 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1533 - INFO] ======================================
+[2023-0728 1534 - INFO] epoch: 35/100
+[2023-0728 1534 - INFO] learning_rate: 0.0001
+[2023-0728 1534 - INFO] train_acc: 74.162%, train_loss: 0.0087
+[2023-0728 1534 - INFO] test_acc: 78.411%, test_loss: 0.0082
+[2023-0728 1534 - INFO] max_train_acc: 74.521%
+[2023-0728 1534 - INFO] max_test_acc: 78.411%
+[2023-0728 1534 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1534 - INFO] ======================================
+[2023-0728 1535 - INFO] epoch: 36/100
+[2023-0728 1535 - INFO] learning_rate: 0.0001
+[2023-0728 1535 - INFO] train_acc: 74.515%, train_loss: 0.0087
+[2023-0728 1535 - INFO] test_acc: 78.441%, test_loss: 0.0082
+[2023-0728 1535 - INFO] max_train_acc: 74.521%
+[2023-0728 1535 - INFO] max_test_acc: 78.441%
+[2023-0728 1535 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1535 - INFO] ======================================
+[2023-0728 1536 - INFO] epoch: 37/100
+[2023-0728 1536 - INFO] learning_rate: 0.0001
+[2023-0728 1536 - INFO] train_acc: 74.397%, train_loss: 0.0087
+[2023-0728 1536 - INFO] test_acc: 78.333%, test_loss: 0.0082
+[2023-0728 1536 - INFO] max_train_acc: 74.521%
+[2023-0728 1536 - INFO] max_test_acc: 78.441%
+[2023-0728 1536 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1536 - INFO] ======================================
+[2023-0728 1537 - INFO] epoch: 38/100
+[2023-0728 1537 - INFO] learning_rate: 0.0001
+[2023-0728 1537 - INFO] train_acc: 74.562%, train_loss: 0.0087
+[2023-0728 1537 - INFO] test_acc: 77.980%, test_loss: 0.0083
+[2023-0728 1537 - INFO] max_train_acc: 74.562%
+[2023-0728 1537 - INFO] max_test_acc: 78.441%
+[2023-0728 1537 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1537 - INFO] ======================================
+[2023-0728 1538 - INFO] epoch: 39/100
+[2023-0728 1538 - INFO] learning_rate: 0.0001
+[2023-0728 1538 - INFO] train_acc: 74.697%, train_loss: 0.0087
+[2023-0728 1538 - INFO] test_acc: 78.167%, test_loss: 0.0083
+[2023-0728 1538 - INFO] max_train_acc: 74.697%
+[2023-0728 1538 - INFO] max_test_acc: 78.441%
+[2023-0728 1538 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1538 - INFO] ======================================
+[2023-0728 1539 - INFO] epoch: 40/100
+[2023-0728 1539 - INFO] learning_rate: 0.0001
+[2023-0728 1539 - INFO] train_acc: 74.450%, train_loss: 0.0087
+[2023-0728 1539 - INFO] test_acc: 78.315%, test_loss: 0.0082
+[2023-0728 1539 - INFO] max_train_acc: 74.697%
+[2023-0728 1539 - INFO] max_test_acc: 78.441%
+[2023-0728 1539 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1539 - INFO] ======================================
+[2023-0728 1540 - INFO] epoch: 41/100
+[2023-0728 1540 - INFO] learning_rate: 0.0001
+[2023-0728 1540 - INFO] train_acc: 74.292%, train_loss: 0.0087
+[2023-0728 1540 - INFO] test_acc: 78.563%, test_loss: 0.0082
+[2023-0728 1540 - INFO] max_train_acc: 74.697%
+[2023-0728 1540 - INFO] max_test_acc: 78.563%
+[2023-0728 1540 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1540 - INFO] ======================================
+[2023-0728 1541 - INFO] epoch: 42/100
+[2023-0728 1541 - INFO] learning_rate: 0.0001
+[2023-0728 1541 - INFO] train_acc: 74.727%, train_loss: 0.0087
+[2023-0728 1541 - INFO] test_acc: 78.611%, test_loss: 0.0082
+[2023-0728 1541 - INFO] max_train_acc: 74.727%
+[2023-0728 1541 - INFO] max_test_acc: 78.611%
+[2023-0728 1541 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1541 - INFO] ======================================
+[2023-0728 1542 - INFO] epoch: 43/100
+[2023-0728 1542 - INFO] learning_rate: 0.0001
+[2023-0728 1542 - INFO] train_acc: 74.697%, train_loss: 0.0087
+[2023-0728 1542 - INFO] test_acc: 78.376%, test_loss: 0.0082
+[2023-0728 1542 - INFO] max_train_acc: 74.727%
+[2023-0728 1542 - INFO] max_test_acc: 78.611%
+[2023-0728 1542 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1542 - INFO] ======================================
+[2023-0728 1543 - INFO] epoch: 44/100
+[2023-0728 1543 - INFO] learning_rate: 0.0001
+[2023-0728 1543 - INFO] train_acc: 74.832%, train_loss: 0.0086
+[2023-0728 1543 - INFO] test_acc: 78.642%, test_loss: 0.0082
+[2023-0728 1543 - INFO] max_train_acc: 74.832%
+[2023-0728 1543 - INFO] max_test_acc: 78.642%
+[2023-0728 1543 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1543 - INFO] ======================================
+[2023-0728 1544 - INFO] epoch: 45/100
+[2023-0728 1544 - INFO] learning_rate: 0.0001
+[2023-0728 1544 - INFO] train_acc: 74.480%, train_loss: 0.0087
+[2023-0728 1544 - INFO] test_acc: 78.637%, test_loss: 0.0082
+[2023-0728 1544 - INFO] max_train_acc: 74.832%
+[2023-0728 1544 - INFO] max_test_acc: 78.642%
+[2023-0728 1544 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1544 - INFO] ======================================
+[2023-0728 1545 - INFO] epoch: 46/100
+[2023-0728 1545 - INFO] learning_rate: 0.0001
+[2023-0728 1545 - INFO] train_acc: 74.633%, train_loss: 0.0086
+[2023-0728 1545 - INFO] test_acc: 78.581%, test_loss: 0.0082
+[2023-0728 1545 - INFO] max_train_acc: 74.832%
+[2023-0728 1545 - INFO] max_test_acc: 78.642%
+[2023-0728 1545 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1545 - INFO] ======================================
+[2023-0728 1546 - INFO] epoch: 47/100
+[2023-0728 1546 - INFO] learning_rate: 0.0001
+[2023-0728 1546 - INFO] train_acc: 74.774%, train_loss: 0.0086
+[2023-0728 1546 - INFO] test_acc: 78.737%, test_loss: 0.0082
+[2023-0728 1546 - INFO] max_train_acc: 74.832%
+[2023-0728 1546 - INFO] max_test_acc: 78.737%
+[2023-0728 1546 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1546 - INFO] ======================================
+[2023-0728 1547 - INFO] epoch: 48/100
+[2023-0728 1547 - INFO] learning_rate: 0.0001
+[2023-0728 1547 - INFO] train_acc: 74.791%, train_loss: 0.0086
+[2023-0728 1547 - INFO] test_acc: 78.620%, test_loss: 0.0082
+[2023-0728 1547 - INFO] max_train_acc: 74.832%
+[2023-0728 1547 - INFO] max_test_acc: 78.737%
+[2023-0728 1547 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1547 - INFO] ======================================
+[2023-0728 1548 - INFO] epoch: 49/100
+[2023-0728 1548 - INFO] learning_rate: 0.0001
+[2023-0728 1548 - INFO] train_acc: 75.009%, train_loss: 0.0086
+[2023-0728 1548 - INFO] test_acc: 79.404%, test_loss: 0.0081
+[2023-0728 1548 - INFO] max_train_acc: 75.009%
+[2023-0728 1548 - INFO] max_test_acc: 79.404%
+[2023-0728 1548 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1548 - INFO] ======================================
+[2023-0728 1549 - INFO] epoch: 50/100
+[2023-0728 1549 - INFO] learning_rate: 0.0001
+[2023-0728 1549 - INFO] train_acc: 74.668%, train_loss: 0.0086
+[2023-0728 1549 - INFO] test_acc: 78.737%, test_loss: 0.0082
+[2023-0728 1549 - INFO] max_train_acc: 75.009%
+[2023-0728 1549 - INFO] max_test_acc: 79.404%
+[2023-0728 1549 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1549 - INFO] ======================================
+[2023-0728 1550 - INFO] epoch: 51/100
+[2023-0728 1550 - INFO] learning_rate: 0.0001
+[2023-0728 1550 - INFO] train_acc: 74.621%, train_loss: 0.0086
+[2023-0728 1550 - INFO] test_acc: 79.208%, test_loss: 0.0081
+[2023-0728 1550 - INFO] max_train_acc: 75.009%
+[2023-0728 1550 - INFO] max_test_acc: 79.404%
+[2023-0728 1550 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1550 - INFO] ======================================
+[2023-0728 1551 - INFO] epoch: 52/100
+[2023-0728 1551 - INFO] learning_rate: 0.0001
+[2023-0728 1551 - INFO] train_acc: 74.756%, train_loss: 0.0086
+[2023-0728 1551 - INFO] test_acc: 79.142%, test_loss: 0.0081
+[2023-0728 1551 - INFO] max_train_acc: 75.009%
+[2023-0728 1551 - INFO] max_test_acc: 79.404%
+[2023-0728 1551 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1551 - INFO] ======================================
+[2023-0728 1552 - INFO] epoch: 53/100
+[2023-0728 1552 - INFO] learning_rate: 0.0001
+[2023-0728 1552 - INFO] train_acc: 75.291%, train_loss: 0.0086
+[2023-0728 1552 - INFO] test_acc: 78.559%, test_loss: 0.0082
+[2023-0728 1552 - INFO] max_train_acc: 75.291%
+[2023-0728 1552 - INFO] max_test_acc: 79.404%
+[2023-0728 1552 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1552 - INFO] ======================================
+[2023-0728 1553 - INFO] epoch: 54/100
+[2023-0728 1553 - INFO] learning_rate: 0.0001
+[2023-0728 1553 - INFO] train_acc: 75.197%, train_loss: 0.0086
+[2023-0728 1553 - INFO] test_acc: 79.295%, test_loss: 0.0081
+[2023-0728 1553 - INFO] max_train_acc: 75.291%
+[2023-0728 1553 - INFO] max_test_acc: 79.404%
+[2023-0728 1553 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1553 - INFO] ======================================
+[2023-0728 1554 - INFO] epoch: 55/100
+[2023-0728 1554 - INFO] learning_rate: 0.0001
+[2023-0728 1554 - INFO] train_acc: 74.962%, train_loss: 0.0086
+[2023-0728 1554 - INFO] test_acc: 79.338%, test_loss: 0.0081
+[2023-0728 1554 - INFO] max_train_acc: 75.291%
+[2023-0728 1554 - INFO] max_test_acc: 79.404%
+[2023-0728 1554 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1554 - INFO] ======================================
+[2023-0728 1555 - INFO] epoch: 56/100
+[2023-0728 1555 - INFO] learning_rate: 0.0001
+[2023-0728 1555 - INFO] train_acc: 74.850%, train_loss: 0.0086
+[2023-0728 1555 - INFO] test_acc: 79.073%, test_loss: 0.0081
+[2023-0728 1555 - INFO] max_train_acc: 75.291%
+[2023-0728 1555 - INFO] max_test_acc: 79.404%
+[2023-0728 1555 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1555 - INFO] ======================================
+[2023-0728 1556 - INFO] epoch: 57/100
+[2023-0728 1556 - INFO] learning_rate: 0.0001
+[2023-0728 1556 - INFO] train_acc: 74.956%, train_loss: 0.0086
+[2023-0728 1556 - INFO] test_acc: 79.099%, test_loss: 0.0081
+[2023-0728 1556 - INFO] max_train_acc: 75.291%
+[2023-0728 1556 - INFO] max_test_acc: 79.404%
+[2023-0728 1556 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1556 - INFO] ======================================
+[2023-0728 1557 - INFO] epoch: 58/100
+[2023-0728 1557 - INFO] learning_rate: 0.0001
+[2023-0728 1557 - INFO] train_acc: 75.173%, train_loss: 0.0086
+[2023-0728 1557 - INFO] test_acc: 78.759%, test_loss: 0.0081
+[2023-0728 1557 - INFO] max_train_acc: 75.291%
+[2023-0728 1557 - INFO] max_test_acc: 79.404%
+[2023-0728 1557 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1557 - INFO] ======================================
+[2023-0728 1558 - INFO] epoch: 59/100
+[2023-0728 1558 - INFO] learning_rate: 0.0001
+[2023-0728 1558 - INFO] train_acc: 75.068%, train_loss: 0.0086
+[2023-0728 1558 - INFO] test_acc: 79.229%, test_loss: 0.0081
+[2023-0728 1558 - INFO] max_train_acc: 75.291%
+[2023-0728 1558 - INFO] max_test_acc: 79.404%
+[2023-0728 1558 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1558 - INFO] ======================================
+[2023-0728 1559 - INFO] epoch: 60/100
+[2023-0728 1559 - INFO] learning_rate: 0.0001
+[2023-0728 1559 - INFO] train_acc: 75.021%, train_loss: 0.0086
+[2023-0728 1559 - INFO] test_acc: 79.369%, test_loss: 0.0080
+[2023-0728 1559 - INFO] max_train_acc: 75.291%
+[2023-0728 1559 - INFO] max_test_acc: 79.404%
+[2023-0728 1559 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1559 - INFO] ======================================
+[2023-0728 1600 - INFO] epoch: 61/100
+[2023-0728 1600 - INFO] learning_rate: 0.0001
+[2023-0728 1600 - INFO] train_acc: 75.073%, train_loss: 0.0086
+[2023-0728 1600 - INFO] test_acc: 79.491%, test_loss: 0.0080
+[2023-0728 1600 - INFO] max_train_acc: 75.291%
+[2023-0728 1600 - INFO] max_test_acc: 79.491%
+[2023-0728 1600 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1600 - INFO] ======================================
+[2023-0728 1601 - INFO] epoch: 62/100
+[2023-0728 1601 - INFO] learning_rate: 0.0001
+[2023-0728 1601 - INFO] train_acc: 74.997%, train_loss: 0.0086
+[2023-0728 1601 - INFO] test_acc: 79.491%, test_loss: 0.0080
+[2023-0728 1601 - INFO] max_train_acc: 75.291%
+[2023-0728 1601 - INFO] max_test_acc: 79.491%
+[2023-0728 1601 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1601 - INFO] ======================================
+[2023-0728 1602 - INFO] epoch: 63/100
+[2023-0728 1602 - INFO] learning_rate: 0.0001
+[2023-0728 1602 - INFO] train_acc: 74.844%, train_loss: 0.0086
+[2023-0728 1602 - INFO] test_acc: 79.743%, test_loss: 0.0080
+[2023-0728 1602 - INFO] max_train_acc: 75.291%
+[2023-0728 1602 - INFO] max_test_acc: 79.743%
+[2023-0728 1602 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1602 - INFO] ======================================
+[2023-0728 1603 - INFO] epoch: 64/100
+[2023-0728 1603 - INFO] learning_rate: 0.0001
+[2023-0728 1603 - INFO] train_acc: 74.991%, train_loss: 0.0086
+[2023-0728 1603 - INFO] test_acc: 79.421%, test_loss: 0.0080
+[2023-0728 1603 - INFO] max_train_acc: 75.291%
+[2023-0728 1603 - INFO] max_test_acc: 79.743%
+[2023-0728 1603 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1603 - INFO] ======================================
+[2023-0728 1604 - INFO] epoch: 65/100
+[2023-0728 1604 - INFO] learning_rate: 0.0001
+[2023-0728 1604 - INFO] train_acc: 74.750%, train_loss: 0.0086
+[2023-0728 1604 - INFO] test_acc: 79.369%, test_loss: 0.0080
+[2023-0728 1604 - INFO] max_train_acc: 75.291%
+[2023-0728 1604 - INFO] max_test_acc: 79.743%
+[2023-0728 1604 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1604 - INFO] ======================================
+[2023-0728 1605 - INFO] epoch: 66/100
+[2023-0728 1605 - INFO] learning_rate: 0.0001
+[2023-0728 1605 - INFO] train_acc: 75.162%, train_loss: 0.0086
+[2023-0728 1605 - INFO] test_acc: 79.708%, test_loss: 0.0080
+[2023-0728 1605 - INFO] max_train_acc: 75.291%
+[2023-0728 1605 - INFO] max_test_acc: 79.743%
+[2023-0728 1605 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1605 - INFO] ======================================
+[2023-0728 1606 - INFO] epoch: 67/100
+[2023-0728 1606 - INFO] learning_rate: 0.0001
+[2023-0728 1606 - INFO] train_acc: 75.097%, train_loss: 0.0086
+[2023-0728 1606 - INFO] test_acc: 79.530%, test_loss: 0.0080
+[2023-0728 1606 - INFO] max_train_acc: 75.291%
+[2023-0728 1606 - INFO] max_test_acc: 79.743%
+[2023-0728 1606 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1606 - INFO] ======================================
+[2023-0728 1607 - INFO] epoch: 68/100
+[2023-0728 1607 - INFO] learning_rate: 0.0001
+[2023-0728 1607 - INFO] train_acc: 74.815%, train_loss: 0.0086
+[2023-0728 1607 - INFO] test_acc: 79.478%, test_loss: 0.0080
+[2023-0728 1607 - INFO] max_train_acc: 75.291%
+[2023-0728 1607 - INFO] max_test_acc: 79.743%
+[2023-0728 1607 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1607 - INFO] ======================================
+[2023-0728 1607 - INFO] epoch: 69/100
+[2023-0728 1607 - INFO] learning_rate: 0.0001
+[2023-0728 1607 - INFO] train_acc: 75.291%, train_loss: 0.0085
+[2023-0728 1607 - INFO] test_acc: 79.552%, test_loss: 0.0080
+[2023-0728 1607 - INFO] max_train_acc: 75.291%
+[2023-0728 1607 - INFO] max_test_acc: 79.743%
+[2023-0728 1607 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1607 - INFO] ======================================
+[2023-0728 1608 - INFO] epoch: 70/100
+[2023-0728 1608 - INFO] learning_rate: 0.0001
+[2023-0728 1608 - INFO] train_acc: 75.326%, train_loss: 0.0085
+[2023-0728 1608 - INFO] test_acc: 79.473%, test_loss: 0.0080
+[2023-0728 1608 - INFO] max_train_acc: 75.326%
+[2023-0728 1608 - INFO] max_test_acc: 79.743%
+[2023-0728 1608 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1608 - INFO] ======================================
+[2023-0728 1609 - INFO] epoch: 71/100
+[2023-0728 1609 - INFO] learning_rate: 0.0001
+[2023-0728 1609 - INFO] train_acc: 75.079%, train_loss: 0.0085
+[2023-0728 1609 - INFO] test_acc: 79.430%, test_loss: 0.0080
+[2023-0728 1609 - INFO] max_train_acc: 75.326%
+[2023-0728 1609 - INFO] max_test_acc: 79.743%
+[2023-0728 1609 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1609 - INFO] ======================================
+[2023-0728 1610 - INFO] epoch: 72/100
+[2023-0728 1610 - INFO] learning_rate: 0.0001
+[2023-0728 1610 - INFO] train_acc: 75.250%, train_loss: 0.0086
+[2023-0728 1610 - INFO] test_acc: 78.920%, test_loss: 0.0081
+[2023-0728 1610 - INFO] max_train_acc: 75.326%
+[2023-0728 1610 - INFO] max_test_acc: 79.743%
+[2023-0728 1610 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1610 - INFO] ======================================
+[2023-0728 1611 - INFO] epoch: 73/100
+[2023-0728 1611 - INFO] learning_rate: 0.0001
+[2023-0728 1611 - INFO] train_acc: 75.003%, train_loss: 0.0086
+[2023-0728 1611 - INFO] test_acc: 79.103%, test_loss: 0.0080
+[2023-0728 1611 - INFO] max_train_acc: 75.326%
+[2023-0728 1611 - INFO] max_test_acc: 79.743%
+[2023-0728 1611 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1611 - INFO] ======================================
+[2023-0728 1612 - INFO] epoch: 74/100
+[2023-0728 1612 - INFO] learning_rate: 0.0001
+[2023-0728 1612 - INFO] train_acc: 75.197%, train_loss: 0.0085
+[2023-0728 1612 - INFO] test_acc: 79.869%, test_loss: 0.0080
+[2023-0728 1612 - INFO] max_train_acc: 75.326%
+[2023-0728 1612 - INFO] max_test_acc: 79.869%
+[2023-0728 1612 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1612 - INFO] ======================================
+[2023-0728 1613 - INFO] epoch: 75/100
+[2023-0728 1613 - INFO] learning_rate: 0.0001
+[2023-0728 1613 - INFO] train_acc: 75.179%, train_loss: 0.0086
+[2023-0728 1613 - INFO] test_acc: 79.478%, test_loss: 0.0080
+[2023-0728 1613 - INFO] max_train_acc: 75.326%
+[2023-0728 1613 - INFO] max_test_acc: 79.869%
+[2023-0728 1613 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1613 - INFO] ======================================
+[2023-0728 1614 - INFO] epoch: 76/100
+[2023-0728 1614 - INFO] learning_rate: 0.0001
+[2023-0728 1614 - INFO] train_acc: 75.409%, train_loss: 0.0085
+[2023-0728 1614 - INFO] test_acc: 79.595%, test_loss: 0.0080
+[2023-0728 1614 - INFO] max_train_acc: 75.409%
+[2023-0728 1614 - INFO] max_test_acc: 79.869%
+[2023-0728 1614 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1614 - INFO] ======================================
+[2023-0728 1615 - INFO] epoch: 77/100
+[2023-0728 1615 - INFO] learning_rate: 0.0001
+[2023-0728 1615 - INFO] train_acc: 75.215%, train_loss: 0.0085
+[2023-0728 1615 - INFO] test_acc: 79.530%, test_loss: 0.0080
+[2023-0728 1615 - INFO] max_train_acc: 75.409%
+[2023-0728 1615 - INFO] max_test_acc: 79.869%
+[2023-0728 1615 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1615 - INFO] ======================================
+[2023-0728 1616 - INFO] epoch: 78/100
+[2023-0728 1616 - INFO] learning_rate: 0.0001
+[2023-0728 1616 - INFO] train_acc: 75.091%, train_loss: 0.0085
+[2023-0728 1616 - INFO] test_acc: 79.425%, test_loss: 0.0080
+[2023-0728 1616 - INFO] max_train_acc: 75.409%
+[2023-0728 1616 - INFO] max_test_acc: 79.869%
+[2023-0728 1616 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1616 - INFO] ======================================
+[2023-0728 1617 - INFO] epoch: 79/100
+[2023-0728 1617 - INFO] learning_rate: 0.0001
+[2023-0728 1617 - INFO] train_acc: 74.891%, train_loss: 0.0086
+[2023-0728 1617 - INFO] test_acc: 79.216%, test_loss: 0.0080
+[2023-0728 1617 - INFO] max_train_acc: 75.409%
+[2023-0728 1617 - INFO] max_test_acc: 79.869%
+[2023-0728 1617 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1617 - INFO] ======================================
+[2023-0728 1618 - INFO] epoch: 80/100
+[2023-0728 1618 - INFO] learning_rate: 0.0001
+[2023-0728 1618 - INFO] train_acc: 75.332%, train_loss: 0.0085
+[2023-0728 1618 - INFO] test_acc: 79.147%, test_loss: 0.0080
+[2023-0728 1618 - INFO] max_train_acc: 75.409%
+[2023-0728 1618 - INFO] max_test_acc: 79.869%
+[2023-0728 1618 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1618 - INFO] ======================================
+[2023-0728 1619 - INFO] epoch: 81/100
+[2023-0728 1619 - INFO] learning_rate: 0.0001
+[2023-0728 1619 - INFO] train_acc: 75.432%, train_loss: 0.0085
+[2023-0728 1619 - INFO] test_acc: 79.421%, test_loss: 0.0080
+[2023-0728 1619 - INFO] max_train_acc: 75.432%
+[2023-0728 1619 - INFO] max_test_acc: 79.869%
+[2023-0728 1619 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1619 - INFO] ======================================
+[2023-0728 1620 - INFO] epoch: 82/100
+[2023-0728 1620 - INFO] learning_rate: 0.0001
+[2023-0728 1620 - INFO] train_acc: 75.708%, train_loss: 0.0085
+[2023-0728 1620 - INFO] test_acc: 79.443%, test_loss: 0.0080
+[2023-0728 1620 - INFO] max_train_acc: 75.708%
+[2023-0728 1620 - INFO] max_test_acc: 79.869%
+[2023-0728 1620 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1620 - INFO] ======================================
+[2023-0728 1621 - INFO] epoch: 83/100
+[2023-0728 1621 - INFO] learning_rate: 0.0001
+[2023-0728 1621 - INFO] train_acc: 75.291%, train_loss: 0.0085
+[2023-0728 1621 - INFO] test_acc: 79.312%, test_loss: 0.0080
+[2023-0728 1621 - INFO] max_train_acc: 75.708%
+[2023-0728 1621 - INFO] max_test_acc: 79.869%
+[2023-0728 1621 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1621 - INFO] ======================================
+[2023-0728 1622 - INFO] epoch: 84/100
+[2023-0728 1622 - INFO] learning_rate: 0.0001
+[2023-0728 1622 - INFO] train_acc: 75.497%, train_loss: 0.0085
+[2023-0728 1622 - INFO] test_acc: 79.395%, test_loss: 0.0080
+[2023-0728 1622 - INFO] max_train_acc: 75.708%
+[2023-0728 1622 - INFO] max_test_acc: 79.869%
+[2023-0728 1622 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1622 - INFO] ======================================
+[2023-0728 1623 - INFO] epoch: 85/100
+[2023-0728 1623 - INFO] learning_rate: 0.0001
+[2023-0728 1623 - INFO] train_acc: 75.203%, train_loss: 0.0085
+[2023-0728 1623 - INFO] test_acc: 79.182%, test_loss: 0.0080
+[2023-0728 1623 - INFO] max_train_acc: 75.708%
+[2023-0728 1623 - INFO] max_test_acc: 79.869%
+[2023-0728 1623 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1623 - INFO] ======================================
+[2023-0728 1624 - INFO] epoch: 86/100
+[2023-0728 1624 - INFO] learning_rate: 0.0001
+[2023-0728 1624 - INFO] train_acc: 75.561%, train_loss: 0.0085
+[2023-0728 1624 - INFO] test_acc: 79.599%, test_loss: 0.0080
+[2023-0728 1624 - INFO] max_train_acc: 75.708%
+[2023-0728 1624 - INFO] max_test_acc: 79.869%
+[2023-0728 1624 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1624 - INFO] ======================================
+[2023-0728 1625 - INFO] epoch: 87/100
+[2023-0728 1625 - INFO] learning_rate: 0.0001
+[2023-0728 1625 - INFO] train_acc: 75.232%, train_loss: 0.0085
+[2023-0728 1625 - INFO] test_acc: 79.530%, test_loss: 0.0080
+[2023-0728 1625 - INFO] max_train_acc: 75.708%
+[2023-0728 1625 - INFO] max_test_acc: 79.869%
+[2023-0728 1625 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1625 - INFO] ======================================
+[2023-0728 1626 - INFO] epoch: 88/100
+[2023-0728 1626 - INFO] learning_rate: 0.0001
+[2023-0728 1626 - INFO] train_acc: 74.991%, train_loss: 0.0086
+[2023-0728 1626 - INFO] test_acc: 79.460%, test_loss: 0.0080
+[2023-0728 1626 - INFO] max_train_acc: 75.708%
+[2023-0728 1626 - INFO] max_test_acc: 79.869%
+[2023-0728 1626 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1626 - INFO] ======================================
+[2023-0728 1627 - INFO] epoch: 89/100
+[2023-0728 1627 - INFO] learning_rate: 0.0001
+[2023-0728 1627 - INFO] train_acc: 75.356%, train_loss: 0.0085
+[2023-0728 1627 - INFO] test_acc: 79.613%, test_loss: 0.0080
+[2023-0728 1627 - INFO] max_train_acc: 75.708%
+[2023-0728 1627 - INFO] max_test_acc: 79.869%
+[2023-0728 1627 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1627 - INFO] ======================================
+[2023-0728 1628 - INFO] epoch: 90/100
+[2023-0728 1628 - INFO] learning_rate: 0.0001
+[2023-0728 1628 - INFO] train_acc: 75.344%, train_loss: 0.0085
+[2023-0728 1628 - INFO] test_acc: 79.264%, test_loss: 0.0080
+[2023-0728 1628 - INFO] max_train_acc: 75.708%
+[2023-0728 1628 - INFO] max_test_acc: 79.869%
+[2023-0728 1628 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1628 - INFO] ======================================
+[2023-0728 1629 - INFO] epoch: 91/100
+[2023-0728 1629 - INFO] learning_rate: 0.0001
+[2023-0728 1629 - INFO] train_acc: 75.279%, train_loss: 0.0085
+[2023-0728 1629 - INFO] test_acc: 78.855%, test_loss: 0.0081
+[2023-0728 1629 - INFO] max_train_acc: 75.708%
+[2023-0728 1629 - INFO] max_test_acc: 79.869%
+[2023-0728 1629 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1629 - INFO] ======================================
+[2023-0728 1630 - INFO] epoch: 92/100
+[2023-0728 1630 - INFO] learning_rate: 0.0001
+[2023-0728 1630 - INFO] train_acc: 75.279%, train_loss: 0.0085
+[2023-0728 1630 - INFO] test_acc: 79.822%, test_loss: 0.0079
+[2023-0728 1630 - INFO] max_train_acc: 75.708%
+[2023-0728 1630 - INFO] max_test_acc: 79.869%
+[2023-0728 1630 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1630 - INFO] ======================================
+[2023-0728 1631 - INFO] epoch: 93/100
+[2023-0728 1631 - INFO] learning_rate: 0.0001
+[2023-0728 1631 - INFO] train_acc: 75.085%, train_loss: 0.0085
+[2023-0728 1631 - INFO] test_acc: 79.739%, test_loss: 0.0079
+[2023-0728 1631 - INFO] max_train_acc: 75.708%
+[2023-0728 1631 - INFO] max_test_acc: 79.869%
+[2023-0728 1631 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1631 - INFO] ======================================
+[2023-0728 1632 - INFO] epoch: 94/100
+[2023-0728 1632 - INFO] learning_rate: 0.0001
+[2023-0728 1632 - INFO] train_acc: 75.732%, train_loss: 0.0085
+[2023-0728 1632 - INFO] test_acc: 79.987%, test_loss: 0.0079
+[2023-0728 1632 - INFO] max_train_acc: 75.732%
+[2023-0728 1632 - INFO] max_test_acc: 79.987%
+[2023-0728 1632 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1632 - INFO] ======================================
+[2023-0728 1633 - INFO] epoch: 95/100
+[2023-0728 1633 - INFO] learning_rate: 0.0001
+[2023-0728 1633 - INFO] train_acc: 75.362%, train_loss: 0.0085
+[2023-0728 1633 - INFO] test_acc: 79.578%, test_loss: 0.0080
+[2023-0728 1633 - INFO] max_train_acc: 75.732%
+[2023-0728 1633 - INFO] max_test_acc: 79.987%
+[2023-0728 1633 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1633 - INFO] ======================================
+[2023-0728 1634 - INFO] epoch: 96/100
+[2023-0728 1634 - INFO] learning_rate: 0.0001
+[2023-0728 1634 - INFO] train_acc: 75.491%, train_loss: 0.0085
+[2023-0728 1634 - INFO] test_acc: 79.678%, test_loss: 0.0080
+[2023-0728 1634 - INFO] max_train_acc: 75.732%
+[2023-0728 1634 - INFO] max_test_acc: 79.987%
+[2023-0728 1634 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1634 - INFO] ======================================
+[2023-0728 1635 - INFO] epoch: 97/100
+[2023-0728 1635 - INFO] learning_rate: 0.0001
+[2023-0728 1635 - INFO] train_acc: 75.391%, train_loss: 0.0085
+[2023-0728 1635 - INFO] test_acc: 79.478%, test_loss: 0.0080
+[2023-0728 1635 - INFO] max_train_acc: 75.732%
+[2023-0728 1635 - INFO] max_test_acc: 79.987%
+[2023-0728 1635 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1635 - INFO] ======================================
+[2023-0728 1636 - INFO] epoch: 98/100
+[2023-0728 1636 - INFO] learning_rate: 0.0001
+[2023-0728 1636 - INFO] train_acc: 75.520%, train_loss: 0.0085
+[2023-0728 1636 - INFO] test_acc: 79.643%, test_loss: 0.0080
+[2023-0728 1636 - INFO] max_train_acc: 75.732%
+[2023-0728 1636 - INFO] max_test_acc: 79.987%
+[2023-0728 1636 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1636 - INFO] ======================================
+[2023-0728 1637 - INFO] epoch: 99/100
+[2023-0728 1637 - INFO] learning_rate: 0.0001
+[2023-0728 1637 - INFO] train_acc: 75.461%, train_loss: 0.0085
+[2023-0728 1637 - INFO] test_acc: 79.613%, test_loss: 0.0080
+[2023-0728 1637 - INFO] max_train_acc: 75.732%
+[2023-0728 1637 - INFO] max_test_acc: 79.987%
+[2023-0728 1637 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1637 - INFO] ======================================
+[2023-0728 1638 - INFO] epoch: 100/100
+[2023-0728 1638 - INFO] learning_rate: 0.0001
+[2023-0728 1638 - INFO] train_acc: 75.297%, train_loss: 0.0085
+[2023-0728 1638 - INFO] test_acc: 79.813%, test_loss: 0.0079
+[2023-0728 1638 - INFO] max_train_acc: 75.732%
+[2023-0728 1638 - INFO] max_test_acc: 79.987%
+[2023-0728 1638 - INFO] max_lr: 0.0001, min_lr: 0.0001
+[2023-0728 1638 - INFO] ======================================
