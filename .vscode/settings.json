@@ -1,3 +1,17 @@
 {
-    "prettier.enableDebugLogs": false
+"python.formatting.provider": "yapf",    					//使用yapf作为Python代码格式化工具。
+"editor.formatOnSave": true,								//开启文件保存时自动格式化
+"python.formatting.yapfArgs": [
+    "--style=pep8",											//格式化风格，PEP 8是Python社区推荐的Python代码风格指南
+    "{column_limit: 100}",									//每行代码的最大长度，多出的就会换行
+    "{indent_width: 4}",									//设置缩进使用4个空格	
+    "{align_closing_bracket_with_visual_indent:true}",		//是否将闭括号与视觉缩进对齐
+    "{allow_split_before_dict_value:true}",					//在字典值前是否允许换行
+    "{continuation_indent_width:4}",						//续行时使用的缩进宽度
+    "{split_arguments_when_comma_terminated:true}",			//在逗号结尾时是否换行
+    "{split_before_expression_after_opening_paren:true}",	//在左括号后是否换行
+    
+],
+"editor.fontFamily": "‘Fira Code’,Consolas, 'Courier New', monospace"
+
 }

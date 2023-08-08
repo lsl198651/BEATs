@@ -6,12 +6,17 @@
 	],
 	"settings": {
 		"[python]": {
-			"editor.defaultFormatter": "ms-python.black-formatter"
+			"editor.defaultFormatter": "ms-python.autopep8"
 		},
 		"python.formatting.provider": "autopep8",
 		"editor.formatOnType": true,
 		"editor.formatOnSave": true,
 		"editor.formatOnPaste": true,
-		"editor.fontFamily": "Consolas, 'Fira Code', monospace"
+		"editor.fontFamily": "‘Fira Code’,Consolas, 'Courier New', monospace"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-ceintl.vscode-language-pack-zh-hans"
+		]
 	}
 }

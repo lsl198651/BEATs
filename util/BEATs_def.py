@@ -1,12 +1,14 @@
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
 import csv
 import os
 import librosa
-import torch, shutil
+import torch
+import shutil
 import pandas as pd
 import numpy as np
 import logging
 import datetime
-import torchaudio
 from datetime import datetime
 import sys
 from torch.utils.data import DataLoader, Dataset
@@ -95,7 +97,8 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                 # 数据读取
                 print("reading: " + subfile)
                 waveform, sr = librosa.load(wav_path)
-                waveform_16k = librosa.resample(y=waveform, orig_sr=sr, target_sr=16000)
+                waveform_16k = librosa.resample(
+                    y=waveform, orig_sr=sr, target_sr=16000)
                 print("waveform_16k size: " + str(waveform_16k.size))
 
                 if subfile.split("_")[2] == "Systolic":
@@ -179,7 +182,8 @@ def logger_init(
         level=log_level,
         format=formatter,
         datefmt="%Y-%m%d %H%M",
-        handlers=[logging.FileHandler(log_path), logging.StreamHandler(sys.stdout)],
+        handlers=[logging.FileHandler(
+            log_path), logging.StreamHandler(sys.stdout)],
     )
     logging.disable(logging.DEBUG)
 
@@ -204,9 +208,6 @@ class save_info(object):
 
 
 # ========================/ train and test /========================== #
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
 
 
 def draw_confusion_matrix(

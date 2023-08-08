@@ -74,7 +74,8 @@ class BEATsConfig:
         self.gru_rel_pos: bool = False  # apply gated relative position embedding
 
         # label predictor
-        self.finetuned_model: bool = False  # whether the model is a fine-tuned model.
+        # whether the model is a fine-tuned model.
+        self.finetuned_model: bool = False
         self.predictor_dropout: float = 0.1  # dropout probability for the predictor
         self.predictor_class: int = 2  # target class number for the predictor
 
@@ -122,7 +123,8 @@ class BEATs(nn.Module):
 
         if cfg.finetuned_model:
             self.predictor_dropout = nn.Dropout(cfg.predictor_dropout)
-            self.predictor = nn.Linear(cfg.encoder_embed_dim, cfg.predictor_class)
+            self.predictor = nn.Linear(
+                cfg.encoder_embed_dim, cfg.predictor_class)
         else:
             self.predictor = None
 
@@ -137,7 +139,8 @@ class BEATs(nn.Module):
         extra = padding_mask.size(1) % features.size(1)
         if extra > 0:
             padding_mask = padding_mask[:, :-extra]
-        padding_mask = padding_mask.view(padding_mask.size(0), features.size(1), -1)
+        padding_mask = padding_mask.view(
+            padding_mask.size(0), features.size(1), -1)
         padding_mask = padding_mask.all(-1)
         return padding_mask
 
@@ -147,7 +150,7 @@ class BEATs(nn.Module):
         source: torch.Tensor,
         fbank_mean: float = 15.41663,
         fbank_std: float = 6.55582,
-        mask: bool = False,
+        args=None,
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
@@ -159,12 +162,10 @@ class BEATs(nn.Module):
                 frame_length=25,
                 frame_shift=10,
             )
-            if mask is True:
-                freqm_value = 30  # 横向
-                timem_value = 1  # 纵向
+            if args.mask is True:
                 # SpecAug, not do for eval set
-                freqm = TT.FrequencyMasking(freq_mask_param=freqm_value)
-                timem = TT.TimeMasking(time_mask_param=timem_value)
+                freqm = TT.FrequencyMasking(freq_mask_param=args.freqm_value)
+                timem = TT.TimeMasking(time_mask_param=args.timem_value)
                 fbank = torch.transpose(fbank, 0, 1)
                 # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
                 fbank = fbank.unsqueeze(0)
@@ -185,12 +186,14 @@ class BEATs(nn.Module):
         padding_mask: Optional[torch.Tensor] = None,
         fbank_mean: float = 15.41663,
         fbank_std: float = 6.55582,
+        args=None,
     ):
         # wav提取fbank系数
         fbank = self.preprocess(
             source,
             fbank_mean=fbank_mean,
             fbank_std=fbank_std,
+            args=args,
         )
         # 如果有padding-mask的话进行forward-padding-mask
         # 返回一个值？？？
@@ -246,6 +249,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
     def __init__(self, args):
         self.model_name = args.model
         self.layers = args.layers
+        self.args = args
         super(BEATs_Pre_Train_itere3, self).__init__()
 
         checkpoint = torch.load(
@@ -267,7 +271,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
 
     def forward(self, x, padding_mask: torch.Tensor = None):
         # with torch.no_grad():
-        x, _ = self.BEATs.extract_features(x, padding_mask)
+        x, _ = self.BEATs.extract_features(x, padding_mask, args=self.args)
         # dropout
         # with torch.enable_grad():
         y = self.last_Dropout(x)
