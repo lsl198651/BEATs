@@ -16,7 +16,7 @@ from util.BEATs_def import (MyDataset, logger_init)
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--batch_size", type=int, default=128,
+parser.add_argument("--batch_size", type=int, default=256,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
                     default=0.001, help="learning_rate for training")
@@ -34,19 +34,19 @@ parser.add_argument("--mask", type=bool, default=False,
                     help="number of classes", choices=[True, False])
 parser.add_argument("--testset_balance", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
-parser.add_argument("--Data_Augmentation", type=bool, default=False,
+parser.add_argument("--Data_Augmentation", type=bool, default=True,
                     help="Add data augmentation", choices=[True, False],)
 parser.add_argument("--grad_flag", type=bool, default=False,
                     help="use grad_no_requiredn", choices=[True, False],)
 parser.add_argument("--samplerWeight", type=bool, default=False,
                     help="use balanced sampler", choices=[True, False],)
 parser.add_argument("--model", type=str,
-                    default="BEATs_iter3_plus_AS20K", help="the model used")
+                    default="BEATs_iter3_plus_AS2M", help="the model used", choices=["BEATs_iter3_plus_AS2M", "BEATs_iter3_plus_AS20K", "BEATs_iter3"])
 parser.add_argument("--ap_ratio", type=float, default=1.0,
                     help="ratio of absent and present")
 parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
-parser.add_argument("--beta", type=float, default=(0.89, 0.999), help="beta")
+parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label = get_features(
@@ -90,20 +90,10 @@ for param in MyModel.BEATs.parameters():
     param.requires_grad = False
 optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
                               lr=args.learning_rate, betas=args.beta,)
-# ========================/ setup warmup lr /========================== #
-warm_up_ratio = 0.1
-total_steps = len(train_loader) * args.num_epochs
-
-if args.scheduler_flag == "cos":
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=10, eta_min=0)
-elif args.scheduler_flag == "cos_warmup":
-    scheduler = optimization.get_cosine_schedule_with_warmup(
-        optimizer, num_warmup_steps=warm_up_ratio * total_steps, num_training_steps=total_steps,)
 
 # ========================/ setup scaler /========================== #
 logger_init()
-logging.info(f"<<<  {args.model}  - {args.layers} fc layer >>> ")
+logging.info(f"<<< {args.model} - {args.layers} fc layer >>>")
 logging.info(f"# Batch_size = {args.batch_size}")
 logging.info(f"# Num_epochs = {args.num_epochs}")
 logging.info(f"# Learning_rate = {args.learning_rate}")
@@ -127,15 +117,14 @@ tb_writer = SummaryWriter(
     r"./tensorboard/" + str(datetime.now().strftime("%Y-%m%d %H%M"))
 )
 
-for epoch in range(args.num_epochs):
-    train_test(
-        model=MyModel,
-        train_loader=train_loader,
-        test_loader=val_loader,
-        padding=padding_mask,
-        epochs=epoch,
-        optimizer=optimizer,
-        args=args,
-        tb_writer=tb_writer,
-        matrix_path=confusion_matrix_path,
-    )
+
+train_test(
+    model=MyModel,
+    train_loader=train_loader,
+    test_loader=val_loader,
+    padding=padding_mask,
+    optimizer=optimizer,
+    args=args,
+    tb_writer=tb_writer,
+    matrix_path=confusion_matrix_path,
+)
