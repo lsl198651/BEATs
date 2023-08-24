@@ -80,12 +80,13 @@ def get_wav_data(dir_path):
                     label.append(0)
                 if file_name[4] == "Present":  # Present
                     label.append(1)  # 说明该听诊区无杂音
+
     return np.array(wav), np.array(label)
 
 
-def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
-    slen = []
-    dlen = []
+def cal_len(dir_path, csv_path):
+    alen = []
+    plen = []
     # label=[]
     if not os.path.exists(csv_path):
         os.makedirs(csv_path)
@@ -101,11 +102,13 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                     y=waveform, orig_sr=sr, target_sr=16000)
                 print("waveform_16k size: " + str(waveform_16k.size))
 
-                if subfile.split("_")[2] == "Systolic":
-                    slen.append(waveform_16k.size)
+                if subfile.split("_")[2] == "Present":
+                    plen.append(waveform_16k.size)
                 else:
-                    dlen.append(waveform_16k.size)
-    return np.array(slen), np.array(dlen)
+                    alen.append(waveform_16k.size)
+
+    pd.DataFrame(plen).to_csv(csv_path, index=False, header=False)
+    pd.DataFrame(alen).to_csv(csv_path, index=False, header=False)
 
 
 """

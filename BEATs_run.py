@@ -19,12 +19,11 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--batch_size", type=int, default=256,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
-                    default=0.001, help="learning_rate for training")
-parser.add_argument("--num_epochs", type=int, default=100, help="num_epochs")
-parser.add_argument("--layers", type=int, default=1, help="layers number")
+                    default=0.0001, help="learning_rate for training")
+parser.add_argument("--num_epochs", type=int, default=150, help="num_epochs")
 parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])
-parser.add_argument("--scheduler_flag", type=str, default='cos',
+parser.add_argument("--scheduler_flag", type=str, default=None,
                     help="the dataset used", choices=["cos", "cos_warmup"],)
 parser.add_argument("--freqm_value",  type=int, default=0,
                     help="frequency mask max length")
@@ -40,6 +39,9 @@ parser.add_argument("--grad_flag", type=bool, default=False,
                     help="use grad_no_requiredn", choices=[True, False],)
 parser.add_argument("--samplerWeight", type=bool, default=False,
                     help="use balanced sampler", choices=[True, False],)
+parser.add_argument("--layers", type=int, default=1, help="layers number")
+parser.add_argument("--train_total_model", type=bool, default=False,
+                    help="train total model", choices=[True, False],)
 parser.add_argument("--model", type=str,
                     default="BEATs_iter3_plus_AS2M", help="the model used", choices=["BEATs_iter3_plus_AS2M", "BEATs_iter3_plus_AS20K", "BEATs_iter3"])
 parser.add_argument("--ap_ratio", type=float, default=1.0,
@@ -86,10 +88,14 @@ padding_mask = torch.Tensor(padding)
 MyModel = BEATs_Pre_Train_itere3(args=args)
 
 # ========================/ setup optimizer /========================== #
-for param in MyModel.BEATs.parameters():
-    param.requires_grad = False
-optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
-                              lr=args.learning_rate, betas=args.beta,)
+if args.train_total_model == False:
+    for param in MyModel.BEATs.parameters():
+        param.requires_grad = False
+    optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
+                                  lr=args.learning_rate, betas=args.beta,)
+else:
+    optimizer = torch.optim.AdamW(MyModel.parameters(),
+                                  lr=args.learning_rate, betas=args.beta,)
 
 # ========================/ setup scaler /========================== #
 logger_init()
@@ -103,6 +109,7 @@ logging.info(f"# Loss_fn = {args.loss_type}")
 logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
 logging.info(f"# Testset_balance = {args.testset_balance}")
 logging.info(f"# Masking = {args.mask}")
+logging.info(f"# wegiht sampler = {args.samplerWeight}")
 logging.info(f"# Train_a/p = {train_absent_size}/{train_present_size}")
 logging.info(f"# Test_a/p = {test_absent_size}/{test_present_size}")
 logging.info(f"# Trainset_size = {trainset_size}")

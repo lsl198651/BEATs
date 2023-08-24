@@ -3,7 +3,7 @@ import random
 
 
 def get_features(args):
-    npy_path_padded = r"D:\Shilong\murmur\03_circor_states\npyFile_padded"
+    npy_path_padded = r'D:\Shilong\murmur\03_circor_states\period_try\npyFile'
     absent_train_features = np.load(
         npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
     )
@@ -97,7 +97,8 @@ def get_features(args):
 
     if args.testset_balance is True:
         absent_size = int(present_test_features.shape[0] * args.ap_ratio)
-        List_test = random.sample(range(1, absent_test_features.shape[0]), absent_size)
+        List_test = random.sample(
+            range(1, absent_test_features.shape[0]), absent_size)
         absent_test_features = absent_test_features[List_test]
         absent_test_label = absent_test_label[List_test]
     else:
