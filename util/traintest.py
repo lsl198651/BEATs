@@ -48,6 +48,7 @@ def train_test(
 
         train_loss = 0
         correct_t = 0
+        train_len = 0
 
         model.train()
         optimizer.zero_grad()
@@ -55,12 +56,12 @@ def train_test(
             data_t, label_t = data_t.to(device), label_t.to(device)
             padding = padding.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict = model(data_t, padding)
+            predict_t = model(data_t, padding)
             # if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
             #     pred = torch.max(predict, dim=1)[0]
             #     loss = loss_fn(predict[:, 1], label_t.float())
             # else:
-            loss_t = loss_fn(predict, label_t.long())
+            loss_t = loss_fn(predict_t, label_t.long())
 
             # scaler.scale(loss).backward()
             # scaler.step(optimizer)
@@ -68,12 +69,13 @@ def train_test(
             loss_t.backward()
             optimizer.step()
             train_loss += loss_t.item()
-            pred_t = predict.max(1, keepdim=True)[
+            pred_t = predict_t.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
             pred_t = torch.squeeze(pred_t)
             target_t = label_t.type(torch.int64)
             correct_t += pred_t.eq(target_t).sum().item()
+            train_len += len(label_t)
 
         if args.scheduler_flag is not None:
             scheduler.step()
@@ -118,17 +120,19 @@ def train_test(
             lr_now = group["lr"]
         lr.append(lr_now)
 
+        val_len = len(label)
+
         # 更新权值
-        test_loss /= len(test_loader.dataset.label)
-        train_loss /= len(train_loader.dataset.label)
-        train_acc = correct_t / len(train_loader.dataset.label)
-        test_acc = correct_v / len(test_loader.dataset.label)
+        test_loss /= val_len
+        train_loss /= train_len
+        train_acc = correct_t / train_len
+        test_acc = correct_v / val_len
         # acc = accuracy_score(pred , target)
 
         train_acc_list.append(train_acc)
         test_acc_list.append(test_acc)
         max_train_acc = max(train_acc_list)
-        max_test_acc = test_acc_list(train_acc_list.index(max_train_acc))
+        max_test_acc = test_acc_list[train_acc_list.index(max_train_acc)]
 
         tb_writer.add_scalar("train_acc", train_acc, epoch)
         tb_writer.add_scalar("test_acc", test_acc, epoch)
