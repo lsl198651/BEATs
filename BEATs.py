@@ -264,7 +264,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # BEATs
         self.BEATs = BEATs_model
         # Dropout
-        self.last_Dropout = nn.Dropout(0.1)
+        self.last_Dropout = nn.Dropout(0.)
         # fc
         self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
@@ -281,7 +281,9 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # add fc layer
         output = self.last_layer(y)
         # mean
+        # output = output.view(output.size(0), -1)
         output = output.mean(dim=1)
         # sigmoid
-        # output = torch.sigmoid(output)
+        output = torch.sigmoid(output)
+        # output = torch.softmax(output, dim=1)
         return output

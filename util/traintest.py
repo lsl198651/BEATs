@@ -57,11 +57,11 @@ def train_test(
             padding = padding.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
             predict_t = model(data_t, padding)
-            # if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
-            #     pred = torch.max(predict, dim=1)[0]
-            #     loss = loss_fn(predict[:, 1], label_t.float())
-            # else:
-            loss_t = loss_fn(predict_t, label_t.long())
+            if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
+                pred = torch.argmax(predict_t, dim=1)
+                loss = loss_fn(predict_t, label_t.float())
+            else:
+                loss_t = loss_fn(predict_t, label_t.long())
 
             # scaler.scale(loss).backward()
             # scaler.step(optimizer)
@@ -97,11 +97,11 @@ def train_test(
                 # optimizer.zero_grad()
                 predict_v = model(data_v, padding)
                 # recall = recall_score(y_hat, y)
-                # if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
-                #     # pred_v = torch.max(predict_v, dim=1)[0]
-                #     loss = loss_fn(predict_v[:, 1], label_t.float())
-                # else:
-                loss_v = loss_fn(predict_v, label_t.long())
+                if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
+                    pred_v = torch.argmax(predict_v, dim=1)
+                    loss = loss_fn(predict_v[:, 1], label_t.float())
+                else:
+                    loss_v = loss_fn(predict_v, label_t.long())
                 test_loss += loss_v.item()
                 pred_v = predict_v.max(1, keepdim=True)[
                     1
