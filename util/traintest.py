@@ -128,7 +128,7 @@ def train_test(
         train_acc_list.append(train_acc)
         test_acc_list.append(test_acc)
         max_train_acc = max(train_acc_list)
-        max_test_acc = max(test_acc_list)
+        max_test_acc = test_acc_list(train_acc_list.index(max_train_acc))
 
         tb_writer.add_scalar("train_acc", train_acc, epoch)
         tb_writer.add_scalar("test_acc", test_acc, epoch)
