@@ -16,24 +16,24 @@ from util.BEATs_def import (MyDataset, logger_init)
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--batch_size", type=int, default=256,
+parser.add_argument("--batch_size", type=int, default=128,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
-                    default=0.0001, help="learning_rate for training")
-parser.add_argument("--num_epochs", type=int, default=150, help="num_epochs")
+                    default=0.001, help="learning_rate for training")
+parser.add_argument("--num_epochs", type=int, default=500, help="num_epochs")
 parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])
 parser.add_argument("--scheduler_flag", type=str, default=None,
                     help="the dataset used", choices=["cos", "cos_warmup"],)
 parser.add_argument("--freqm_value",  type=int, default=0,
                     help="frequency mask max length")
-parser.add_argument("--timem_value", type=int, default=0,
+parser.add_argument("--timem_value", type=int, default=10,
                     help="time mask max length")
 parser.add_argument("--mask", type=bool, default=False,
                     help="number of classes", choices=[True, False])
 parser.add_argument("--testset_balance", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
-parser.add_argument("--Data_Augmentation", type=bool, default=True,
+parser.add_argument("--Data_Augmentation", type=bool, default=False,
                     help="Add data augmentation", choices=[True, False],)
 parser.add_argument("--grad_flag", type=bool, default=False,
                     help="use grad_no_requiredn", choices=[True, False],)
@@ -43,12 +43,12 @@ parser.add_argument("--layers", type=int, default=1, help="layers number")
 parser.add_argument("--train_total_model", type=bool, default=False,
                     help="train total model", choices=[True, False],)
 parser.add_argument("--model", type=str,
-                    default="BEATs_iter3_plus_AS2M", help="the model used", choices=["BEATs_iter3_plus_AS2M", "BEATs_iter3_plus_AS20K", "BEATs_iter3"])
+                    default="BEATs_iter3_plus_AS2M", help="the model used", choices=["BEATs_iter3_plus_AS2M", "BEATs_iter3_plus_AS20K", "BEATs_iter3", "BEATs_iter2"])
 parser.add_argument("--ap_ratio", type=float, default=1.0,
                     help="ratio of absent and present")
 parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
-parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
+parser.add_argument("--beta", type=float, default=(0.9, 0.999), help="beta")
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label = get_features(
@@ -102,14 +102,18 @@ logger_init()
 logging.info(f"<<< {args.model} - {args.layers} fc layer >>>")
 logging.info(f"# Batch_size = {args.batch_size}")
 logging.info(f"# Num_epochs = {args.num_epochs}")
-logging.info(f"# Learning_rate = {args.learning_rate}")
+logging.info(f"# Learning_rate = {args.learning_rate:.6f}")
 logging.info(f"# lr_scheduler = {args.scheduler_flag}")
 logging.info(f"# Padding_size = {padding_size}")
 logging.info(f"# Loss_fn = {args.loss_type}")
 logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
 logging.info(f"# Testset_balance = {args.testset_balance}")
 logging.info(f"# Masking = {args.mask}")
+if args.mask == True:
+    logging.info(f"# freqm_value = {args.freqm_value}")
+    logging.info(f"# timem_value = {args.timem_value}")
 logging.info(f"# wegiht sampler = {args.samplerWeight}")
+logging.info(f"# train total model = {args.train_total_model}")
 logging.info(f"# Train_a/p = {train_absent_size}/{train_present_size}")
 logging.info(f"# Test_a/p = {test_absent_size}/{test_present_size}")
 logging.info(f"# Trainset_size = {trainset_size}")
