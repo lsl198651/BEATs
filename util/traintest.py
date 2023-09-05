@@ -71,7 +71,9 @@ def train_test(
             pred_t = predict.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
-            correct_t += pred_t.eq(label_t.view_as(pred_t)).sum().item()
+            pred_t = torch.squeeze(pred_t)
+            target_t = label_t.type(torch.int64)
+            correct_t += pred_t.eq(target_t).sum().item()
 
         if args.scheduler_flag is not None:
             scheduler.step()
@@ -101,7 +103,9 @@ def train_test(
                 pred_v = predict_v.max(1, keepdim=True)[
                     1
                 ]  # get the index of the max log-probability
-                correct_v += pred_v.eq(label_v.view_as(pred_v)).sum().item()
+                pred_v = torch.squeeze(pred_v)
+                target_v = label_v.type(torch.int64)
+                correct_v += pred_v.eq(target_v).sum().item()
                 pred.extend(pred_v.cpu().tolist())
                 label.extend(label_v.cpu().tolist())
                 # from sklearn.metrics import classification_report
@@ -132,29 +136,15 @@ def train_test(
         tb_writer.add_scalar("learning_rate", lr_now, epoch)
 
         # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
-        logging.info("epoch: " + str(epoch + 1) + "/" + str(args.num_epochs))
-        logging.info("learning_rate: " + str("{:.4f}".format(lr_now)))
+        logging.info(f"epoch:  {epoch + 1}/{args.num_epochs}")
+        logging.info(f"learning_rate: {lr_now:.6f}")
         logging.info(
-            "train_acc: "
-            + str("{:.3%}".format(train_acc))
-            + ", train_loss: "
-            + str("{:.4f}".format(train_loss))
-        )
-        logging.info(
-            "test_acc: "
-            + str("{:.3%}".format(test_acc))
-            + ", test_loss: "
-            + str("{:.4f}".format(test_loss))
-        )
-        logging.info(f"max_train_acc: " + str("{:.3%}".format(max_train_acc)))
-        logging.info(f"max_test_acc: " + str("{:.3%}".format(max_test_acc)))
-        logging.info(
-            "max_lr: "
-            + str("{:.4f}".format(max(lr)))
-            + ", min_lr: "
-            + str("{:.4f}".format(min(lr)))
-        )
-        logging.info(f"======================================")
+            f"train_acc: {train_acc:.3%} train_loss: {train_loss:.4f}")
+        logging.info(f"test_acc: {test_acc:.3%} test_loss:{test_loss:.4f}")
+        logging.info(f"max_train_acc:{max_train_acc:.3%}")
+        logging.info(f"max_test_acc: {max_test_acc:.3%}")
+        logging.info(f"max_lr: {max(lr):.6f} , min_lr: {min(lr):.6f}")
+        logging.info("======================================")
         # 画混淆矩阵
         draw_confusion_matrix(
             label,
