@@ -4,7 +4,6 @@ import random
 
 def get_features(args):
     npy_path_padded = r"D:\Shilong\murmur\03_circor_states\npyFile_padded"
-    npy_path_segment = r'D:\Shilong\murmur\03_circor_states\period_try\npyFile'
     absent_train_features = np.load(
         npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
     )

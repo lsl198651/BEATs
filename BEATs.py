@@ -284,6 +284,6 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # output = output.view(output.size(0), -1)
         output = output.mean(dim=1)
         # sigmoid
-        output = torch.sigmoid(output)
-        # output = torch.softmax(output, dim=1)
+        # output = torch.sigmoid(output)
+        output = torch.softmax(output, dim=1)
         return output
