@@ -51,10 +51,10 @@ def train_test(
         train_len = 0
 
         model.train()
-        optimizer.zero_grad()
         for data_t, label_t in train_loader:
             data_t, label_t = data_t.to(device), label_t.to(device)
             padding = padding.to(device)
+            optimizer.zero_grad()
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
             predict_t = model(data_t, padding)
             if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
@@ -66,6 +66,7 @@ def train_test(
             # scaler.scale(loss).backward()
             # scaler.step(optimizer)
             # scaler.update()
+            # flood = (loss-0.17).abs()+0.17 # 用于防止梯度爆炸
             loss_t.backward()
             optimizer.step()
             train_loss += loss_t.item()
@@ -94,7 +95,7 @@ def train_test(
                     label_v.to(device),
                     padding.to(device),
                 )
-                # optimizer.zero_grad()
+                optimizer.zero_grad()
                 predict_v = model(data_v, padding)
                 # recall = recall_score(y_hat, y)
                 if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
