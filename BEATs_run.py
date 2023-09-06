@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--batch_size", type=int, default=128,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
-                    default=0.001, help="learning_rate for training")
+                    default=0.000001, help="learning_rate for training")
 parser.add_argument("--num_epochs", type=int, default=500, help="num_epochs")
 parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])
