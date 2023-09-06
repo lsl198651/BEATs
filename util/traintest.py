@@ -28,7 +28,7 @@ def train_test(
     train_loss = 0
     correct_t = 0
     # for amp
-    scaler = GradScaler()
+    # scaler = GradScaler()
     warm_up_ratio = 0.1
     total_steps = len(train_loader) * args.num_epochs
 
@@ -46,7 +46,7 @@ def train_test(
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     model.train()
 
-    optimizer.zero_grad()
+    
     for data_t, label_t in train_loader:
         data_t, label_t = data_t.to(device), label_t.to(device)
         padding = padding.to(device)
@@ -59,11 +59,12 @@ def train_test(
         else:
             loss = loss_fn(predict, label_t.long())
 
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
-        # loss.backward()
-        # optimizer.step()
+        # scaler.scale(loss).backward()
+        # scaler.step(optimizer)
+        # scaler.update()
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
         train_loss += loss.item()
         pred_t = predict.max(1, keepdim=True)[
             1
@@ -85,17 +86,18 @@ def train_test(
                 label_v.to(device),
                 padding.to(device),
             )
-            # optimizer.zero_grad()
+            optimizer.zero_grad()
             predict_v = model(data_v, padding)
             # recall = recall_score(y_hat, y)
             if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
                 # pred_v = torch.max(predict_v, dim=1)[0]
                 loss = loss_fn(predict_v[:, 1], label_t.float())
             else:
-                loss = loss_fn(predict_v, label_t.long())
+                loss_v = loss_fn(predict_v, label_t.long())
             pred_v = predict_v.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
+            test_loss+=loss_v.item() 
             correct_v += pred_v.eq(label_v.view_as(pred_v)).sum().item()
             pred.extend(pred_v.cpu().tolist())
             label.extend(label_v.cpu().tolist())
@@ -105,10 +107,10 @@ def train_test(
     lr.append(lr_now)
 
     # 更新权值
-    test_loss /= len(test_loader.dataset.label)
+    test_loss /= len(pred)
     train_loss /= len(train_loader.dataset.label)
     train_acc = correct_t / len(train_loader.dataset.label)
-    test_acc = correct_v / len(test_loader.dataset.label)
+    test_acc = correct_v / len(pred)
     # acc = accuracy_score(pred , target)
 
     max_train_acc.append(train_acc)
@@ -116,8 +118,8 @@ def train_test(
     max_train_acc = max(max_train_acc)
     max_test_acc = max(max_test_acc)
 
-    tb_writer.add_scalar("train_acc", train_acc * 100, epochs)
-    tb_writer.add_scalar("test_acc", test_acc * 100, epochs)
+    tb_writer.add_scalar("train_acc", train_acc , epochs)
+    tb_writer.add_scalar("test_acc", test_acc , epochs)
     tb_writer.add_scalar("train_loss", train_loss, epochs)
     tb_writer.add_scalar("test_loss", test_loss, epochs)
     tb_writer.add_scalar("learning_rate", lr_now, epochs)

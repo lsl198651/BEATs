@@ -146,35 +146,15 @@ class BEATs(nn.Module):
 
     # calculate fbank value
     def preprocess(
-        self,
-        source: torch.Tensor,
-        fbank_mean: float = 15.41663,
-        fbank_std: float = 6.55582,
-        args=None,
+            self,
+            source: torch.Tensor,
+            fbank_mean: float = 15.41663,
+            fbank_std: float = 6.55582,
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
-            waveform = waveform.unsqueeze(0) * 2**15
-            fbank = ta_kaldi.fbank(
-                waveform,
-                num_mel_bins=128,
-                sample_frequency=16000,
-                frame_length=25,
-                frame_shift=10,
-            )
-            if args.mask is True:
-                # SpecAug, not do for eval set
-                freqm = TT.FrequencyMasking(freq_mask_param=args.freqm_value)
-                timem = TT.TimeMasking(time_mask_param=args.timem_value)
-                fbank = torch.transpose(fbank, 0, 1)
-                # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
-                fbank = fbank.unsqueeze(0)
-                fbank = freqm(fbank)
-                fbank = timem(fbank)
-                # squeeze it back, it is just a trick to satisfy new torchaudio version
-                fbank = fbank.squeeze(0)
-                fbank = torch.transpose(fbank, 0, 1)
-
+            waveform = waveform.unsqueeze(0) * 2 ** 15
+            fbank = ta_kaldi.fbank(waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         fbank = (fbank - fbank_mean) / (2 * fbank_std)
@@ -193,7 +173,7 @@ class BEATs(nn.Module):
             source,
             fbank_mean=fbank_mean,
             fbank_std=fbank_std,
-            args=args,
+
         )
         # 如果有padding-mask的话进行forward-padding-mask
         # 返回一个值？？？
@@ -266,8 +246,15 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # Dropout
         self.last_Dropout = nn.Dropout(0.1)
         # fc
-        self.fc_layer = nn.Linear(768, 768)
-        self.last_layer = nn.Linear(768, 2)
+        # self.fc_layer = nn.Linear(768, 768)
+        # self.last_layer = nn.Linear(768, 2)
+        self.fc_layer = nn.Sequential(
+            nn.Linear(768 * 8, 768),
+            nn.ReLU(),
+            nn.Linear(768, 32),
+            nn.ReLU(),
+            nn.Linear(32, 2),
+        )
 
     def forward(self, x, padding_mask: torch.Tensor = None):
         # with torch.no_grad():
@@ -275,13 +262,16 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # dropout
         # with torch.enable_grad():
         y = self.last_Dropout(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc_layer(x)
+        output = torch.softmax(x, dim=1)
         # FC 修改层数记得修改logging
-        if self.layers == 2:
-            y = self.fc_layer(y)
+        # if self.layers == 2:
+        #     y = self.fc_layer(y)
         # add fc layer
-        output = self.last_layer(y)
+        # output = self.last_layer(y)
         # mean
-        output = output.mean(dim=1)
+        # output = output.mean(dim=1)
         # sigmoid
         # output = torch.sigmoid(output)
         return output

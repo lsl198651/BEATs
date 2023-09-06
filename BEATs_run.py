@@ -19,12 +19,12 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--batch_size", type=int, default=128,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
-                    default=0.001, help="learning_rate for training")
+                    default=0.0001, help="learning_rate for training")
 parser.add_argument("--num_epochs", type=int, default=100, help="num_epochs")
 parser.add_argument("--layers", type=int, default=1, help="layers number")
 parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])
-parser.add_argument("--scheduler_flag", type=str, default='cos',
+parser.add_argument("--scheduler_flag", type=str, default=None,
                     help="the dataset used", choices=["cos", "cos_warmup"],)
 parser.add_argument("--freqm_value",  type=int, default=0,
                     help="frequency mask max length")
@@ -41,12 +41,12 @@ parser.add_argument("--grad_flag", type=bool, default=False,
 parser.add_argument("--samplerWeight", type=bool, default=False,
                     help="use balanced sampler", choices=[True, False],)
 parser.add_argument("--model", type=str,
-                    default="BEATs_iter3_plus_AS20K", help="the model used")
+                    default="BEATs_iter3_plus_AS2M", help="the model used")
 parser.add_argument("--ap_ratio", type=float, default=1.0,
                     help="ratio of absent and present")
 parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
-parser.add_argument("--beta", type=float, default=(0.89, 0.999), help="beta")
+parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label = get_features(
@@ -94,12 +94,12 @@ optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.paramete
 warm_up_ratio = 0.1
 total_steps = len(train_loader) * args.num_epochs
 
-if args.scheduler_flag == "cos":
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=10, eta_min=0)
-elif args.scheduler_flag == "cos_warmup":
-    scheduler = optimization.get_cosine_schedule_with_warmup(
-        optimizer, num_warmup_steps=warm_up_ratio * total_steps, num_training_steps=total_steps,)
+# if args.scheduler_flag == "cos":
+#     scheduler = optim.lr_scheduler.CosineAnnealingLR(
+#         optimizer, T_max=10, eta_min=0)
+# elif args.scheduler_flag == "cos_warmup":
+#     scheduler = optimization.get_cosine_schedule_with_warmup(
+#         optimizer, num_warmup_steps=warm_up_ratio * total_steps, num_training_steps=total_steps,)
 
 # ========================/ setup scaler /========================== #
 logger_init()
