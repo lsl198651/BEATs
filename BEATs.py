@@ -240,8 +240,16 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # Dropout
         self.last_Dropout = nn.Dropout(0.1)
         # fc
-        self.fc_layer = nn.Linear(768, 768)
+        # self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
+        # ===============new=================
+        self.fc_layer = nn.Sequential(
+            nn.Linear(768 * 8, 768),
+            nn.ReLU(),
+            nn.Linear(768, 32),
+            nn.ReLU(),
+            nn.Linear(32, 2),
+        )
 
     def forward(self, x, padding_mask: torch.Tensor = None):
         with torch.no_grad():
@@ -249,12 +257,19 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # dropout
         with torch.enable_grad():
             x = self.last_Dropout(x)
+            # ==================new=====================
+            x = x.view(x.size(0), -1)
+            x = self.fc_layer(x)
+            output = torch.softmax(x, dim=1)
+            # =======================================
+            # fc
+            # x = self.fc_layer(x)
             # FC 修改层数记得修改logging
             # x = self.fc_layer(x)
             # add fc layer
-            output = self.last_layer(x)
+            # output = self.last_layer(x)
             # mean
-            output = output.mean(dim=1)
+            # output = output.mean(dim=1)
             # sigmoid
             # output = torch.sigmoid(output)
         return output
