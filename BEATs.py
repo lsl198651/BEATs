@@ -258,7 +258,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         with torch.enable_grad():
             x = self.last_Dropout(x)
             # ==================new=====================
-            x = x.view(x.size(0), -1)
+            x = x.reshape(x.size(0), -1)
             x = self.fc_layer(x)
             output = torch.softmax(x, dim=1)
             # =======================================

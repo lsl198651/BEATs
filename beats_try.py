@@ -111,6 +111,7 @@ np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)"""
 # present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ load npy padded file /========================== #
+Data_Augmentation = True
 absent_train_features = np.load(
     npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
 )
@@ -136,7 +137,65 @@ present_train_label = np.load(
 present_test_label = np.load(
     npy_path_padded + r"\present_test_label.npy", allow_pickle=True
 )
+if Data_Augmentation is True:
+    present_train_features_8 = np.load(
+        npy_path_padded + r"\present_train_features_8.npy", allow_pickle=True
+    )
+    present_train_features_12 = np.load(
+        npy_path_padded + r"\present_train_features_12.npy", allow_pickle=True
+    )
+    present_train_label_8 = np.load(
+        npy_path_padded + r"\present_train_label_8.npy", allow_pickle=True
+    )
+    present_train_label_12 = np.load(
+        npy_path_padded + r"\present_train_label_12.npy", allow_pickle=True
+    )
 
+    absent_size = int(
+        (
+            present_train_features.shape[0]
+            + present_train_features_12.shape[0]
+            + present_train_features_8.shape[0]
+        )
+    )
+    List_train = random.sample(range(1, absent_train_features.shape[0]), absent_size)
+    absent_train_features = absent_train_features[List_train]
+    absent_train_label = absent_train_label[List_train]
+    train_label = np.hstack(
+        (
+            absent_train_label,
+            present_train_label,
+            present_train_label_8,
+            present_train_label_12,
+        )
+    )
+
+    train_features = np.vstack(
+        (
+            absent_train_features,
+            present_train_features,
+            present_train_features_8,
+            present_train_features_12,
+        )
+    )
+else:
+    absent_size = int(present_train_features.shape[0])
+    List_train = random.sample(range(1, absent_train_features.shape[0]), absent_size)
+    absent_train_features = absent_train_features[List_train]
+    absent_train_label = absent_train_label[List_train]
+    train_label = np.hstack(
+        (
+            absent_train_label,
+            present_train_label,
+        )
+    )
+
+    train_features = np.vstack(
+        (
+            absent_train_features,
+            present_train_features,
+        )
+    )
 ap_ratio = 1
 absent_size = int(present_train_features.shape[0] * ap_ratio)
 
@@ -154,17 +213,18 @@ absent_train_label = absent_train_label[List_train]
 train_features,train_label=get_mel_features(train_path,absent_patient_id,present_patient_id)
 test_features,test_label=get_mel_features(test_path,absent_patient_id,present_patient_id)
 """
-train_present_size = present_train_features.shape[0]
-train_absent_size = absent_train_features.shape[0]
-test_present_size = present_test_features.shape[0]
-test_absent_size = absent_test_features.shape[0]
+
 
 # ========================/ label encoder /========================== #
-train_label = np.hstack((absent_train_label, present_train_label))
+# train_label = np.hstack((absent_train_label, present_train_label))
 test_label = np.hstack((absent_test_label, present_test_label))
-train_features = np.vstack((absent_train_features, present_train_features))
+# train_features = np.vstack((absent_train_features, present_train_features))
 test_features = np.vstack((absent_test_features, present_test_features))
 
+train_present_size = np.sum(train_label == 1)
+train_absent_size = np.sum(train_label == 0)
+test_present_size = np.sum(test_label == 1)
+test_absent_size = np.sum(test_label == 0)
 # ========================/ train test /========================== #
 train_features = train_features.astype(float)
 train_label = train_label.astype(int)
@@ -178,8 +238,8 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
 batch_size = 128
-learning_rate = 0.001
-num_epochs = 100
+learning_rate = 0.0001
+num_epochs = 300
 loss_type = "CE"
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
@@ -259,11 +319,11 @@ def train_model(
         with autocast():
             loss = loss_fn(predict, label_t.long())
         optimizer.zero_grad()
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
-        # loss.backward()
-        # optimizer.step()
+        # scaler.scale(loss).backward()
+        # scaler.step(optimizer)
+        # scaler.update()
+        loss.backward()
+        optimizer.step()
         train_loss += loss.item()
         pred_t = predict.max(1, keepdim=True)[
             1
@@ -332,8 +392,8 @@ def train_model(
         + ", test_loss: "
         + str("{:.4f}".format(test_loss))
     )
-    logging.info(f"max_train_acc: " + str("{:.3%}".format(max_train_acc)))
-    logging.info(f"max_test_acc: " + str("{:.3%}".format(max_test_acc)))
+    logging.info(f"max_train_acc: {max_train_acc:.3%}")
+    logging.info(f"max_test_acc: {max_test_acc:.3%}")
     logging.info(
         f"max_lr: "
         + str("{:.4f}".format(max(lr)))
