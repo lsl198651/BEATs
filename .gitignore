@@ -1,3 +1,6 @@
 .png
 *.png
 confusion_matrix
+ResultFile
+tensorboard
+*.pyc
