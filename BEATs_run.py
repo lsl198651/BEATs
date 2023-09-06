@@ -20,7 +20,7 @@ parser.add_argument("--batch_size", type=int, default=128,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
                     default=0.0001, help="learning_rate for training")
-parser.add_argument("--num_epochs", type=int, default=100, help="num_epochs")
+parser.add_argument("--num_epochs", type=int, default=300, help="num_epochs")
 parser.add_argument("--layers", type=int, default=1, help="layers number")
 parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])

@@ -262,7 +262,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # dropout
         # with torch.enable_grad():
         y = self.last_Dropout(x)
-        x = x.view(x.size(0), -1)
+        x = x.reshape(x.size(0), -1)
         x = self.fc_layer(x)
         output = torch.softmax(x, dim=1)
         # FC 修改层数记得修改logging
