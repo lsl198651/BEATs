@@ -1,5 +1,5 @@
 {
-    "workbench.editor.enablePreview": false,
+    "workbench.editor.enablePreview": true,
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
