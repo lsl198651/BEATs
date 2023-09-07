@@ -52,7 +52,7 @@ def train_test(
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     model.train()
 # ============ training ================
-    for epoch_num in range(epochs):
+    for epoch_num in range(args.num_epochs):
         # train model
         model.train()
         train_loss = 0
@@ -129,8 +129,8 @@ def train_test(
 
         max_train_acc.append(train_acc)
         max_test_acc.append(test_acc)
-        max_train_acc = max(max_train_acc)
-        max_test_acc = max(max_test_acc)
+        max_train_acc_value = max(max_train_acc)
+        max_test_acc_value = max_test_acc[max_train_acc.index(max_train_acc_value)]
 
         tb_writer.add_scalar("train_acc", train_acc , epochs)
         tb_writer.add_scalar("test_acc", test_acc , epochs)
@@ -140,11 +140,11 @@ def train_test(
 
         # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
-        logging.info(f"learning_rate: {lr_now:.4f}")
+        logging.info(f"learning_rate: {lr_now:.6f}")
         logging.info(f"train_acc: {train_acc:.3%} train_loss: {train_loss:.4f}")
-        logging.info(f"max_train_acc: {max_train_acc:.3%}")
-        logging.info(f"max_test_acc: {max_test_acc:.3%}")
-        logging.info(f"max_lr: {max(lr):.4f}, min_lr: {min(lr):.4f}")
+        logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
+        logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
+        logging.info(f"max_lr:{max(lr):.6f}, min_lr:{min(lr):.6f}")
         logging.info(f"======================================")
         # 画混淆矩阵
         draw_confusion_matrix(

@@ -94,7 +94,7 @@ else:
 
 # ========================/ setup scaler /========================== #
 logger_init()
-logging.info(f"{args.model} - {args.layers} fc layer")
+logging.info(f"{args.model} + {args.layers} fc layer")
 logging.info(f"# Batch_size = {args.batch_size}")
 logging.info(f"# Num_epochs = {args.num_epochs}")
 logging.info(f"# Learning_rate = {args.learning_rate}")
@@ -113,13 +113,12 @@ logging.info("# Optimizer = " + str(optimizer))
 logging.info("# Notes : ")
 logging.info("-------------------------------------")
 
-for epoch in range(args.num_epochs):
-    train_test(
-        model=MyModel,
-        train_loader=train_loader,
-        test_loader=val_loader,
-        padding=padding_mask,
-        epochs=epoch,
-        optimizer=optimizer,
-        args=args,
-    )
+
+train_test(
+    model=MyModel,
+    train_loader=train_loader,
+    test_loader=val_loader,
+    padding=padding_mask,
+    optimizer=optimizer,
+    args=args,
+)
