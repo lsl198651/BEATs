@@ -111,7 +111,7 @@ np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)"""
 # present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ load npy padded file /========================== #
-Data_Augmentation = True
+Data_Augmentation = False
 absent_train_features = np.load(
     npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
 )
@@ -196,13 +196,13 @@ else:
             present_train_features,
         )
     )
-ap_ratio = 1
-absent_size = int(present_train_features.shape[0] * ap_ratio)
+# ap_ratio = 1
+# absent_size = int(present_train_features.shape[0] * ap_ratio)
 
 
-List_train = random.sample(range(1, absent_train_features.shape[0]), absent_size)
-absent_train_features = absent_train_features[List_train]
-absent_train_label = absent_train_label[List_train]
+# List_train = random.sample(range(1, absent_train_features.shape[0]), absent_size)
+# absent_train_features = absent_train_features[List_train]
+# absent_train_label = absent_train_label[List_train]
 # List_test = random.sample(range(1, absent_test_features.shape[0]), test_absent_size)
 # absent_test_features = absent_test_features[List_test]
 # absent_test_label = absent_test_label[List_test]
@@ -369,10 +369,10 @@ def train_model(
     max_train_acc.append(train_acc)
     max_test_acc.append(test_acc)
     max_train_acc = max(max_train_acc)
-    max_test_acc = max(max_test_acc)
+    max_test_acc = max_test_acc[max_train_acc.index(max_train_acc)]
 
-    tb_writer.add_scalar("train_acc", train_acc * 100, epochs)
-    tb_writer.add_scalar("test_acc", test_acc * 100, epochs)
+    tb_writer.add_scalar("train_acc", train_acc, epochs)
+    tb_writer.add_scalar("test_acc", test_acc, epochs)
     tb_writer.add_scalar("train_loss", train_loss, epochs)
     tb_writer.add_scalar("test_loss", test_loss, epochs)
     tb_writer.add_scalar("learning_rate", lr_now, epochs)

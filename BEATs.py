@@ -258,18 +258,18 @@ class BEATs_Pre_Train_itere3(nn.Module):
         with torch.enable_grad():
             x = self.last_Dropout(x)
             # ==================new=====================
-            x = x.reshape(x.size(0), -1)
-            x = self.fc_layer(x)
-            output = torch.softmax(x, dim=1)
+            # x = x.reshape(x.size(0), -1)
+            # x = self.fc_layer(x)
+            # output = torch.softmax(x, dim=1)
             # =======================================
             # fc
             # x = self.fc_layer(x)
             # FC 修改层数记得修改logging
             # x = self.fc_layer(x)
             # add fc layer
-            # output = self.last_layer(x)
+            output = self.last_layer(x)
             # mean
-            # output = output.mean(dim=1)
+            output = output.mean(dim=1)
             # sigmoid
             # output = torch.sigmoid(output)
         return output
