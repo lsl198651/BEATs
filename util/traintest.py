@@ -63,13 +63,13 @@ def train_test(
             data_t, label_t ,padding= data_t.to(device), label_t.to(device), padding.to(device)
 
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict = model(data_t, padding)
+            predict_t = model(data_t, padding)
 
             if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
-                pred = torch.max(predict, dim=1)[0]
-                loss = loss_fn(predict[:, 1], label_t.float())
+                pred = torch.max(predict_t, dim=1)[0]
+                loss = loss_fn(predict_t[:, 1], label_t.float())
             else:
-                loss = loss_fn(predict, label_t.long())
+                loss = loss_fn(predict_t, label_t.long())
 
             # scaler.scale(loss).backward()
             # scaler.step(optimizer)
@@ -78,7 +78,7 @@ def train_test(
             loss.backward()
             optimizer.step()
             train_loss += loss.item()
-            pred_t = predict.max(1, keepdim=True)[
+            pred_t = predict_t.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
             train_len+=len(label_t)
@@ -107,7 +107,7 @@ def train_test(
                     # pred_v = torch.max(predict_v, dim=1)[0]
                     loss = loss_fn(predict_v[:, 1], label_t.float())
                 else:
-                    loss_v = loss_fn(predict_v, label_t.long())
+                    loss_v = loss_fn(predict_v, label_v.long())
                 pred_v = predict_v.max(1, keepdim=True)[
                     1
                 ]  # get the index of the max log-probability

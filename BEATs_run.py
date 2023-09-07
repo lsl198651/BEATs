@@ -122,5 +122,4 @@ for epoch in range(args.num_epochs):
         epochs=epoch,
         optimizer=optimizer,
         args=args,
-        matrix_path=confusion_matrix_path,
     )
