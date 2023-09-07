@@ -252,24 +252,24 @@ class BEATs_Pre_Train_itere3(nn.Module):
         )
 
     def forward(self, x, padding_mask: torch.Tensor = None):
-        with torch.no_grad():
-            x, _ = self.BEATs.extract_features(x, padding_mask)
+        # with torch.no_grad():
+        x, _ = self.BEATs.extract_features(x, padding_mask)
         # dropout
-        with torch.enable_grad():
-            x = self.last_Dropout(x)
-            # ==================new=====================
-            # x = x.reshape(x.size(0), -1)
-            # x = self.fc_layer(x)
-            # output = torch.softmax(x, dim=1)
-            # =======================================
-            # fc
-            # x = self.fc_layer(x)
-            # FC 修改层数记得修改logging
-            # x = self.fc_layer(x)
-            # add fc layer
-            output = self.last_layer(x)
-            # mean
-            output = output.mean(dim=1)
-            # sigmoid
-            # output = torch.sigmoid(output)
+        # with torch.enable_grad():
+        x = self.last_Dropout(x)
+        # ==================new=====================
+        # x = x.reshape(x.size(0), -1)
+        # x = self.fc_layer(x)
+        # output = torch.softmax(x, dim=1)
+        # =======================================
+        # fc
+        # x = self.fc_layer(x)
+        # FC 修改层数记得修改logging
+        # x = self.fc_layer(x)
+        # add fc layer
+        output = self.last_layer(x)
+        # mean
+        output = output.mean(dim=1)
+        # sigmoid
+        # output = torch.sigmoid(output)
         return output

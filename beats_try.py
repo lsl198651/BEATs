@@ -111,7 +111,7 @@ np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)"""
 # present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ load npy padded file /========================== #
-Data_Augmentation = False
+Data_Augmentation = True
 absent_train_features = np.load(
     npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
 )
@@ -241,6 +241,7 @@ batch_size = 128
 learning_rate = 0.00001
 num_epochs = 300
 loss_type = "CE"
+train_total = True
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -259,7 +260,7 @@ train_loader = DataLoader(
     shuffle=True,
 )
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=True)
-print("Dataloader is ok")  # 最后再打印一下新的模型
+print("Dataloader is ready")  # 最后再打印一下新的模型
 
 # ========================/ load model /========================== #
 MyModel = BEATs_Pre_Train_itere3()
@@ -272,11 +273,17 @@ if loss_type == "BCE":
     loss_fn = nn.BCEWithLogitsLoss()
 elif loss_type == "CE":
     loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.AdamW(
-    [{"params": MyModel.last_layer.parameters()}],
-    lr=learning_rate,
-    betas=(0.9, 0.999),
-)  # 指定 新加的fc层的学习率
+
+if train_total is True:
+    for param in MyModel.BEATs.parameters():
+        param.requires_grad = False
+    optimizer = torch.optim.AdamW(MyModel.parameters(), lr=learning_rate)
+else:
+    optimizer = torch.optim.AdamW(
+        filter(lambda p: p.requires_grad, MyModel.parameters()),
+        lr=learning_rate,
+    )
+# 指定 新加的fc层的学习率
 
 # ========================/ setup warmup lr /========================== #
 warm_up_ratio = 0.1
@@ -417,17 +424,18 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<<< " + model_name + " - 1 fc layer >>> ")
-logging.info("# trainset_size = " + str(trainset_size))
-logging.info("# testset_size = " + str(testset_size))
-logging.info("# train_a/p = " + "{}/{}".format(train_absent_size, train_present_size))
-logging.info("# test_a/p = " + "{}/{}".format(test_absent_size, test_present_size))
-logging.info("# batch_size = " + str(batch_size))
-logging.info("# learning_rate = " + str(learning_rate))
-logging.info("# num_epochs = " + str(num_epochs))
-logging.info("# padding_size = " + str(padding_size))
+logging.info("<" + model_name + " - 1 fc layer >")
+logging.info(f"# trainset_size =  {trainset_size}")
+logging.info(f"# testset_size =  {testset_size}")
+logging.info(f"# train_a/p = {train_absent_size}/{train_present_size}")
+logging.info(f"# test_a/p ={test_absent_size}/{test_present_size}")
+logging.info(f"# batch_size = {batch_size}")
+logging.info(f"# train total model = {train_total}")
+logging.info(f"# learning_rate = {learning_rate}")
+logging.info(f"# num_epochs = {num_epochs}")
+logging.info(f"# padding_size = {padding_size}")
 logging.info("# loss_fn = " + loss_type)
-logging.info("# scheduler = " + str(scheduler))
+logging.info(f"# scheduler = {scheduler}")
 logging.info("# optimizer = " + str(optimizer))
 logging.info("-------------------------------------")
 confusion_matrix_path = r"./confusion_matrix/" + str(
