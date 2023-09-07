@@ -111,7 +111,7 @@ np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)"""
 # present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ load npy padded file /========================== #
-Data_Augmentation = True
+Data_Augmentation = False
 absent_train_features = np.load(
     npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
 )
@@ -238,7 +238,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
 batch_size = 128
-learning_rate = 0.00001
+learning_rate = 0.0001
 num_epochs = 300
 loss_type = "CE"
 train_total = True
@@ -388,7 +388,7 @@ def train_model(
 
     # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
     logging.info(f"epoch: " + str(epochs + 1) + "/" + str(num_epochs))
-    logging.info(f"learning_rate: " + str("{:.4f}".format(lr_now)))
+    logging.info(f"learning_rate: " + str("{:.6f}".format(lr_now)))
     logging.info(
         f"train_acc: "
         + str("{:.3%}".format(train_acc))
@@ -431,7 +431,7 @@ logging.info(f"# train_a/p = {train_absent_size}/{train_present_size}")
 logging.info(f"# test_a/p ={test_absent_size}/{test_present_size}")
 logging.info(f"# batch_size = {batch_size}")
 logging.info(f"# train total model = {train_total}")
-logging.info(f"# learning_rate = {learning_rate}")
+logging.info(f"# learning_rate = {learning_rate:.6%}")
 logging.info(f"# num_epochs = {num_epochs}")
 logging.info(f"# padding_size = {padding_size}")
 logging.info("# loss_fn = " + loss_type)
