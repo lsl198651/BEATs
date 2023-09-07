@@ -238,7 +238,7 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
 batch_size = 128
-learning_rate = 0.0001
+learning_rate = 0.00001
 num_epochs = 300
 loss_type = "CE"
 padding_size = train_features.shape[1]  # 3500
@@ -310,14 +310,16 @@ def train_model(
     # for amp
     scaler = GradScaler()
     model.train()
+    train_len = 0
+
     for data_t, label_t in train_loader:
         data_t, label_t = data_t.to(device), label_t.to(device)
         padding = padding.to(device)
 
         # with torch.cuda.amp.autocast():
         predict = model(data_t, padding)
-        with autocast():
-            loss = loss_fn(predict, label_t.long())
+        # with autocast():
+        loss = loss_fn(predict, label_t.long())
         optimizer.zero_grad()
         # scaler.scale(loss).backward()
         # scaler.step(optimizer)
@@ -325,9 +327,9 @@ def train_model(
         loss.backward()
         optimizer.step()
         train_loss += loss.item()
-        pred_t = predict.max(1, keepdim=True)[
-            1
-        ]  # get the index of the max log-probability
+        pred_t = predict.max(1, keepdim=True)[1]
+        train_len += len(pred_t)
+        # get the index of the max log-probability
         correct_t += pred_t.eq(label_t.view_as(pred_t)).sum().item()
 
     # evaluate model
@@ -361,15 +363,15 @@ def train_model(
     lr.append(lr_now)
 
     # 更新权值
-    test_loss /= len(test_loader.dataset)
-    train_loss /= len(train_loader.dataset)
-    train_acc = correct_t / len(train_set)
-    test_acc = correct_v / len(test_set)
+    test_loss /= len(pred)
+    test_acc = correct_v / len(pred)
+    train_loss /= train_len
+    train_acc = correct_t / train_len
 
     max_train_acc.append(train_acc)
     max_test_acc.append(test_acc)
-    max_train_acc = max(max_train_acc)
-    max_test_acc = max_test_acc[max_train_acc.index(max_train_acc)]
+    max_acc_t = max(max_train_acc)
+    max_acc_v = max_test_acc[max_train_acc.index(max_acc_t)]
 
     tb_writer.add_scalar("train_acc", train_acc, epochs)
     tb_writer.add_scalar("test_acc", test_acc, epochs)
@@ -392,8 +394,8 @@ def train_model(
         + ", test_loss: "
         + str("{:.4f}".format(test_loss))
     )
-    logging.info(f"max_train_acc: {max_train_acc:.3%}")
-    logging.info(f"max_test_acc: {max_test_acc:.3%}")
+    logging.info(f"max_train_acc: {max_acc_t:.3%}")
+    logging.info(f"max_test_acc: {max_acc_v:.3%}")
     logging.info(
         f"max_lr: "
         + str("{:.4f}".format(max(lr)))
