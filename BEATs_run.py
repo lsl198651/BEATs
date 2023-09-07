@@ -17,7 +17,7 @@ parser.add_argument("--batch_size", type=int, default=128,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
                     default=0.0001, help="learning_rate for training")
-parser.add_argument("--num_epochs", type=int, default=300, help="num_epochs")
+parser.add_argument("--num_epochs", type=int, default=200, help="num_epochs")
 parser.add_argument("--layers", type=int, default=1, help="layers number")
 parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])
@@ -87,17 +87,17 @@ if args.train_total == True:
     for param in MyModel.BEATs.parameters():
         param.requires_grad = False
     optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
-                                lr=args.learning_rate, betas=args.beta,)
+                                  lr=args.learning_rate, betas=args.beta,)
 else:
     optimizer = torch.optim.AdamW(MyModel.parameters(),
-                                lr=args.learning_rate, betas=args.beta,)
+                                  lr=args.learning_rate, betas=args.beta,)
 
 # ========================/ setup scaler /========================== #
 logger_init()
 logging.info(f"{args.model} + {args.layers} fc layer")
 logging.info(f"# Batch_size = {args.batch_size}")
 logging.info(f"# Num_epochs = {args.num_epochs}")
-logging.info(f"# Learning_rate = {args.learning_rate}")
+logging.info(f"# Learning_rate = {args.learning_rate:.4f}")
 logging.info(f"# lr_scheduler = {args.scheduler_flag}")
 logging.info(f"# Padding_size = {padding_size}")
 logging.info(f"# Loss_fn = {args.loss_type}")
