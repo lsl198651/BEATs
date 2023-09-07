@@ -43,7 +43,7 @@ parser.add_argument("--ap_ratio", type=float, default=1.0,
                     help="ratio of absent and present")
 parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
-parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
+parser.add_argument("--beta", type=float, default=(0.9, 0.999), help="beta")
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label = get_features(
@@ -97,7 +97,7 @@ logger_init()
 logging.info(f"{args.model} + {args.layers} fc layer")
 logging.info(f"# Batch_size = {args.batch_size}")
 logging.info(f"# Num_epochs = {args.num_epochs}")
-logging.info(f"# Learning_rate = {args.learning_rate:.4f}")
+logging.info(f"# Learning_rate = {args.learning_rate:.6f}")
 logging.info(f"# lr_scheduler = {args.scheduler_flag}")
 logging.info(f"# Padding_size = {padding_size}")
 logging.info(f"# Loss_fn = {args.loss_type}")

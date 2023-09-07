@@ -154,7 +154,8 @@ class BEATs(nn.Module):
         fbanks = []
         for waveform in source:
             waveform = waveform.unsqueeze(0) * 2 ** 15
-            fbank = ta_kaldi.fbank(waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         fbank = (fbank - fbank_mean) / (2 * fbank_std)
@@ -247,7 +248,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         self.last_Dropout = nn.Dropout(0.1)
         # fc
         # self.fc_layer = nn.Linear(768, 768)
-        # self.last_layer = nn.Linear(768, 2)
+        self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
             nn.Linear(768 * 8, 768),
             nn.ReLU(),
@@ -262,16 +263,16 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # dropout
         # with torch.enable_grad():
         y = self.last_Dropout(x)
-        x = x.reshape(x.size(0), -1)
-        x = self.fc_layer(x)
-        output = torch.softmax(x, dim=1)
+        # x = x.reshape(x.size(0), -1)
+        # x = self.fc_layer(x)
+        # output = torch.softmax(x, dim=1)
         # FC 修改层数记得修改logging
         # if self.layers == 2:
         #     y = self.fc_layer(y)
         # add fc layer
-        # output = self.last_layer(y)
+        output = self.last_layer(y)
         # mean
-        # output = output.mean(dim=1)
+        output = output.mean(dim=1)
         # sigmoid
         # output = torch.sigmoid(output)
         return output

@@ -83,8 +83,10 @@ def train_test(
             pred_t = predict_t.max(1, keepdim=True)[
                 1
             ]  # get the index of the max log-probability
+            # label_t = torch.int64(label_t)
+            pred_t = pred_t.squeeze(1)
+            correct_t += pred_t.eq(label_t).sum().item()
             train_len += len(label_t)
-            correct_t += pred_t.eq(label_t.view_as(pred_t)).sum().item()
 
         if args.scheduler_flag is not None:
             scheduler.step()
@@ -114,7 +116,8 @@ def train_test(
                     1
                 ]  # get the index of the max log-probability
                 test_loss += loss_v.item()
-                correct_v += pred_v.eq(label_v.view_as(pred_v)).sum().item()
+                pred_v = pred_v.squeeze(1)
+                correct_v += pred_v.eq(label_v).sum().item()
                 pred.extend(pred_v.cpu().tolist())
                 label.extend(label_v.cpu().tolist())
 
@@ -151,7 +154,7 @@ def train_test(
         logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
         logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
         logging.info(f"max_lr:{max(lr):.6f}, min_lr:{min(lr):.6f}")
-        logging.info(f"======================================")
+        logging.info(f"=======================================")
         # 画混淆矩阵
         draw_confusion_matrix(
             label,
