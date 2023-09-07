@@ -4,12 +4,9 @@ import torch.profiler
 import logging
 import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
-from datetime import datetime
-from torch import optim
-from transformers import optimization
 from torch.utils.data import DataLoader
 from BEATs import BEATs_Pre_Train_itere3
-from torch.utils.tensorboard import SummaryWriter
+
 from util.dataloaders import get_features
 from util.traintest import train_test
 from util.BEATs_def import (MyDataset, logger_init)
@@ -36,7 +33,7 @@ parser.add_argument("--testset_balance", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
 parser.add_argument("--Data_Augmentation", type=bool, default=False,
                     help="Add data augmentation", choices=[True, False],)
-parser.add_argument("--grad_flag", type=bool, default=False,
+parser.add_argument("--train_total", type=bool, default=False,
                     help="use grad_no_requiredn", choices=[True, False],)
 parser.add_argument("--samplerWeight", type=bool, default=False,
                     help="use balanced sampler", choices=[True, False],)
@@ -86,24 +83,18 @@ padding_mask = torch.Tensor(padding)
 MyModel = BEATs_Pre_Train_itere3(args=args)
 
 # ========================/ setup optimizer /========================== #
-for param in MyModel.BEATs.parameters():
-    param.requires_grad = False
-optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
-                              lr=args.learning_rate, betas=args.beta,)
-# ========================/ setup warmup lr /========================== #
-warm_up_ratio = 0.1
-total_steps = len(train_loader) * args.num_epochs
-
-# if args.scheduler_flag == "cos":
-#     scheduler = optim.lr_scheduler.CosineAnnealingLR(
-#         optimizer, T_max=10, eta_min=0)
-# elif args.scheduler_flag == "cos_warmup":
-#     scheduler = optimization.get_cosine_schedule_with_warmup(
-#         optimizer, num_warmup_steps=warm_up_ratio * total_steps, num_training_steps=total_steps,)
+if args.train_total == True:
+    for param in MyModel.BEATs.parameters():
+        param.requires_grad = False
+    optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
+                                lr=args.learning_rate, betas=args.beta,)
+else:
+    optimizer = torch.optim.AdamW(MyModel.parameters(),
+                                lr=args.learning_rate, betas=args.beta,)
 
 # ========================/ setup scaler /========================== #
 logger_init()
-logging.info(f"<<<  {args.model}  - {args.layers} fc layer >>> ")
+logging.info(f"{args.model} - {args.layers} fc layer")
 logging.info(f"# Batch_size = {args.batch_size}")
 logging.info(f"# Num_epochs = {args.num_epochs}")
 logging.info(f"# Learning_rate = {args.learning_rate}")
@@ -112,6 +103,7 @@ logging.info(f"# Padding_size = {padding_size}")
 logging.info(f"# Loss_fn = {args.loss_type}")
 logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
 logging.info(f"# Testset_balance = {args.testset_balance}")
+logging.info(f"# train_total = {args.train_total}")
 logging.info(f"# Masking = {args.mask}")
 logging.info(f"# Train_a/p = {train_absent_size}/{train_present_size}")
 logging.info(f"# Test_a/p = {test_absent_size}/{test_present_size}")
@@ -120,12 +112,6 @@ logging.info(f"# Testset_size = {testset_size}")
 logging.info("# Optimizer = " + str(optimizer))
 logging.info("# Notes : ")
 logging.info("-------------------------------------")
-confusion_matrix_path = r"./confusion_matrix/" + str(
-    datetime.now().strftime("%Y-%m%d %H%M")
-)
-tb_writer = SummaryWriter(
-    r"./tensorboard/" + str(datetime.now().strftime("%Y-%m%d %H%M"))
-)
 
 for epoch in range(args.num_epochs):
     train_test(
@@ -136,6 +122,5 @@ for epoch in range(args.num_epochs):
         epochs=epoch,
         optimizer=optimizer,
         args=args,
-        tb_writer=tb_writer,
         matrix_path=confusion_matrix_path,
     )
