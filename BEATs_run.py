@@ -83,7 +83,7 @@ padding_mask = torch.Tensor(padding)
 MyModel = BEATs_Pre_Train_itere3(args=args)
 
 # ========================/ setup optimizer /========================== #
-if args.train_total == True:
+if args.train_total == False:       # tmd 谁给我这么写的！！！！！！
     for param in MyModel.BEATs.parameters():
         param.requires_grad = False
     optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
