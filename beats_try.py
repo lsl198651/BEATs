@@ -239,9 +239,9 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 # ========================/ HyperParameters /========================== #
 batch_size = 128
 learning_rate = 0.0001
-num_epochs = 300
+num_epochs = 180
 loss_type = "CE"
-train_total = True
+train_total = False
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
@@ -275,10 +275,10 @@ elif loss_type == "CE":
     loss_fn = nn.CrossEntropyLoss()
 
 if train_total is True:
-    for param in MyModel.BEATs.parameters():
-        param.requires_grad = False
     optimizer = torch.optim.AdamW(MyModel.parameters(), lr=learning_rate)
 else:
+    for param in MyModel.BEATs.parameters():
+        param.requires_grad = False
     optimizer = torch.optim.AdamW(
         filter(lambda p: p.requires_grad, MyModel.parameters()),
         lr=learning_rate,
@@ -352,7 +352,7 @@ def train_model(
                 label_v.to(device),
                 padding.to(device),
             )
-            # optimizer.zero_grad()
+            optimizer.zero_grad()
             predict_v = model(data_v, padding)
             # recall = recall_score(y_hat, y)
             test_loss += loss_fn(predict_v, label_v.long()).item()  # sum up batch loss
@@ -405,9 +405,9 @@ def train_model(
     logging.info(f"max_test_acc: {max_acc_v:.3%}")
     logging.info(
         f"max_lr: "
-        + str("{:.4f}".format(max(lr)))
+        + str("{:.6f}".format(max(lr)))
         + ", min_lr: "
-        + str("{:.4f}".format(min(lr)))
+        + str("{:.6f}".format(min(lr)))
     )
     logging.info(f"======================================")
     # 画混淆矩阵
@@ -431,7 +431,7 @@ logging.info(f"# train_a/p = {train_absent_size}/{train_present_size}")
 logging.info(f"# test_a/p ={test_absent_size}/{test_present_size}")
 logging.info(f"# batch_size = {batch_size}")
 logging.info(f"# train total model = {train_total}")
-logging.info(f"# learning_rate = {learning_rate:.6%}")
+logging.info(f"# learning_rate = {learning_rate:.6f}")
 logging.info(f"# num_epochs = {num_epochs}")
 logging.info(f"# padding_size = {padding_size}")
 logging.info("# loss_fn = " + loss_type)
