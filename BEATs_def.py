@@ -242,10 +242,10 @@ def draw_confusion_matrix(
     cm = confusion_matrix(label_true, label_pred)
 
     row_sums = np.sum(cm, axis=1)  # 计算每行的和
-    cm2 = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
-    cm2 = cm2.T
+    # cm2 = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
+    # cm2 = cm2.T
     cm = cm.T
-    plt.imshow(cm2, cmap="Reds")
+    plt.imshow(cm.T, cmap="Reds")
     plt.title(title)
     plt.xlabel("Predict label")
     plt.ylabel("Truth label")
@@ -259,7 +259,7 @@ def draw_confusion_matrix(
         for j in range(label_name.__len__()):
             # color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
             # value = float(format("%.4f" % cm[i, j]))
-            str_value = "{:.2%}({})".format(cm2[i, j], cm[i, j])
+            str_value = "{}".format(cm[i, j])
             plt.text(
                 i,
                 j,
