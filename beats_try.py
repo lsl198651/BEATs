@@ -238,16 +238,19 @@ test_set = MyDataset(wavlabel=test_label, wavdata=test_features)
 
 # ========================/ HyperParameters /========================== #
 batch_size = 128
-learning_rate = 0.0001
-num_epochs = 180
+learning_rate = 0.000001
+num_epochs = 1000
 loss_type = "CE"
-train_total = False
+train_total = True
 padding_size = train_features.shape[1]  # 3500
 padding = torch.zeros(
     batch_size, padding_size
 ).bool()  # we randomly mask 75% of the input patches,
+padding_v = torch.zeros(
+    1, padding_size
+).bool()  # we randomly mask 75% of the input patches,
 padding_mask = torch.Tensor(padding)
-
+# padding_mask_v = torch.Tensor(padding_v)
 # ========================/ dataloader /========================== #
 # 如果label为1，那么对应的该类别被取出来的概率是另外一个类别的2倍
 # weights = [9 if label == 1 else 1 for data, label in train_set]
@@ -424,7 +427,7 @@ def train_model(
 # ========================/ training and logging info /========================== #
 logger_init()
 model_name = MyModel.model_name
-logging.info("<" + model_name + " - 1 fc layer >")
+logging.info("<" + model_name + " + 1 fc layer >")
 logging.info(f"# trainset_size =  {trainset_size}")
 logging.info(f"# testset_size =  {testset_size}")
 logging.info(f"# train_a/p = {train_absent_size}/{train_present_size}")
@@ -452,6 +455,7 @@ for epoch in range(num_epochs):
         train_loader=train_loader,
         test_loader=test_loader,
         padding=padding_mask,
+        # padding_v=padding_mask_v,
         epochs=epoch,
     )
 tb_writer.close()
