@@ -111,7 +111,7 @@ np.save(npy_path_padded+r'\present_test_label.npy',present_test_label)"""
 # present_test_label = np.load(npy_path+r'\present_test_label.npy',allow_pickle=True)
 
 # ========================/ load npy padded file /========================== #
-Data_Augmentation = False
+Data_Augmentation = True
 absent_train_features = np.load(
     npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
 )

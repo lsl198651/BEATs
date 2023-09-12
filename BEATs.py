@@ -268,7 +268,6 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # x = self.fc_layer(x)
         # add fc layer
         # output = self.last_layer(x)
-        # mean
         # output = output.mean(dim=1)
         # sigmoid
         # output = torch.sigmoid(output)
