@@ -47,33 +47,26 @@ def get_patientid(csv_path):
 def get_wav_data(dir_path):
     wav = []
     label = []
-    # if not os.path.exists(csv_path):
-    #     os.makedirs(csv_path)
-
+    data_length = 10000
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
             if os.path.exists(wav_path):
                 # 数据读取
                 print("reading: " + subfile)
-                y, sr = librosa.load(wav_path)
+                y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                # print("y_16k size: "+y_16k.size)
-                if y_16k.shape[0] < 3500:
+                print("y_16k size: "+str(y_16k.size))
+                if y_16k.shape[0] < data_length:
                     y_16k = np.pad(
                         y_16k,
-                        (0, 3500 - y_16k.shape[0]),
+                        (0, data_length - y_16k.shape[0]),
                         "constant",
                         constant_values=(0, 0),
                     )
-                elif y_16k.shape[0] > 3500:
-                    y_16k = y_16k[0:3500]
+                elif y_16k.shape[0] > data_length:
+                    y_16k = y_16k[0:data_length]
                 wav.append(y_16k)
-                # feature = pd.DataFrame(y_16k)
-                # save_path = csv_path +"\\"+ subfile+ ".csv"
-                # print("shape: "+feature.shape())
-                # feature.to_csv(save_path, index=False, header=False)
-
                 file_name = subfile.split("_")
                 # 标签读取
                 if file_name[4] == "Absent":  # Absent
@@ -244,14 +237,14 @@ def draw_confusion_matrix(
 
     row_sums = np.sum(cm, axis=1)  # 计算每行的和
     cm2 = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
-    cm2 = cm2.T
+
     cm = cm.T
-    plt.imshow(cm2, cmap="Reds")
+    plt.imshow(cm.T, cmap="Reds")
     plt.title(title)
     plt.xlabel("Predict label")
     plt.ylabel("Truth label")
     plt.yticks(range(label_name.__len__()), label_name)
-    plt.xticks(range(label_name.__len__()), label_name, rotation=45)
+    plt.xticks(range(label_name.__len__()), label_name)
 
     plt.tight_layout()
     plt.colorbar()
@@ -260,7 +253,7 @@ def draw_confusion_matrix(
         for j in range(label_name.__len__()):
             # color = (1, 1, 1) if i == j else (0, 0, 0)  # 对角线字体白色，其他黑色
             # value = float(format("%.4f" % cm[i, j]))
-            str_value = "{:.2%}({})".format(cm2[i, j], cm[i, j])
+            str_value = "{}".format(cm[i, j])
             plt.text(
                 i,
                 j,

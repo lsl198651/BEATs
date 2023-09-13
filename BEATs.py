@@ -250,7 +250,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
-            nn.Linear(768 * 8, 768),
+            nn.Linear(768 * 24, 768),
             nn.ReLU(),
             nn.Linear(768, 32),
             nn.ReLU(),
@@ -263,16 +263,16 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # dropout
         # with torch.enable_grad():
         y = self.last_Dropout(x)
-        # x = x.reshape(x.size(0), -1)
-        # x = self.fc_layer(x)
-        # output = torch.softmax(x, dim=1)
+        x = x.reshape(x.size(0), -1)
+        x = self.fc_layer(x)
+        output = torch.softmax(x, dim=1)
         # FC 修改层数记得修改logging
         # if self.layers == 2:
         #     y = self.fc_layer(y)
         # add fc layer
-        output = self.last_layer(y)
+        # output = self.last_layer(y)
         # mean
-        output = output.mean(dim=1)
+        # output = output.mean(dim=1)
         # sigmoid
         # output = torch.sigmoid(output)
         return output

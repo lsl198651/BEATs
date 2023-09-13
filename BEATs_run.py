@@ -16,8 +16,8 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--batch_size", type=int, default=128,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
-                    default=0.000001, help="learning_rate for training")
-parser.add_argument("--num_epochs", type=int, default=200, help="num_epochs")
+                    default=0.0001, help="learning_rate for training")
+parser.add_argument("--num_epochs", type=int, default=500, help="num_epochs")
 parser.add_argument("--layers", type=int, default=1, help="layers number")
 parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])
@@ -33,7 +33,7 @@ parser.add_argument("--testset_balance", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
 parser.add_argument("--Data_Augmentation", type=bool, default=False,
                     help="Add data augmentation", choices=[True, False],)
-parser.add_argument("--train_total", type=bool, default=False,
+parser.add_argument("--train_total", type=bool, default=True,
                     help="use grad_no_requiredn", choices=[True, False],)
 parser.add_argument("--samplerWeight", type=bool, default=False,
                     help="use balanced sampler", choices=[True, False],)
