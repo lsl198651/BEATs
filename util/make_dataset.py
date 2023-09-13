@@ -189,11 +189,11 @@ def state_div(
     # end_index2 = 0
 
     for i in range(index_file.shape[0] - 3):
-        if index_file[i][2] == "1" and index_file[i + 3][2] == "4":
+        if index_file[i][2] == "1" and index_file[i + 2][2] == "3":
             start_index1 = float(index_file[i][0]) * fs
-            end_index1 = float(index_file[i+3][1]) * fs
+            end_index1 = float(index_file[i+1][1]) * fs
             start_index2 = float(index_file[i + 2][0]) * fs
-            end_index2 = float(index_file[i + 2][1]) * fs
+            end_index2 = float(index_file[i + 3][1]) * fs
             num = num + 1
             #  解决出现_0.wav的问题
             print(start_index1, end_index1, start_index2, end_index2)
@@ -206,7 +206,7 @@ def state_div(
             soundfile.write(
                 state_path
                 + "{}_{}_{}_{}_{}.wav".format(
-                    index, "s1+Systolic+s2+Diastolic", num, Systolic_murmur, Systolic_state
+                    index, "s1+Systolic", num, Systolic_murmur, Systolic_state
                 ),
                 buff1,
                 fs,
@@ -312,7 +312,7 @@ positoin = ["_AV", "_MV", "_PV", "_TV"]
 murmur = ["Absent\\", "Present\\"]
 period = ["s1", "systolic", "s2", "diastolic"]
 src_path = r"D:\Shilong\murmur\dataset_all\training_data"
-folder_path = r"D:\Shilong\murmur\01_dataset\02_period\\"
+folder_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\\"
 # 将wav文件和tsv文件copy到目标文件夹
 copy_wav_file(src_path, folder_path, absent_patient_id, "Absent", positoin)
 copy_wav_file(src_path, folder_path, present_patient_id, "Present", positoin)
@@ -367,7 +367,7 @@ absent_test_id = csv_reader_cl(absent_test_id_path, 0)
 present_train_id = csv_reader_cl(present_train_id_path, 0)
 present_test_id = csv_reader_cl(present_test_id_path, 0)
 # 将训练集和测试集文件分别copy到train和test文件夹
-folder = r"D:\Shilong\murmur\01_dataset\02_period"
+folder = r"D:\Shilong\murmur\01_dataset\01_s1s2"
 copy_states_data(folder, absent_train_id, "\\Absent\\", "\\train")
 copy_states_data(folder, present_train_id, "\\Present\\", "\\train")
 copy_states_data(folder, absent_test_id, "\\Absent\\", "\\test")

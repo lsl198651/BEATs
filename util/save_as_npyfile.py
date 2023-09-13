@@ -12,9 +12,9 @@ murmur_ap = ["Absent\\", "Present\\"]
 period = ["Systolic", "Diastolic"]
 
 # ========================/ get lists /========================== #
-dataset_path = r'D:\Shilong\murmur\01_dataset\02_period'
-file_path_train = r'D:\Shilong\murmur\01_dataset\02_period\train'
-file_path_test = r'D:\Shilong\murmur\01_dataset\02_period\test'
+dataset_path = r'D:\Shilong\murmur\01_dataset\01_s1s2'
+file_path_train = r'D:\Shilong\murmur\01_dataset\01_s1s2\train'
+file_path_test = r'D:\Shilong\murmur\01_dataset\01_s1s2\test'
 target_dir_train_a = dataset_path+r'\trainset\absent'
 target_dir_train_p = dataset_path+r'\trainset\present'
 target_dir_test_a = dataset_path+r'\testset\absent'
@@ -63,7 +63,7 @@ Systolic_murmur_timing_path = (
 )
 Murmur_locations_path = csv_folder+r"\Murmur_locations.csv"
 
-wav_filepath = r"D:\Shilong\murmur\01_dataset\02_period"
+wav_filepath = r"D:\Shilong\murmur\01_dataset\01_s1s2"
 absent_train_path = wav_filepath+r"\trainset\absent"
 absent_test_path = wav_filepath+r"\testset\absent"
 present_train_path = wav_filepath+r"\trainset\present"
