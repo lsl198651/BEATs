@@ -18,7 +18,7 @@ parser.add_argument("--batch_size", type=int, default=128,
 parser.add_argument("--learning_rate", type=float,
                     default=0.000001, help="learning_rate for training")
 parser.add_argument("--num_epochs", type=int, default=500, help="num_epochs")
-parser.add_argument("--layers", type=int, default=1, help="layers number")
+parser.add_argument("--layers", type=int, default=3, help="layers number")
 parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])
 parser.add_argument("--scheduler_flag", type=str, default=None,
@@ -43,7 +43,7 @@ parser.add_argument("--ap_ratio", type=float, default=1.0,
                     help="ratio of absent and present")
 parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
-parser.add_argument("--beta", type=float, default=(0.9, 0.999), help="beta")
+parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label = get_features(
