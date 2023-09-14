@@ -157,7 +157,7 @@ def period_div(
                     Diastolic_state = "nan"
                 if os.path.exists(tsv_path):
                     # 切割数据
-                    state_div(
+                    state_div2(
                         tsv_path,
                         wav_path,
                         dir_path + "\\",
@@ -215,6 +215,61 @@ def state_div(
                 state_path
                 + "{}_{}_{}_{}_{}.wav".format(
                     index, "s2+Diastolic", num, Diastolic_murmur, Diastolic_state
+                ),
+                buff2,
+                fs,
+            )
+
+# preprocessed PCGs were segmented into four heart sound states
+
+
+def state_div2(
+    tsvname,
+    wavname,
+    state_path,
+    index,
+    Systolic_murmur,
+    Diastolic_murmur,
+    Systolic_state,
+    Diastolic_state,
+):
+    index_file = index_load(tsvname)
+    recording, fs = librosa.load(wavname, sr=4000)
+    num1 = 0
+    num2 = 0
+    # start_index1 = 0
+    # end_index1 = 0
+    # start_index2 = 0
+    # end_index2 = 0
+
+    for i in range(index_file.shape[0]):
+        if index_file[i][2] == "2":
+            start_index1 = float(index_file[i][0]) * fs
+            end_index1 = float(index_file[i][1]) * fs
+            num1 = num1 + 1
+            buff1 = recording[int(start_index1): int(end_index1)]  # 字符串索引切割
+            print(start_index1, end_index1)
+            print("buff1 len: " + str(len(buff1)))
+            soundfile.write(
+                state_path
+                + "{}_{}_{}_{}_{}.wav".format(
+                    index, "Systolic", num1, Systolic_murmur, Systolic_state
+                ),
+                buff1,
+                fs,
+            )
+
+        if index_file[i][2] == "4":
+            start_index2 = float(index_file[i][0]) * fs
+            end_index2 = float(index_file[i][1]) * fs
+            num2 = num2 + 1
+            buff2 = recording[int(start_index2): int(end_index2)]  # 字符串索引切割
+            print(start_index2, end_index2)
+            print("buff2 len: " + str(len(buff2)))
+            soundfile.write(
+                state_path
+                + "{}_{}_{}_{}_{}.wav".format(
+                    index, "Diastolic", num2, Diastolic_murmur, Diastolic_state
                 ),
                 buff2,
                 fs,
@@ -312,7 +367,7 @@ positoin = ["_AV", "_MV", "_PV", "_TV"]
 murmur = ["Absent\\", "Present\\"]
 period = ["s1", "systolic", "s2", "diastolic"]
 src_path = r"D:\Shilong\murmur\dataset_all\training_data"
-folder_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\\"
+folder_path = r"D:\Shilong\murmur\01_dataset\00_sd\\"
 # 将wav文件和tsv文件copy到目标文件夹
 copy_wav_file(src_path, folder_path, absent_patient_id, "Absent", positoin)
 copy_wav_file(src_path, folder_path, present_patient_id, "Present", positoin)
@@ -367,7 +422,7 @@ absent_test_id = csv_reader_cl(absent_test_id_path, 0)
 present_train_id = csv_reader_cl(present_train_id_path, 0)
 present_test_id = csv_reader_cl(present_test_id_path, 0)
 # 将训练集和测试集文件分别copy到train和test文件夹
-folder = r"D:\Shilong\murmur\01_dataset\01_s1s2"
+folder = r"D:\Shilong\murmur\01_dataset\00_sd"
 copy_states_data(folder, absent_train_id, "\\Absent\\", "\\train")
 copy_states_data(folder, present_train_id, "\\Present\\", "\\train")
 copy_states_data(folder, absent_test_id, "\\Absent\\", "\\test")

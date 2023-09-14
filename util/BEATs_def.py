@@ -47,7 +47,7 @@ def get_patientid(csv_path):
 def get_wav_data(dir_path):
     wav = []
     label = []
-    data_length = 6000
+    data_length = 3500
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
