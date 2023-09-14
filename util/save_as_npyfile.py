@@ -12,7 +12,7 @@ murmur_ap = ["Absent\\", "Present\\"]
 period = ["Systolic", "Diastolic"]
 
 # ========================/ get lists /========================== #
-dataset_path = r'D:\Shilong\murmur\01_dataset\00_sd'
+dataset_path = r'D:\Shilong\murmur\00_sd\00_sd'
 file_path_train = r'D:\Shilong\murmur\01_dataset\00_sd\train'
 file_path_test = r'D:\Shilong\murmur\01_dataset\00_sd\test'
 target_dir_train_a = dataset_path+r'\trainset\absent'
@@ -29,25 +29,25 @@ if not os.path.exists(target_dir_test_a):
 if not os.path.exists(target_dir_test_p):
     os.makedirs(target_dir_test_p)
 # 复制到trainset和testset
-for root, dir, file in os.walk(file_path_train):
-    for subfile in file:
-        files = os.path.join(root, subfile)
-        print(subfile)
-        state = subfile.split("_")[4]
-        if state == 'Absent':
-            shutil.copy(files, target_dir_train_a + "\\")
-        if state == 'Present':
-            shutil.copy(files, target_dir_train_p + "\\")
+# for root, dir, file in os.walk(file_path_train):
+#     for subfile in file:
+#         files = os.path.join(root, subfile)
+#         print(subfile)
+#         state = subfile.split("_")[4]
+#         if state == 'Absent':
+#             shutil.copy(files, target_dir_train_a + "\\")
+#         if state == 'Present':
+#             shutil.copy(files, target_dir_train_p + "\\")
 
-for root, dir, file in os.walk(file_path_test):
-    for subfile in file:
-        files = os.path.join(root, subfile)
-        print(subfile)
-        state = subfile.split("_")[4]
-        if state == 'Absent':
-            shutil.copy(files, target_dir_test_a + "\\")
-        if state == 'Present':
-            shutil.copy(files, target_dir_test_p + "\\")
+# for root, dir, file in os.walk(file_path_test):
+#     for subfile in file:
+#         files = os.path.join(root, subfile)
+#         print(subfile)
+#         state = subfile.split("_")[4]
+#         if state == 'Absent':
+#             shutil.copy(files, target_dir_test_a + "\\")
+#         if state == 'Present':
+#             shutil.copy(files, target_dir_test_p + "\\")
 
 # ========================/ file path /========================== #
 # get absent / present patient_id

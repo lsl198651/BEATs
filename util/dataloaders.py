@@ -3,7 +3,7 @@ import random
 
 
 def get_features(args):
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded"
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\00_sd\npyFile_padded"
     absent_train_features = np.load(
         npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
     )

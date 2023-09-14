@@ -154,7 +154,7 @@ def train_test(
         logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
         logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
         logging.info(f"max_lr:{max(lr):.6f}, min_lr:{min(lr):.6f}")
-        logging.info(f"=======================================")
+        logging.info(f"======================================")
         # 画混淆矩阵
         draw_confusion_matrix(
             label,
