@@ -14,8 +14,8 @@ def train_test(
     model,
     train_loader,
     test_loader,
-    padding,
-    optimizer,
+    padding=None,
+    optimizer=None,
     args=None,
 ):
 
@@ -69,7 +69,7 @@ def train_test(
 
             if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
                 pred = torch.max(predict_t, dim=1)[0]
-                loss = loss_fn(predict_t[:, 1], label_t.float())
+                loss = loss_fn(pred, label_t.float())
             else:
                 loss = loss_fn(predict_t, label_t.long())
 
@@ -108,8 +108,8 @@ def train_test(
                 predict_v = model(data_v, padding)
                 # recall = recall_score(y_hat, y)
                 if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
-                    # pred_v = torch.max(predict_v, dim=1)[0]
-                    loss = loss_fn(predict_v[:, 1], label_t.float())
+                    pred_v = torch.max(predict_v, dim=1)[0]
+                    loss = loss_fn(pred_v, label_t.float())
                 else:
                     loss_v = loss_fn(predict_v, label_v.long())
                 pred_v = predict_v.max(1, keepdim=True)[

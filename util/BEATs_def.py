@@ -47,7 +47,7 @@ def get_patientid(csv_path):
 def get_wav_data(dir_path):
     wav = []
     label = []
-    data_length = 4000
+    data_length = 1500
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
@@ -55,7 +55,8 @@ def get_wav_data(dir_path):
                 # 数据读取
                 print("reading: " + subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
-                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                # y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                y_16k = y
                 print("y_16k size: "+str(y_16k.size))
                 if y_16k.shape[0] < data_length:
                     y_16k = np.pad(
