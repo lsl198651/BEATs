@@ -6,29 +6,29 @@ def get_features(args):
     npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded"
     # if args.4k is True:
     absent_train_features = np.load(
-        npy_path_padded + r"\absent_train_features4k.npy", allow_pickle=True
+        npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
     )
     absent_test_features = np.load(
-        npy_path_padded + r"\absent_test_features4k.npy", allow_pickle=True
+        npy_path_padded + r"\absent_test_features.npy", allow_pickle=True
     )
     present_train_features = np.load(
-        npy_path_padded + r"\present_train_features4k.npy", allow_pickle=True
+        npy_path_padded + r"\present_train_features.npy", allow_pickle=True
     )
     present_test_features = np.load(
-        npy_path_padded + r"\present_test_features4k.npy", allow_pickle=True
+        npy_path_padded + r"\present_test_features.npy", allow_pickle=True
     )
 
     absent_train_label = np.load(
-        npy_path_padded + r"\absent_train_label4k.npy", allow_pickle=True
+        npy_path_padded + r"\absent_train_label.npy", allow_pickle=True
     )
     absent_test_label = np.load(
-        npy_path_padded + r"\absent_test_label4k.npy", allow_pickle=True
+        npy_path_padded + r"\absent_test_label.npy", allow_pickle=True
     )
     present_train_label = np.load(
-        npy_path_padded + r"\present_train_label4k.npy", allow_pickle=True
+        npy_path_padded + r"\present_train_label.npy", allow_pickle=True
     )
     present_test_label = np.load(
-        npy_path_padded + r"\present_test_label4k.npy", allow_pickle=True
+        npy_path_padded + r"\present_test_label.npy", allow_pickle=True
     )
 
     if args.Data_Augmentation is True:

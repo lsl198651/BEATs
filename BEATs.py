@@ -30,7 +30,7 @@ class BEATsConfig:
         self.embed_dim: int = 512  # patch embedding dimension
         self.conv_bias: bool = False  # include bias in conv encoder
 
-        self.encoder_layers: int = 6  # num encoder layers in the transformer
+        self.encoder_layers: int = 4  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 3072  # encoder embedding dimension for FFN
         self.encoder_attention_heads: int = 12  # num encoder attention heads
@@ -155,7 +155,7 @@ class BEATs(nn.Module):
         for waveform in source:
             waveform = waveform.unsqueeze(0) * 2 ** 15
             fbank = ta_kaldi.fbank(
-                waveform, num_mel_bins=128, sample_frequency=4000, frame_length=25, frame_shift=10)
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         fbank = (fbank - fbank_mean) / (2 * fbank_std)
