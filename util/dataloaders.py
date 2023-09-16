@@ -36,13 +36,13 @@ def get_features(args):
             npy_path_padded + r"\present_train_features_8.npy", allow_pickle=True
         )
         present_train_features_12 = np.load(
-            npy_path_padded + r"\present_train_features_12.npy", allow_pickle=True
+            npy_path_padded + r"\present_train_features_11.npy", allow_pickle=True
         )
         present_train_label_8 = np.load(
             npy_path_padded + r"\present_train_label_8.npy", allow_pickle=True
         )
         present_train_label_12 = np.load(
-            npy_path_padded + r"\present_train_label_12.npy", allow_pickle=True
+            npy_path_padded + r"\present_train_label_11.npy", allow_pickle=True
         )
 
         absent_size = int(

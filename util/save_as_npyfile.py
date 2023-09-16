@@ -107,32 +107,32 @@ present_train_path_11 = wav_filepath+r"\trainset\time_stretch1.1"
 
 npy_path_padded = wav_filepath+r"\npyFile_padded"
 
-absent_train_features, absent_train_label = get_wav_data(
-    absent_train_path
-)  # absent
-absent_test_features, absent_test_label = get_wav_data(
-    absent_test_path
-)  # absent
-present_train_features, present_train_label = get_wav_data(
-    present_train_path
-)  # present
-present_test_features, present_test_label = get_wav_data(
-    present_test_path
-)  # present
+# absent_train_features, absent_train_label = get_wav_data(
+#     absent_train_path
+# )  # absent
+# absent_test_features, absent_test_label = get_wav_data(
+#     absent_test_path
+# )  # absent
+# present_train_features, present_train_label = get_wav_data(
+#     present_train_path
+# )  # present
+# present_test_features, present_test_label = get_wav_data(
+#     present_test_path
+# )  # present
 
 # # # ========================/ save as npy file /========================== #
 # 保存特征数据
 if not os.path.exists(npy_path_padded):
     os.makedirs(npy_path_padded)
-np.save(npy_path_padded + r"\absent_train_features4k.npy", absent_train_features)
-np.save(npy_path_padded + r"\absent_test_features4k.npy", absent_test_features)
-np.save(npy_path_padded + r"\present_train_features4k.npy", present_train_features)
-np.save(npy_path_padded + r"\present_test_features4k.npy", present_test_features)
-# 保存标签数据
-np.save(npy_path_padded + r"\absent_train_label4k.npy", absent_train_label)
-np.save(npy_path_padded + r"\absent_test_label4k.npy", absent_test_label)
-np.save(npy_path_padded + r"\present_train_label4k.npy", present_train_label)
-np.save(npy_path_padded + r"\present_test_label4k.npy", present_test_label)
+# np.save(npy_path_padded + r"\absent_train_features4k.npy", absent_train_features)
+# np.save(npy_path_padded + r"\absent_test_features4k.npy", absent_test_features)
+# np.save(npy_path_padded + r"\present_train_features4k.npy", present_train_features)
+# np.save(npy_path_padded + r"\present_test_features4k.npy", present_test_features)
+# # 保存标签数据
+# np.save(npy_path_padded + r"\absent_train_label4k.npy", absent_train_label)
+# np.save(npy_path_padded + r"\absent_test_label4k.npy", absent_test_label)
+# np.save(npy_path_padded + r"\present_train_label4k.npy", present_train_label)
+# np.save(npy_path_padded + r"\present_test_label4k.npy", present_test_label)
 
 # 保存增强后的特征和标签
 present_train_features_8, present_train_label_8 = get_wav_data(
@@ -141,9 +141,9 @@ present_train_features_8, present_train_label_8 = get_wav_data(
 present_train_features_12, present_train_label_12 = get_wav_data(
     present_train_path_11
 )  # present
-np.save(npy_path_padded + r"\present_train_features4k_8.npy",
+np.save(npy_path_padded + r"\present_train_features_8.npy",
         present_train_features_8)
-np.save(npy_path_padded + r"\present_train_features4k_11.npy",
+np.save(npy_path_padded + r"\present_train_features_11.npy",
         present_train_features_12)
-np.save(npy_path_padded + r"\present_train_label4k_8.npy", present_train_label_8)
-np.save(npy_path_padded + r"\present_train_label4k_11.npy", present_train_label_12)
+np.save(npy_path_padded + r"\present_train_label_8.npy", present_train_label_8)
+np.save(npy_path_padded + r"\present_train_label_11.npy", present_train_label_12)
