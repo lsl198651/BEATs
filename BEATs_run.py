@@ -31,7 +31,7 @@ parser.add_argument("--mask", type=bool, default=False,
                     help="number of classes", choices=[True, False])
 parser.add_argument("--testset_balance", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
-parser.add_argument("--Data_Augmentation", type=bool, default=True,
+parser.add_argument("--Data_Augmentation", type=bool, default=False,
                     help="Add data augmentation", choices=[True, False],)
 parser.add_argument("--train_total", type=bool, default=True,
                     help="use grad_no_requiredn", choices=[True, False],)
@@ -43,7 +43,7 @@ parser.add_argument("--ap_ratio", type=float, default=1.0,
                     help="ratio of absent and present")
 parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
-parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
+parser.add_argument("--beta", type=float, default=(0.9, 0.999), help="beta")
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label = get_features(
