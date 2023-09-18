@@ -32,7 +32,7 @@ class BEATsConfig:
 
         self.encoder_layers: int = 2  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
-        self.encoder_ffn_embed_dim: int = 3072  # encoder embedding dimension for FFN
+        self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
         self.encoder_attention_heads: int = 12  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
 
@@ -150,12 +150,29 @@ class BEATs(nn.Module):
             source: torch.Tensor,
             fbank_mean: float = 15.41663,
             fbank_std: float = 6.55582,
+            args=None,
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
             waveform = waveform.unsqueeze(0) * 2 ** 15
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+
+            if args.mask is True:
+                freqm_value = 30  # 横向
+                timem_value = 1  # 纵向
+                # SpecAug, not do for eval set
+                freqm = TT.FrequencyMasking(freq_mask_param=freqm_value)
+                timem = TT.TimeMasking(time_mask_param=timem_value)
+                fbank = torch.transpose(fbank, 0, 1)
+                # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
+                fbank = fbank.unsqueeze(0)
+                fbank = freqm(fbank)
+                fbank = timem(fbank)
+                # squeeze it back, it is just a trick to satisfy new torchaudio version
+                fbank = fbank.squeeze(0)
+                fbank = torch.transpose(fbank, 0, 1)
+
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         fbank = (fbank - fbank_mean) / (2 * fbank_std)
@@ -174,7 +191,7 @@ class BEATs(nn.Module):
             source,
             fbank_mean=fbank_mean,
             fbank_std=fbank_std,
-
+            args=args,
         )
         # 如果有padding-mask的话进行forward-padding-mask
         # 返回一个值？？？
