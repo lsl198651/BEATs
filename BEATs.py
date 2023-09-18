@@ -30,14 +30,14 @@ class BEATsConfig:
         self.embed_dim: int = 512  # patch embedding dimension
         self.conv_bias: bool = False  # include bias in conv encoder
 
-        self.encoder_layers: int = 8  # num encoder layers in the transformer
+        self.encoder_layers: int = 2  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 3072  # encoder embedding dimension for FFN
-        self.encoder_attention_heads: int = 6  # num encoder attention heads
+        self.encoder_attention_heads: int = 12  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
 
         self.layer_wise_gradient_decay_ratio: float = (
-            0.5  # ratio for layer-wise gradient decay
+            1  # ratio for layer-wise gradient decay
         )
         self.layer_norm_first: bool = False  # apply layernorm first in the transformer
         self.deep_norm: bool = False  # apply deep_norm first in the transformer
