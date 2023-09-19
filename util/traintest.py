@@ -48,7 +48,7 @@ def train_test(
         )
 # ==========loss function================
     if args.loss_type == "BCE":
-        loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
+        loss_fn = nn.BCELoss(size_average=True, reduce=False)  # BCELoss+sigmoid
     elif args.loss_type == "CE":
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     model.train()
@@ -68,25 +68,32 @@ def train_test(
             predict_t = model(data_t, padding)
 
             if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
-                pred = torch.max(predict_t, dim=1)[0]
-                loss = loss_fn(pred, label_t.float())
+                predict_t2,_ = torch.argmax(predict_t, dim=1)
+                loss = loss_fn(predict_t2, label_t.float())
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                train_loss += loss.item()
+                predict_t2 = predict_t2.squeeze(1)
+                correct_t += predict_t2.eq(label_t).sum().item()
+                train_len += len(label_t)
+
             else:
                 loss = loss_fn(predict_t, label_t.long())
-
-            # scaler.scale(loss).backward()
-            # scaler.step(optimizer)
-            # scaler.update()
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            train_loss += loss.item()
-            pred_t = predict_t.max(1, keepdim=True)[
-                1
-            ]  # get the index of the max log-probability
-            # label_t = torch.int64(label_t)
-            pred_t = pred_t.squeeze(1)
-            correct_t += pred_t.eq(label_t).sum().item()
-            train_len += len(label_t)
+                # scaler.scale(loss).backward()
+                # scaler.step(optimizer)
+                # scaler.update()
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                train_loss += loss.item()
+                pred_t = predict_t.max(1, keepdim=True)[
+                    1
+                ]  # get the index of the max log-probability
+                # label_t = torch.int64(label_t)
+                pred_t = pred_t.squeeze(1)
+                correct_t += pred_t.eq(label_t).sum().item()
+                train_len += len(label_t)
 
         if args.scheduler_flag is not None:
             scheduler.step()
@@ -108,18 +115,22 @@ def train_test(
                 predict_v = model(data_v, padding)
                 # recall = recall_score(y_hat, y)
                 if isinstance(loss_fn, torch.nn.BCEWithLogitsLoss):
-                    pred_v = torch.max(predict_v, dim=1)[0]
-                    loss = loss_fn(pred_v, label_t.float())
+                    predict_v2,_ = torch.argmax(predict_v, dim=1)
+                    loss_v = loss_fn(predict_v2, label_t.float())
+                    test_loss += loss_v.item()
+                    predict_v2 = predict_v2.squeeze(1)
+                    correct_v += pred_v.eq(label_v).sum().item()
+                    pred.extend(pred_v.cpu().tolist())
+                    label.extend(label_v.cpu().tolist())
+                    
                 else:
                     loss_v = loss_fn(predict_v, label_v.long())
-                pred_v = predict_v.max(1, keepdim=True)[
-                    1
-                ]  # get the index of the max log-probability
-                test_loss += loss_v.item()
-                pred_v = pred_v.squeeze(1)
-                correct_v += pred_v.eq(label_v).sum().item()
-                pred.extend(pred_v.cpu().tolist())
-                label.extend(label_v.cpu().tolist())
+                    pred_v = predict_v.max(1, keepdim=True)[1]  # get the index of the max log-probability
+                    test_loss += loss_v.item()
+                    pred_v = pred_v.squeeze(1)
+                    correct_v += pred_v.eq(label_v).sum().item()
+                    pred.extend(pred_v.cpu().tolist())
+                    label.extend(label_v.cpu().tolist())
 
         for group in optimizer.param_groups:
             lr_now = group["lr"]
