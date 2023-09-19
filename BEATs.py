@@ -30,9 +30,9 @@ class BEATsConfig:
         self.embed_dim: int = 512  # patch embedding dimension
         self.conv_bias: bool = False  # include bias in conv encoder
 
-        self.encoder_layers: int = 2  # num encoder layers in the transformer
+        self.encoder_layers: int = 8  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
-        self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
+        self.encoder_ffn_embed_dim: int = 3072  # encoder embedding dimension for FFN
         self.encoder_attention_heads: int = 12  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
 
@@ -162,8 +162,8 @@ class BEATs(nn.Module):
                 freqm_value = 30  # 横向
                 timem_value = 1  # 纵向
                 # SpecAug, not do for eval set
-                freqm = TT.FrequencyMasking(freq_mask_param=freqm_value)
-                timem = TT.TimeMasking(time_mask_param=timem_value)
+                freqm = TT.FrequencyMasking(freq_mask_param=args.freqm_value)
+                timem = TT.TimeMasking(time_mask_param=args.timem_value)
                 fbank = torch.transpose(fbank, 0, 1)
                 # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
                 fbank = fbank.unsqueeze(0)

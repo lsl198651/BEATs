@@ -23,11 +23,11 @@ parser.add_argument("--loss_type", type=str, default="CE",
                     help="loss function", choices=["BCE", "CE"])
 parser.add_argument("--scheduler_flag", type=str, default=None,
                     help="the dataset used", choices=["cos", "cos_warmup"],)
-parser.add_argument("--freqm_value",  type=int, default=0,
+parser.add_argument("--freqm_value",  type=int, default=30,
                     help="frequency mask max length")
 parser.add_argument("--timem_value", type=int, default=0,
                     help="time mask max length")
-parser.add_argument("--mask", type=bool, default=False,
+parser.add_argument("--mask", type=bool, default=True,
                     help="number of classes", choices=[True, False])
 parser.add_argument("--testset_balance", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
