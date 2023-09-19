@@ -1,4 +1,3 @@
-
 import torch
 import sys
 import torch.nn as nn
@@ -21,7 +20,6 @@ from torch.utils.data import DataLoader, Dataset
 from datetime import datetime
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
-
 
 def csv_reader_cl(file_name, clo_num):
     with open(file_name, encoding="utf-8") as csvfile:

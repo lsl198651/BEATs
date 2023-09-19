@@ -8,7 +8,7 @@ from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from BEATs_def import BCEFocalLoss
 import logging
-from sklearn.metrics import confusion_matrix
+
 
 
 def train_test(
@@ -175,7 +175,7 @@ def train_test(
         logging.info(
             f"train_acc: {train_acc:.3%} train_loss: {train_loss:.4f}")
         logging.info(
-            f"train_acc: {test_acc:.3%} train_loss: {test_loss:.4f}")
+            f"test_acc: {test_acc:.3%} test_loss: {test_loss:.4f}")
         logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
         logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
         logging.info(f"max_lr:{max(lr):.6f}, min_lr:{min(lr):.6f}")
