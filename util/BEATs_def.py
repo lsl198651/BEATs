@@ -1,4 +1,10 @@
-from sklearn.metrics import confusion_matrix
+
+import torch
+import sys
+import torch.nn as nn
+import torch.optim as optim
+import torchvision
+import torchvision.transforms as F
 import matplotlib.pyplot as plt
 import csv
 import os
@@ -9,8 +15,10 @@ import pandas as pd
 import numpy as np
 import logging
 import datetime
+from IPython.display import display
+from sklearn.metrics import confusion_matrix
+from torch.utils.data import DataLoader, Dataset
 from datetime import datetime
-import sys
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
 
@@ -20,7 +28,6 @@ def csv_reader_cl(file_name, clo_num):
         reader = csv.reader(csvfile)
         column = [row[clo_num] for row in reader]
     return column
-
 
 def copy_wav(folder, idlist, mur, traintest):
     for patient_id in idlist:
@@ -34,14 +41,12 @@ def copy_wav(folder, idlist, mur, traintest):
                 shutil.copytree(subdir_path, traintest + "\\" + subdir)
     # idlist.to_scv(folder+"\\"+traintest+"\\"+mur+traintest+".csv", index=False, header=False)
 
-
 def get_patientid(csv_path):
     # 'import csv' is required
     with open(csv_path) as csvfile:
         reader = csv.reader(csvfile)
         id = [row[0] for row in reader]  # weight 同列的数据
     return id
-
 
 # 读取数据并打标签
 def get_wav_data(dir_path):
@@ -76,7 +81,6 @@ def get_wav_data(dir_path):
                     label.append(1)  # 说明该听诊区无杂音
     return np.array(wav), np.array(label)
 
-
 def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
     slen = []
     dlen = []
@@ -101,12 +105,9 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                     dlen.append(waveform_16k.size)
     return np.array(slen), np.array(dlen)
 
-
 """
 读取csv文件返回feature和label
 """
-
-
 def get_mel_features(dir_path, absent_id, present_id):
     feature_list = []
     label_list = []
@@ -132,9 +133,7 @@ def get_mel_features(dir_path, absent_id, present_id):
                 label_list.append(1)
             if id in present_id:
                 label_list.append(0)
-
     return np.array(feature_list), np.array(label_list)
-
 
 # ========================/ dataset Class /========================== #
 class MyDataset(Dataset):
@@ -158,6 +157,24 @@ class MyDataset(Dataset):
         return len(self.data)
 
 
+# ========================/ Focal Loss /========================== #
+class BCEFocalLoss(torch.nn.Module):
+    def __init__(self, gamma=2, alpha=0.25, reduction='mean'):
+        super(BCEFocalLoss, self).__init__()
+        self.gamma = gamma
+        self.alpha = alpha
+        self.reduction = reduction
+
+    def forward(self, predict, target):
+        pt = torch.sigmoid(predict) # sigmoide获取概率
+        #在原始ce上增加动态权重因子，注意alpha的写法，下面多类时不能这样使用
+        loss = - self.alpha * (1 - pt) ** self.gamma * target * torch.log(pt) - (1 - self.alpha) * pt ** self.gamma * (1 - target) * torch.log(1 - pt)
+
+        if self.reduction == 'mean':
+            loss = torch.mean(loss)
+        elif self.reduction == 'sum':
+            loss = torch.sum(loss)
+        return loss
 # ========================/ logging init /========================== #
 def logger_init(
     log_level=logging.DEBUG,
@@ -180,7 +197,6 @@ def logger_init(
             log_path), logging.StreamHandler(sys.stdout)],
     )
     logging.disable(logging.DEBUG)
-
 
 # ========================/ logging formate /========================== #
 class save_info(object):
