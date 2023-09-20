@@ -53,11 +53,11 @@ def get_features(args):
             )
             * args.ap_ratio
         )
-        List_train = random.sample(
-            range(1, absent_train_features.shape[0]), absent_size
-        )
-        absent_train_features = absent_train_features[List_train]
-        absent_train_label = absent_train_label[List_train]
+        # List_train = random.sample(
+        #     range(1, absent_train_features.shape[0]), absent_size
+        # )
+        # absent_train_features = absent_train_features[List_train]
+        # absent_train_label = absent_train_label[List_train]
         train_label = np.hstack(
             (
                 absent_train_label,
@@ -76,12 +76,12 @@ def get_features(args):
             )
         )
     else:
-        absent_size = int(present_train_features.shape[0] * args.ap_ratio)
-        List_train = random.sample(
-            range(1, absent_train_features.shape[0]), absent_size
-        )
-        absent_train_features = absent_train_features[List_train]
-        absent_train_label = absent_train_label[List_train]
+        # absent_size = int(present_train_features.shape[0] * args.ap_ratio)
+        # List_train = random.sample(
+        #     range(1, absent_train_features.shape[0]), absent_size
+        # )
+        # absent_train_features = absent_train_features[List_train]
+        # absent_train_label = absent_train_label[List_train]
         train_label = np.hstack(
             (
                 absent_train_label,

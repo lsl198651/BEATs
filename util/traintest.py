@@ -6,7 +6,7 @@ from torch import optim
 from transformers import optimization
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
-from util.BEATs_def import BCEFocalLoss
+from util.BEATs_def import FocalLoss
 import logging
 
 
@@ -52,7 +52,7 @@ def train_test(
     elif args.loss_type == "CE":
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
-        loss_fn = BCEFocalLoss()
+        loss_fn = FocalLoss()
     model.train()
 # ============ training ================
     for epochs in range(args.num_epochs):

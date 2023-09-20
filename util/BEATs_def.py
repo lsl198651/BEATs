@@ -3,7 +3,7 @@ import sys
 import torch.nn as nn
 import torch.optim as optim
 import torchvision
-import torchvision.transforms as F
+import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import csv
 import os
@@ -20,12 +20,15 @@ from torch.utils.data import DataLoader, Dataset
 from datetime import datetime
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
+from torch.autograd import Variable
+
 
 def csv_reader_cl(file_name, clo_num):
     with open(file_name, encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
         column = [row[clo_num] for row in reader]
     return column
+
 
 def copy_wav(folder, idlist, mur, traintest):
     for patient_id in idlist:
@@ -39,6 +42,7 @@ def copy_wav(folder, idlist, mur, traintest):
                 shutil.copytree(subdir_path, traintest + "\\" + subdir)
     # idlist.to_scv(folder+"\\"+traintest+"\\"+mur+traintest+".csv", index=False, header=False)
 
+
 def get_patientid(csv_path):
     # 'import csv' is required
     with open(csv_path) as csvfile:
@@ -47,6 +51,8 @@ def get_patientid(csv_path):
     return id
 
 # 读取数据并打标签
+
+
 def get_wav_data(dir_path):
     wav = []
     label = []
@@ -79,6 +85,7 @@ def get_wav_data(dir_path):
                     label.append(1)  # 说明该听诊区无杂音
     return np.array(wav), np.array(label)
 
+
 def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
     slen = []
     dlen = []
@@ -103,9 +110,12 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                     dlen.append(waveform_16k.size)
     return np.array(slen), np.array(dlen)
 
+
 """
 读取csv文件返回feature和label
 """
+
+
 def get_mel_features(dir_path, absent_id, present_id):
     feature_list = []
     label_list = []
@@ -134,6 +144,8 @@ def get_mel_features(dir_path, absent_id, present_id):
     return np.array(feature_list), np.array(label_list)
 
 # ========================/ dataset Class /========================== #
+
+
 class MyDataset(Dataset):
     """my dataset."""
 
@@ -164,16 +176,58 @@ class BCEFocalLoss(torch.nn.Module):
         self.reduction = reduction
 
     def forward(self, predict, target):
-        pt = torch.sigmoid(predict) # sigmoide获取概率
-        #在原始ce上增加动态权重因子，注意alpha的写法，下面多类时不能这样使用
-        loss = - self.alpha * (1 - pt) ** self.gamma * target * torch.log(pt) - (1 - self.alpha) * pt ** self.gamma * (1 - target) * torch.log(1 - pt)
+        pt = torch.sigmoid(predict)  # sigmoide获取概率
+        # 在原始ce上增加动态权重因子，注意alpha的写法，下面多类时不能这样使用
+        loss = - self.alpha * (1 - pt) ** self.gamma * target * torch.log(pt) - (
+            1 - self.alpha) * pt ** self.gamma * (1 - target) * torch.log(1 - pt)
 
         if self.reduction == 'mean':
             loss = torch.mean(loss)
         elif self.reduction == 'sum':
             loss = torch.sum(loss)
         return loss
+
+# ========================/ Focal Loss /========================== #
+
+
+class FocalLoss(nn.Module):
+    def __init__(self, gamma=4, alpha=0.25, size_average=True):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.alpha = alpha
+        if isinstance(alpha, (float, int)):
+            self.alpha = torch.Tensor([alpha, 1-alpha])
+        if isinstance(alpha, list):
+            self.alpha = torch.Tensor(alpha)
+        self.size_average = size_average
+
+    def forward(self, input, target):
+        if input.dim() > 2:
+            # N,C,H,W => N,C,H*W
+            input = input.view(input.size(0), input.size(1), -1)
+            input = input.transpose(1, 2)    # N,C,H*W => N,H*W,C
+            input = input.contiguous().view(-1, input.size(2))   # N,H*W,C => N*H*W,C
+        target = target.view(-1, 1)
+
+        logpt = torch.log_softmax(input, dim=1)
+        logpt = logpt.gather(1, target)
+        logpt = logpt.view(-1)
+        pt = Variable(logpt.data.exp())
+
+        if self.alpha is not None:
+            if self.alpha.type() != input.data.type():
+                self.alpha = self.alpha.type_as(input.data)
+            at = self.alpha.gather(0, target.data.view(-1))
+            logpt = logpt * Variable(at)
+
+        loss = -1 * (1-pt)**self.gamma * logpt
+        if self.size_average:
+            return loss.mean()
+        else:
+            return loss.sum()
 # ========================/ logging init /========================== #
+
+
 def logger_init(
     log_level=logging.DEBUG,
     log_dir=r"./ResultFile",
@@ -197,6 +251,8 @@ def logger_init(
     logging.disable(logging.DEBUG)
 
 # ========================/ logging formate /========================== #
+
+
 class save_info(object):
     def __init__(self, epoch_num, epoch, train_loss, test_acc, test_loss):
         self.epoch = epoch
