@@ -146,14 +146,14 @@ def train_test(
 
         # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
-        logging.info(f"learning_rate: {lr_now:.6f}")
+        logging.info(f"learning_rate: {lr_now:.1e}")
         logging.info(
             f"train_acc: {train_acc:.3%} train_loss: {train_loss:.4f}")
         logging.info(
-            f"train_acc: {test_acc:.3%} train_loss: {test_loss:.4f}")
+            f"test_acc: {test_acc:.3%} test_loss: {test_loss:.4f}")
         logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
         logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
-        logging.info(f"max_lr:{max(lr):.6f}, min_lr:{min(lr):.6f}")
+        logging.info(f"max_lr:{max(lr):.1e}, min_lr:{min(lr):.1e}")
         logging.info(f"======================================")
         # 画混淆矩阵
         draw_confusion_matrix(

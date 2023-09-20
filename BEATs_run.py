@@ -6,7 +6,6 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 from BEATs import BEATs_Pre_Train_itere3
-
 from util.dataloaders import get_features
 from util.traintest import train_test
 from util.BEATs_def import (MyDataset, logger_init)
@@ -97,7 +96,7 @@ logger_init()
 logging.info(f"{args.model} + {args.layers} fc layer")
 logging.info(f"# Batch_size = {args.batch_size}")
 logging.info(f"# Num_epochs = {args.num_epochs}")
-logging.info(f"# Learning_rate = {args.learning_rate:.6f}")
+logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
 logging.info(f"# lr_scheduler = {args.scheduler_flag}")
 logging.info(f"# Padding_size = {padding_size}")
 logging.info(f"# Loss_fn = {args.loss_type}")
