@@ -19,8 +19,8 @@ parser.add_argument("--learning_rate", type=float,
                     default=0.0000001, help="learning_rate for training")
 parser.add_argument("--num_epochs", type=int, default=500, help="num_epochs")
 parser.add_argument("--layers", type=int, default=3, help="layers number")
-parser.add_argument("--loss_type", type=str, default="CE",
-                    help="loss function", choices=["BCE", "CE"])
+parser.add_argument("--loss_type", type=str, default="BCE",
+                    help="loss function", choices=["BCE", "CE", "FocalLoss"])
 parser.add_argument("--scheduler_flag", type=str, default=None,
                     help="the dataset used", choices=["cos", "cos_warmup"],)
 parser.add_argument("--freqm_value",  type=int, default=0,
@@ -97,7 +97,7 @@ logger_init()
 logging.info(f"{args.model} + {args.layers} fc layer")
 logging.info(f"# Batch_size = {args.batch_size}")
 logging.info(f"# Num_epochs = {args.num_epochs}")
-logging.info(f"# Learning_rate = {args.learning_rate:.6f}")
+logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
 logging.info(f"# lr_scheduler = {args.scheduler_flag}")
 logging.info(f"# Padding_size = {padding_size}")
 logging.info(f"# Loss_fn = {args.loss_type}")

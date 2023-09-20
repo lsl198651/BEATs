@@ -6,9 +6,8 @@ from torch import optim
 from transformers import optimization
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
-from BEATs_def import BCEFocalLoss
+from util.BEATs_def import BCEFocalLoss
 import logging
-
 
 
 def train_test(
@@ -49,11 +48,11 @@ def train_test(
         )
 # ==========loss function================
     if args.loss_type == "BCE":
-        loss_fn = nn.BCELoss()  # BCELoss+sigmoid
+        loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
     elif args.loss_type == "CE":
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
-        loss_fn= BCEFocalLoss()
+        loss_fn = BCEFocalLoss()
     model.train()
 # ============ training ================
     for epochs in range(args.num_epochs):
@@ -64,20 +63,22 @@ def train_test(
         train_len = 0
 
         for data_t, label_t in train_loader:
-            data_t, label_t, padding = data_t.to(device), label_t.to(device), padding.to(device)
+            data_t, label_t, padding = data_t.to(
+                device), label_t.to(device), padding.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
             predict_t = model(data_t, padding)
-            if args.loss_type=="BCE":
-                predict_t2,_ = torch.argmax(predict_t, dim=1)
-                loss = loss_fn(predict_t2, label_t.float())
+            if args.loss_type == "BCE":
+                predict_t2 = torch.argmax(predict_t, dim=1)
+                loss = loss_fn(predict_t2.float(), label_t)
                 optimizer.zero_grad()
+                loss.requires_grad_(True)
                 loss.backward()
                 optimizer.step()
                 train_loss += loss.item()
-                predict_t2 = predict_t2.squeeze(1)
+                # predict_t2 = predict_t2.squeeze(1)
                 correct_t += predict_t2.eq(label_t).sum().item()
                 train_len += len(label_t)
-            elif args.loss_type=="CE":
+            elif args.loss_type == "CE":
                 loss = loss_fn(predict_t, label_t.long())
                 # scaler.scale(loss).backward()
                 # scaler.step(optimizer)
@@ -86,18 +87,20 @@ def train_test(
                 loss.backward()
                 optimizer.step()
                 train_loss += loss.item()
-                pred_t = predict_t.max(1, keepdim=True)[1]  # get the index of the max log-probability
+                # get the index of the max log-probability
+                pred_t = predict_t.max(1, keepdim=True)[1]
                 # label_t = torch.int64(label_t)
                 pred_t = pred_t.squeeze(1)
                 correct_t += pred_t.eq(label_t).sum().item()
                 train_len += len(label_t)
-            elif args.loss_type=="FocalLoss":
+            elif args.loss_type == "FocalLoss":
                 loss = loss_fn(predict_t, label_t.long())
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
                 train_loss += loss.item()
-                pred_t = predict_t.max(1, keepdim=True)[1]  # get the index of the max log-probability
+                # get the index of the max log-probability
+                pred_t = predict_t.max(1, keepdim=True)[1]
                 # label_t = torch.int64(label_t)
                 pred_t = pred_t.squeeze(1)
                 correct_t += pred_t.eq(label_t).sum().item()
@@ -121,25 +124,27 @@ def train_test(
                 optimizer.zero_grad()
                 predict_v = model(data_v, padding)
                 # recall = recall_score(y_hat, y)
-                if args.loss_type=="BCE":
-                    predict_v2,_ = torch.argmax(predict_v, dim=1)
-                    loss_v = loss_fn(predict_v2, label_t.float())
+                if args.loss_type == "BCE":
+                    predict_v2 = torch.argmax(predict_v, dim=1)
+                    loss_v = loss_fn(predict_v2.float(), label_t)
                     test_loss += loss_v.item()
-                    predict_v2 = predict_v2.squeeze(1)
-                    correct_v += pred_v.eq(label_v).sum().item()
-                    pred.extend(pred_v.cpu().tolist())
-                    label.extend(label_v.cpu().tolist())                    
-                elif args.loss_type=="CE":
+                    # predict_v2 = predict_v2.squeeze(1)
+                    correct_v += predict_v2.eq(label_v).sum().item()
+                    pred.extend(predict_v2.cpu().tolist())
+                    label.extend(label_v.cpu().tolist())
+                elif args.loss_type == "CE":
                     loss_v = loss_fn(predict_v, label_v.long())
-                    pred_v = predict_v.max(1, keepdim=True)[1]  # get the index of the max log-probability
+                    # get the index of the max log-probability
+                    pred_v = predict_v.max(1, keepdim=True)[1]
                     test_loss += loss_v.item()
                     pred_v = pred_v.squeeze(1)
                     correct_v += pred_v.eq(label_v).sum().item()
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
-                elif args.loss_type=="FocalLoss":
+                elif args.loss_type == "FocalLoss":
                     loss_v = loss_fn(predict_v, label_v.long())
-                    pred_v = predict_v.max(1, keepdim=True)[1]  # get the index of the max log-probability
+                    # get the index of the max log-probability
+                    pred_v = predict_v.max(1, keepdim=True)[1]
                     test_loss += loss_v.item()
                     pred_v = pred_v.squeeze(1)
                     correct_v += pred_v.eq(label_v).sum().item()
@@ -171,14 +176,14 @@ def train_test(
 
         # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
-        logging.info(f"learning_rate: {lr_now:.6f}")
+        logging.info(f"learning_rate: {lr_now:.1e}")
         logging.info(
             f"train_acc: {train_acc:.3%} train_loss: {train_loss:.4f}")
         logging.info(
             f"test_acc: {test_acc:.3%} test_loss: {test_loss:.4f}")
         logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
         logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
-        logging.info(f"max_lr:{max(lr):.6f}, min_lr:{min(lr):.6f}")
+        logging.info(f"max_lr:{max(lr):.1e}, min_lr:{min(lr):.1e}")
         logging.info(f"======================================")
         # 画混淆矩阵
         draw_confusion_matrix(
