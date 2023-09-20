@@ -191,7 +191,7 @@ class BCEFocalLoss(torch.nn.Module):
 
 
 class FocalLoss(nn.Module):
-    def __init__(self, gamma=4, alpha=0.25, size_average=True):
+    def __init__(self, gamma=2, alpha=0.25, size_average=True):
         super(FocalLoss, self).__init__()
         self.gamma = gamma
         self.alpha = alpha
