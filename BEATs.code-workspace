@@ -1,10 +1,10 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
     "[python]": {
       "editor.defaultFormatter": "ms-python.autopep8"
     },
@@ -13,13 +13,10 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.fontFamily": "'Fira Code',Consolas, 'Courier New', monospace",
-    "python.autoComplete.extraPaths": [
-	
-	]
+    "python.autoComplete.extraPaths": [],
+    "python.analysis.extraPaths": []
   },
-	"extensions": {
-		"recommendations": [
-			"ms-ceintl.vscode-language-pack-zh-hans"
-		]
-	}
+  "extensions": {
+    "recommendations": ["ms-ceintl.vscode-language-pack-zh-hans"]
+  }
 }
