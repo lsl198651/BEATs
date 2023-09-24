@@ -45,14 +45,14 @@ def get_features(args):
             npy_path_padded + r"\present_train_label_11.npy", allow_pickle=True
         )
 
-        absent_size = int(
-            (
-                present_train_features.shape[0]
-                + present_train_features_12.shape[0]
-                + present_train_features_8.shape[0]
-            )
-            * args.ap_ratio
-        )
+        # absent_size = int(
+        #     (
+        #         present_train_features.shape[0]
+        #         + present_train_features_12.shape[0]
+        #         + present_train_features_8.shape[0]
+        #     )
+        #     * args.ap_ratio
+        # )
         # List_train = random.sample(
         #     range(1, absent_train_features.shape[0]), absent_size
         # )
