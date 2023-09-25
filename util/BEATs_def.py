@@ -51,7 +51,20 @@ def get_patientid(csv_path):
     return id
 
 # 读取数据并打标签
+# ------------------/ 归一化 /------------------ #
 
+
+def wav_normalize(data):
+    _range = np.max(data) - np.min(data)
+    for i in range(data.shape[0]):
+        if _range == 0:
+            data[i] = 0
+        else:
+            data[i] = (data[i] - np.min(data)) / _range
+    return data
+
+
+# ------------------/ 返回数据文件 /------------------ #
 
 def get_wav_data(dir_path):
     wav = []
@@ -65,18 +78,18 @@ def get_wav_data(dir_path):
                 print("reading: " + subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                # y_16k = y
-                print("y_16k size: "+str(y_16k.size))
-                if y_16k.shape[0] < data_length:
-                    y_16k = np.pad(
-                        y_16k,
-                        (0, data_length - y_16k.shape[0]),
+                y_16k_norm = wav_normalize(y_16k)
+                print("y_16k size: "+str(y_16k_norm.size))
+                if y_16k_norm.shape[0] < data_length:
+                    y_16k_norm = np.pad(
+                        y_16k_norm,
+                        (0, data_length - y_16k_norm.shape[0]),
                         "constant",
                         constant_values=(0, 0),
                     )
-                elif y_16k.shape[0] > data_length:
-                    y_16k = y_16k[0:data_length]
-                wav.append(y_16k)
+                elif y_16k_norm.shape[0] > data_length:
+                    y_16k_norm = y_16k_norm[0:data_length]
+                wav.append(y_16k_norm)
                 file_name = subfile.split("_")
                 # 标签读取
                 if file_name[4] == "Absent":  # Absent

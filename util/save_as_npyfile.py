@@ -28,7 +28,7 @@ if not os.path.exists(target_dir_test_a):
     os.makedirs(target_dir_test_a)
 if not os.path.exists(target_dir_test_p):
     os.makedirs(target_dir_test_p)
-# # 复制到trainset和testset
+# 复制到trainset和testset
 # for root, dir, file in os.walk(file_path_train):
 #     for subfile in file:
 #         files = os.path.join(root, subfile)
@@ -50,17 +50,17 @@ if not os.path.exists(target_dir_test_p):
 #             shutil.copy(files, target_dir_test_p + "\\")
 
 
-# ========================/ DataAugementation /========================== #
+# ========================/ Data Augementation /========================== #
 # 数据增强文件
-# speed_factor1 = 1.1
-# speed_factor0 = 0.8
-# time_path1 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch0.8'
-# time_path2 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch1.1'
-# path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\present'
-# if not os.path.exists(time_path1):
-#     os.makedirs(time_path1)
-# if not os.path.exists(time_path2):
-#     os.makedirs(time_path2)
+speed_factor1 = 1.1
+speed_factor0 = 0.8
+time_path1 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch0.8'
+time_path2 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch1.1'
+path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\present'
+if not os.path.exists(time_path1):
+    os.makedirs(time_path1)
+if not os.path.exists(time_path2):
+    os.makedirs(time_path2)
 
 # for root, dir, file in os.walk(path):
 #     for filename in file:
@@ -98,41 +98,37 @@ present_test_path = wav_filepath+r"\testset\present"
 present_train_path_8 = wav_filepath+r"\trainset\time_stretch0.8"
 present_train_path_11 = wav_filepath+r"\trainset\time_stretch1.1"
 # ========================/ get lists /========================== #
-# id_data = get_patientid(id_data_path)
-# absent_patient_id = get_patientid(absent_csv_path)
-# present_patient_id = get_patientid(present_csv_path)
-# Diastolic_murmur_timing = get_patientid(Diastolic_murmur_timing_path)
-# Systolic_murmur_timing = get_patientid(Systolic_murmur_timing_path)
-# Murmur_locations = get_patientid(Murmur_locations_path)
+npy_path_padded = wav_filepath+r"\npyFile_padded\normalized"
 
-npy_path_padded = wav_filepath+r"\npyFile_padded"
-
-# absent_train_features, absent_train_label = get_wav_data(
-#     absent_train_path
-# )  # absent
-# absent_test_features, absent_test_label = get_wav_data(
-#     absent_test_path
-# )  # absent
-# present_train_features, present_train_label = get_wav_data(
-#     present_train_path
-# )  # present
-# present_test_features, present_test_label = get_wav_data(
-#     present_test_path
-# )  # present
+absent_train_features, absent_train_label = get_wav_data(
+    absent_train_path
+)  # absent
+absent_test_features, absent_test_label = get_wav_data(
+    absent_test_path
+)  # absent
+present_train_features, present_train_label = get_wav_data(
+    present_train_path
+)  # present
+present_test_features, present_test_label = get_wav_data(
+    present_test_path
+)  # present
 
 # # # ========================/ save as npy file /========================== #
 # 保存特征数据
 if not os.path.exists(npy_path_padded):
     os.makedirs(npy_path_padded)
-# np.save(npy_path_padded + r"\absent_train_features4k.npy", absent_train_features)
-# np.save(npy_path_padded + r"\absent_test_features4k.npy", absent_test_features)
-# np.save(npy_path_padded + r"\present_train_features4k.npy", present_train_features)
-# np.save(npy_path_padded + r"\present_test_features4k.npy", present_test_features)
-# # 保存标签数据
-# np.save(npy_path_padded + r"\absent_train_label4k.npy", absent_train_label)
-# np.save(npy_path_padded + r"\absent_test_label4k.npy", absent_test_label)
-# np.save(npy_path_padded + r"\present_train_label4k.npy", present_train_label)
-# np.save(npy_path_padded + r"\present_test_label4k.npy", present_test_label)
+np.save(npy_path_padded + r"\absent_train_features_norm.npy",
+        absent_train_features)
+np.save(npy_path_padded + r"\absent_test_features.npy_norm", absent_test_features)
+np.save(npy_path_padded + r"\present_train_features_norm.npy",
+        present_train_features)
+np.save(npy_path_padded + r"\present_test_features_norm.npy",
+        present_test_features)
+# 保存标签数据
+np.save(npy_path_padded + r"\absent_train_label_norm.npy", absent_train_label)
+np.save(npy_path_padded + r"\absent_test_label_norm.npy", absent_test_label)
+np.save(npy_path_padded + r"\present_train_label_norm.npy", present_train_label)
+np.save(npy_path_padded + r"\present_test_label_norm.npy", present_test_label)
 
 # 保存增强后的特征和标签
 present_train_features_8, present_train_label_8 = get_wav_data(
@@ -141,9 +137,11 @@ present_train_features_8, present_train_label_8 = get_wav_data(
 present_train_features_12, present_train_label_12 = get_wav_data(
     present_train_path_11
 )  # present
-np.save(npy_path_padded + r"\present_train_features_8.npy",
+np.save(npy_path_padded + r"\present_train_features_8_norm.npy",
         present_train_features_8)
-np.save(npy_path_padded + r"\present_train_features_11.npy",
+np.save(npy_path_padded + r"\present_train_features_11_norm.npy",
         present_train_features_12)
-np.save(npy_path_padded + r"\present_train_label_8.npy", present_train_label_8)
-np.save(npy_path_padded + r"\present_train_label_11.npy", present_train_label_12)
+np.save(npy_path_padded + r"\present_train_label_8_norm.npy",
+        present_train_label_8)
+np.save(npy_path_padded + r"\present_train_label_11_norm.npy",
+        present_train_label_12)
