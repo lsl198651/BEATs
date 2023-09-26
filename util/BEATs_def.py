@@ -21,6 +21,7 @@ from datetime import datetime
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
+from pydub import AudioSegment
 
 
 def csv_reader_cl(file_name, clo_num):
@@ -69,7 +70,7 @@ def wav_normalize(data):
 # ------------------/ 倒放 /------------------ #
 
 
-def wav_reverse(dir_path):
+def wav_reverse(dir_path, save_path):
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
@@ -77,8 +78,8 @@ def wav_reverse(dir_path):
             temp = AudioSegment.from_file(wav_path, format="wav")
             backplay = temp.reverse()
             # 存为相关格式倒放文件
-            reverse_name = subfile.split(".")[0]+"_reverse.wav"
-            backplay.export(reverse_name, format="wav")
+            reverse_name = subfile.split(".")[0]+"_reverse"
+            backplay.export(save_path+reverse_name+".wav", format="wav")
 
 # ------------------/ 返回数据文件 /------------------ #
 

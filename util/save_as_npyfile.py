@@ -97,6 +97,7 @@ present_train_path = wav_filepath+r"\trainset\present"
 present_test_path = wav_filepath+r"\testset\present"
 present_train_path_8 = wav_filepath+r"\trainset\time_stretch0.8"
 present_train_path_11 = wav_filepath+r"\trainset\time_stretch1.1"
+present_train_path_reverse = wav_filepath+r"\trainset\reverse"
 # ========================/ get lists /========================== #
 npy_path_padded = wav_filepath+r"\npyFile_padded\normalized"
 
@@ -145,3 +146,11 @@ np.save(npy_path_padded + r"\present_train_label_8_norm.npy",
         present_train_label_8)
 np.save(npy_path_padded + r"\present_train_label_11_norm.npy",
         present_train_label_12)
+# 反转后的特征和标签
+present_train_features_revert, present_train_label_revert = get_wav_data(
+    present_train_path_reverse
+)  # present
+np.save(npy_path_padded + r"\present_train_features_reverse_norm.npy",
+        present_train_features_revert)
+np.save(npy_path_padded + r"\present_train_label_reverse_norm.npy",
+        present_train_label_revert)
