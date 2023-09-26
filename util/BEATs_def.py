@@ -66,6 +66,20 @@ def wav_normalize(data):
             data[i] = (data[i] - np.min(data)) / _range
     return data
 
+# ------------------/ 倒放 /------------------ #
+
+
+def wav_reverse(dir_path):
+    for root, dir, file in os.walk(dir_path):
+        for subfile in file:
+            wav_path = os.path.join(root, subfile)
+            # 读取文件
+            temp = AudioSegment.from_file(wav_path, format="wav")
+            backplay = temp.reverse()
+            # 存为相关格式倒放文件
+            reverse_name = subfile.split(".")[0]+"_reverse.wav"
+            backplay.export(reverse_name, format="wav")
+
 # ------------------/ 返回数据文件 /------------------ #
 
 
