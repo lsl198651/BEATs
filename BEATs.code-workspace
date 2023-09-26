@@ -14,7 +14,8 @@
     "editor.formatOnPaste": true,
     "editor.fontFamily": "'Fira Code',Consolas, 'Courier New', monospace",
     "python.autoComplete.extraPaths": [],
-    "python.analysis.extraPaths": []
+    "python.analysis.extraPaths": [],
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe"
   },
   "extensions": {
     "recommendations": ["ms-ceintl.vscode-language-pack-zh-hans"]

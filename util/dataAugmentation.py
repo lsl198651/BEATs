@@ -8,10 +8,12 @@ from pydub import AudioSegment
 # 数据增强文件
 speed_factor1 = 1.2
 speed_factor0 = 0.9
+
 path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\present'
 time_path1 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch0.9'
 time_path2 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch1.2'
 reverse_path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\reverse'
+
 if not os.path.exists(time_path1):
     os.makedirs(time_path1)
 if not os.path.exists(time_path2):
