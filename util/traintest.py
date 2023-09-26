@@ -6,7 +6,7 @@ from torch import optim
 from transformers import optimization
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
-from util.BEATs_def import FocalLoss
+from util.BEATs_def import FocalLoss, BCEFocalLoss, sigmoid_focal_loss
 import logging
 
 
@@ -52,7 +52,7 @@ def train_test(
     elif args.loss_type == "CE":
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
-        loss_fn = FocalLoss()
+        loss_fn = sigmoid_focal_loss()
     model.train()
 # ============ training ================
     for epochs in range(args.num_epochs):
@@ -94,7 +94,8 @@ def train_test(
                 correct_t += pred_t.eq(label_t).sum().item()
                 train_len += len(label_t)
             elif args.loss_type == "FocalLoss":
-                loss = loss_fn(predict_t, label_t.long())
+                loss = loss_fn(
+                    predict_t.mean(dim=1), label_t, reduction="mean")
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
@@ -142,7 +143,8 @@ def train_test(
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
                 elif args.loss_type == "FocalLoss":
-                    loss_v = loss_fn(predict_v, label_v.long())
+                    loss_v = loss_fn(
+                        predict_v.mean(dim=1), label_v, reduction="mean")
                     # get the index of the max log-probability
                     pred_v = predict_v.max(1, keepdim=True)[1]
                     test_loss += loss_v.item()

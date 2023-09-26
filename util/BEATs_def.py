@@ -1,3 +1,4 @@
+from ..utils import _log_api_usage_once
 import torch
 import sys
 import torch.nn as nn
@@ -197,7 +198,8 @@ class MyDataset(Dataset):
         return len(self.data)
 
 
-# ------------------/ Focal Loss /------------------ #
+# ------------------/ BiFocal Loss /------------------ #
+
 class BCEFocalLoss(torch.nn.Module):
     def __init__(self, gamma=2, alpha=0.25, reduction='mean'):
         super(BCEFocalLoss, self).__init__()
@@ -208,6 +210,7 @@ class BCEFocalLoss(torch.nn.Module):
     def forward(self, predict, target):
         pt = torch.sigmoid(predict)  # sigmoide获取概率
         # 在原始ce上增加动态权重因子，注意alpha的写法，下面多类时不能这样使用
+        self.gamma = self.gamma.view(target.size)
         loss = - self.alpha * (1 - pt) ** self.gamma * target * torch.log(pt) - (
             1 - self.alpha) * pt ** self.gamma * (1 - target) * torch.log(1 - pt)
 
@@ -239,7 +242,7 @@ class FocalLoss(nn.Module):
             input = input.contiguous().view(-1, input.size(2))   # N,H*W,C => N*H*W,C
         target = target.view(-1, 1)
 
-        logpt = torch.log_softmax(input, dim=1)
+        logpt = torch.log(torch.softmax(input, dim=1))
         logpt = logpt.gather(1, target)
         logpt = logpt.view(-1)
         pt = Variable(logpt.data.exp())
@@ -255,6 +258,53 @@ class FocalLoss(nn.Module):
             return loss.mean()
         else:
             return loss.sum()
+
+
+# ------------------/ Focal Loss /------------------ #
+
+
+def sigmoid_focal_loss(
+    inputs: torch.Tensor,
+    targets: torch.Tensor,
+    alpha: float = 0.25,
+    gamma: float = 2,
+    reduction: str = "mean",
+) -> torch.Tensor:
+    """
+    Loss used in RetinaNet for dense detection: https://arxiv.org/abs/1708.02002.
+
+    Args:
+        inputs (Tensor): A float tensor of arbitrary shape.
+                The predictions for each example.
+        targets (Tensor): A float tensor with the same shape as inputs. Stores the binary
+                classification label for each element in inputs
+                (0 for the negative class and 1 for the positive class).
+        alpha (float): Weighting factor in range (0,1) to balance
+                positive vs negative examples or -1 for ignore. Default: ``0.25``.
+        gamma (float): Exponent of the modulating factor (1 - p_t) to
+                balance easy vs hard examples. Default: ``2``.
+        reduction (string): ``'none'`` | ``'mean'`` | ``'sum'``
+                ``'none'``: No reduction will be applied to the output.
+                ``'mean'``: The output will be averaged.
+                ``'sum'``: The output will be summed. Default: ``'none'``.
+    Returns:
+        Loss tensor with the reduction option applied.
+    """
+
+    if not torch.jit.is_scripting() and not torch.jit.is_tracing():
+        _log_api_usage_once(sigmoid_focal_loss)
+    p = torch.sigmoid(inputs)
+    ce_loss = F.cross_entropy(inputs, targets, reduction="mean")
+    p_t = p * targets + (1 - p) * (1 - targets)
+    loss = ce_loss * ((1 - p_t) ** gamma)
+
+    if alpha >= 0:
+        alpha_t = alpha * targets + (1 - alpha) * (1 - targets)
+        loss = alpha_t * loss
+
+    # Check reduction option and return loss accordingly
+    loss = loss.mean()
+    return loss
 
 # ------------------/ logging init /------------------ #
 
