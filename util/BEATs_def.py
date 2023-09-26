@@ -21,7 +21,6 @@ from datetime import datetime
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
-from pydub import AudioSegment
 
 
 def csv_reader_cl(file_name, clo_num):
@@ -99,22 +98,6 @@ def get_wav_data(dir_path):
                     label.append(1)  # 说明该听诊区无杂音
     return np.array(wav), np.array(label)
 
-# ------------------/ 倒放 /------------------ #
-
-
-def wav_reverse(dir_path):
-    for root, dir, file in os.walk(dir_path):
-        for subfile in file:
-            wav_path = os.path.join(root, subfile)
-            # 读取文件
-            temp = AudioSegment.from_file(wav_path, format="wav")
-            backplay = temp.reverse()
-            # 存为相关格式倒放文件
-            reverse_name = subfile.split(".")[0]+"_reverse.wav"
-            backplay.export(reverse_name, format="wav")
-
-
-# ------------------/ 计算长度 /------------------ #
 
 def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
     slen = []
