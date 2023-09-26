@@ -29,6 +29,8 @@ def csv_reader_cl(file_name, clo_num):
         column = [row[clo_num] for row in reader]
     return column
 
+# ------------------/ 将wav文件夹复制到指定路径 /------------------ #
+
 
 def copy_wav(folder, idlist, mur, traintest):
     for patient_id in idlist:
@@ -42,6 +44,8 @@ def copy_wav(folder, idlist, mur, traintest):
                 shutil.copytree(subdir_path, traintest + "\\" + subdir)
     # idlist.to_scv(folder+"\\"+traintest+"\\"+mur+traintest+".csv", index=False, header=False)
 
+# ------------------/ 读csv文件 /------------------ #
+
 
 def get_patientid(csv_path):
     # 'import csv' is required
@@ -50,7 +54,6 @@ def get_patientid(csv_path):
         id = [row[0] for row in reader]  # weight 同列的数据
     return id
 
-# 读取数据并打标签
 # ------------------/ 归一化 /------------------ #
 
 
@@ -63,8 +66,8 @@ def wav_normalize(data):
             data[i] = (data[i] - np.min(data)) / _range
     return data
 
-
 # ------------------/ 返回数据文件 /------------------ #
+
 
 def get_wav_data(dir_path):
     wav = []
@@ -78,7 +81,7 @@ def get_wav_data(dir_path):
                 print("reading: " + subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                y_16k_norm = wav_normalize(y_16k)
+                y_16k_norm = wav_normalize(y_16k)  # 归一化
                 print("y_16k size: "+str(y_16k_norm.size))
                 if y_16k_norm.shape[0] < data_length:
                     y_16k_norm = np.pad(
@@ -97,6 +100,8 @@ def get_wav_data(dir_path):
                 if file_name[4] == "Present":  # Present
                     label.append(1)  # 说明该听诊区无杂音
     return np.array(wav), np.array(label)
+
+# ------------------/ 计算音频长度 /------------------ #
 
 
 def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
@@ -123,10 +128,7 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                     dlen.append(waveform_16k.size)
     return np.array(slen), np.array(dlen)
 
-
-"""
-读取csv文件返回feature和label
-"""
+# ------------------/ 读取csv文件返回feature和label /------------------ #
 
 
 def get_mel_features(dir_path, absent_id, present_id):
@@ -156,7 +158,7 @@ def get_mel_features(dir_path, absent_id, present_id):
                 label_list.append(0)
     return np.array(feature_list), np.array(label_list)
 
-# ========================/ dataset Class /========================== #
+# ------------------/ dataset Class /------------------ #
 
 
 class MyDataset(Dataset):
@@ -180,7 +182,7 @@ class MyDataset(Dataset):
         return len(self.data)
 
 
-# ========================/ Focal Loss /========================== #
+# ------------------/ Focal Loss /------------------ #
 class BCEFocalLoss(torch.nn.Module):
     def __init__(self, gamma=2, alpha=0.25, reduction='mean'):
         super(BCEFocalLoss, self).__init__()
@@ -200,7 +202,7 @@ class BCEFocalLoss(torch.nn.Module):
             loss = torch.sum(loss)
         return loss
 
-# ========================/ Focal Loss /========================== #
+# ------------------/ Focal Loss /------------------ #
 
 
 class FocalLoss(nn.Module):
@@ -238,7 +240,8 @@ class FocalLoss(nn.Module):
             return loss.mean()
         else:
             return loss.sum()
-# ========================/ logging init /========================== #
+
+# ------------------/ logging init /------------------ #
 
 
 def logger_init(
@@ -263,7 +266,7 @@ def logger_init(
     )
     logging.disable(logging.DEBUG)
 
-# ========================/ logging formate /========================== #
+# ------------------/ logging formate /------------------ #
 
 
 class save_info(object):
@@ -284,7 +287,7 @@ class save_info(object):
         logging.info(f"======================================")
 
 
-# ========================/ train and test /========================== #
+# ------------------/ train and test /------------------ #
 
 
 def draw_confusion_matrix(

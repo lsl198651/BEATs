@@ -3,46 +3,46 @@ import random
 
 
 def get_features(args):
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded"
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized"
     # if args.4k is True:
     absent_train_features = np.load(
-        npy_path_padded + r"\absent_train_features.npy", allow_pickle=True
+        npy_path_padded + r"\absent_train_features_norm.npy", allow_pickle=True
     )
     absent_test_features = np.load(
-        npy_path_padded + r"\absent_test_features.npy", allow_pickle=True
+        npy_path_padded + r"\absent_test_features_norm.npy", allow_pickle=True
     )
     present_train_features = np.load(
-        npy_path_padded + r"\present_train_features.npy", allow_pickle=True
+        npy_path_padded + r"\present_train_features_norm.npy", allow_pickle=True
     )
     present_test_features = np.load(
-        npy_path_padded + r"\present_test_features.npy", allow_pickle=True
+        npy_path_padded + r"\present_test_features_norm.npy", allow_pickle=True
     )
 
     absent_train_label = np.load(
-        npy_path_padded + r"\absent_train_label.npy", allow_pickle=True
+        npy_path_padded + r"\absent_train_label_norm.npy", allow_pickle=True
     )
     absent_test_label = np.load(
-        npy_path_padded + r"\absent_test_label.npy", allow_pickle=True
+        npy_path_padded + r"\absent_test_label_norm.npy", allow_pickle=True
     )
     present_train_label = np.load(
-        npy_path_padded + r"\present_train_label.npy", allow_pickle=True
+        npy_path_padded + r"\present_train_label_norm.npy", allow_pickle=True
     )
     present_test_label = np.load(
-        npy_path_padded + r"\present_test_label.npy", allow_pickle=True
+        npy_path_padded + r"\present_test_label_norm.npy", allow_pickle=True
     )
 
     if args.Data_Augmentation is True:
         present_train_features_8 = np.load(
-            npy_path_padded + r"\present_train_features_8.npy", allow_pickle=True
+            npy_path_padded + r"\present_train_features_8_norm.npy", allow_pickle=True
         )
         present_train_features_12 = np.load(
-            npy_path_padded + r"\present_train_features_11.npy", allow_pickle=True
+            npy_path_padded + r"\present_train_features_11_norm.npy", allow_pickle=True
         )
         present_train_label_8 = np.load(
-            npy_path_padded + r"\present_train_label_8.npy", allow_pickle=True
+            npy_path_padded + r"\present_train_label_8_norm.npy", allow_pickle=True
         )
         present_train_label_12 = np.load(
-            npy_path_padded + r"\present_train_label_11.npy", allow_pickle=True
+            npy_path_padded + r"\present_train_label_11_norm.npy", allow_pickle=True
         )
 
         # absent_size = int(
