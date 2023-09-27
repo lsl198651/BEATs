@@ -4,7 +4,7 @@ import random
 
 def get_features(args):
     npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized"
-    # if args.4k is True:
+
     absent_train_features = np.load(
         npy_path_padded + r"\absent_train_features_norm.npy", allow_pickle=True
     )

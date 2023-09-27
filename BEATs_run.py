@@ -9,7 +9,7 @@ from BEATs import BEATs_Pre_Train_itere3
 
 from util.dataloaders import get_features
 from util.traintest import train_test
-from util.BEATs_def import (MyDataset, logger_init)
+from util.BEATs_def import (MyDataset, logger_init, DatasetClass)
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -48,16 +48,20 @@ args = parser.parse_args()
 
 train_features, train_label, test_features, test_label = get_features(
     args=args)
+
+
+train_index = np.arange(len(train_label))
+test_index = np.arange(len(test_label))
 # ========================/ setup loader /========================== #
 if args.samplerWeight == True:
     weights = [3 if label == 1 else 1 for label in train_label]
     Data_sampler = WeightedRandomSampler(
         weights, num_samples=len(weights), replacement=True
     )
-    train_loader = DataLoader(MyDataset(wavlabel=train_label, wavdata=train_features),
+    train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
                               sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True,)
 else:
-    train_loader = DataLoader(MyDataset(wavlabel=train_label, wavdata=train_features),
+    train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=test_index),
                               batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True,)
 
 val_loader = DataLoader(

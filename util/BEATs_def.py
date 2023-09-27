@@ -87,14 +87,18 @@ def wav_reverse(dir_path, save_path):
 # ------------------/ 返回数据文件 /------------------ #
 
 
-def get_wav_data(dir_path):
+def get_wav_data(dir_path, num=0):
     wav = []
     label = []
+    index = []
     data_length = 6000
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
             if os.path.exists(wav_path):
+                # 序号
+                num = num+1
+                index.append(num)
                 # 数据读取
                 print("reading: " + subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
@@ -117,7 +121,8 @@ def get_wav_data(dir_path):
                     label.append(0)
                 if file_name[4] == "Present":  # Present
                     label.append(1)  # 说明该听诊区无杂音
-    return np.array(wav), np.array(label)
+
+    return np.array(wav), np.array(label), np.array(label), num
 
 # ------------------/ 计算音频长度 /------------------ #
 
@@ -200,7 +205,36 @@ class MyDataset(Dataset):
         return len(self.data)
 
 
+# ------------------/ dataset Class /------------------ #
+class DatasetClass(Dataset):
+    """继承Dataset类，重写__getitem__和__len__方法
+    添加get_idx方法，返回id
+
+    """
+
+    # Initialize your data, download, etc.
+    def __init__(self, wavlabel, wavdata, wavidx):
+        # 直接传递data和label
+        # self.len = wavlen
+        self.data = torch.from_numpy(wavdata)
+        self.label = torch.from_numpy(wavlabel)
+        self.id = torch.from_numpy(wavidx)
+
+    def __getitem__(self, index):
+        # 根据索引返回数据和对应的标签
+        dataitem = torch.Tensor(self.data[index])
+        labelitem = torch.Tensor(self.label[index])
+        return dataitem.float(), labelitem.float()
+
+    def __len__(self):
+        # 返回文件数据的数目
+        return len(self.data)
+
+    def get_idx(self, index):
+        iditem = torch.Tensor(self.id[index])
+        return iditem
 # ------------------/ BiFocal Loss /------------------ #
+
 
 class BCEFocalLoss(torch.nn.Module):
     def __init__(self, gamma=2, alpha=0.25, reduction='mean'):
