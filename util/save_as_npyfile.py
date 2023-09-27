@@ -101,17 +101,17 @@ present_train_path_reverse = wav_filepath+r"\trainset\reverse"
 # ========================/ get lists /========================== #
 npy_path_padded = wav_filepath+r"\npyFile_padded\normalized"
 
-absent_train_features, absent_train_label, absent_train_index, num = get_wav_data(
+absent_train_features, absent_train_label, absent_train_names, absent_train_index, data_id = get_wav_data(
     absent_train_path
 )  # absent
-absent_test_features, absent_test_label, absent_test_index, num = get_wav_data(
-    absent_test_path, num
+absent_test_features, absent_test_label, absent_test_names, absent_test_index, data_id = get_wav_data(
+    absent_test_path, data_id
 )  # absent
-present_train_features, present_train_label, present_train_index, num = get_wav_data(
-    present_train_path, num
+present_train_features, present_train_label, present_train_names, present_train_index, data_id = get_wav_data(
+    present_train_path, data_id
 )  # present
-present_test_features, present_test_label, present_test_index, num = get_wav_data(
-    present_test_path, num
+present_test_features, present_test_label, present_test_names, present_test_index, data_id = get_wav_data(
+    present_test_path, data_id
 )  # present
 
 # # # ========================/ save as npy file /========================== #
@@ -131,18 +131,18 @@ np.save(npy_path_padded + r"\absent_test_label_norm.npy", absent_test_label)
 np.save(npy_path_padded + r"\present_train_label_norm.npy", present_train_label)
 np.save(npy_path_padded + r"\present_test_label_norm.npy", present_test_label)
 
-# 保存索引数据
-np.save(npy_path_padded + r"\absent_train_index_norm.npy", absent_train_index)
-np.save(npy_path_padded + r"\absent_test_index_norm.npy", absent_test_index)
-np.save(npy_path_padded + r"\present_train_index_norm.npy", present_train_index)
-np.save(npy_path_padded + r"\present_test_index_norm.npy", present_test_index)
+# 保存字典数据
+np.save(npy_path_padded + r"\absent_train_names_norm.npy", absent_train_names)
+np.save(npy_path_padded + r"\absent_test_names_norm.npy", absent_test_names)
+np.save(npy_path_padded + r"\present_train_names_norm.npy", present_train_names)
+np.save(npy_path_padded + r"\present_test_names_norm.npy", present_test_names)
 
 # 保存增强后的特征和标签
-present_train_features_8, present_train_label_8, present_train_index_8, num = get_wav_data(
-    present_train_path_8
+present_train_features_8, present_train_label_8, present_train_names_8, present_train_index_8, data_id = get_wav_data(
+    present_train_path_8, data_id
 )  # present
-present_train_features_11, present_train_label_11, present_train_index_11, num = get_wav_data(
-    present_train_path_11
+present_train_features_11, present_train_label_11, present_train_names_11, present_train_index_11, data_id = get_wav_data(
+    present_train_path_11, data_id
 )  # present
 np.save(npy_path_padded + r"\present_train_features_9_norm.npy",
         present_train_features_8)
@@ -152,10 +152,10 @@ np.save(npy_path_padded + r"\present_train_label_9_norm.npy",
         present_train_label_8)
 np.save(npy_path_padded + r"\present_train_label_12_norm.npy",
         present_train_label_11)
-np.save(npy_path_padded + r"\present_train_index_9_norm.npy",
-        present_train_index_8)
-np.save(npy_path_padded + r"\present_train_index_12_norm.npy",
-        present_train_index_11)
+np.save(npy_path_padded + r"\present_train_names_9_norm.npy",
+        present_train_names_8)
+np.save(npy_path_padded + r"\present_train_names_12_norm.npy",
+        present_train_names_11)
 
 # 反转后的特征和标签
 present_train_features_revert, present_train_label_revert,  = get_wav_data(

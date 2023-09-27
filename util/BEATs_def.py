@@ -90,7 +90,7 @@ def wav_reverse(dir_path, save_path):
 def get_wav_data(dir_path, num=0):
     wav = []
     label = []
-    index = []
+    file_names = []
     data_length = 6000
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
@@ -98,13 +98,13 @@ def get_wav_data(dir_path, num=0):
             if os.path.exists(wav_path):
                 # 序号
                 num = num+1
-                index.append(num)
+                file_names.append(subfile)
                 # 数据读取
                 print("reading: " + subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
                 y_16k_norm = wav_normalize(y_16k)  # 归一化
-                print("y_16k size: "+str(y_16k_norm.size))
+                print("num is "+str(num), "y_16k size: "+str(y_16k_norm.size))
                 if y_16k_norm.shape[0] < data_length:
                     y_16k_norm = np.pad(
                         y_16k_norm,
@@ -122,7 +122,7 @@ def get_wav_data(dir_path, num=0):
                 if file_name[4] == "Present":  # Present
                     label.append(1)  # 说明该听诊区无杂音
 
-    return np.array(wav), np.array(label), np.array(label), num
+    return np.array(wav), np.array(label), np.array(file_names)
 
 # ------------------/ 计算音频长度 /------------------ #
 
