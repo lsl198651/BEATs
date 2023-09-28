@@ -51,8 +51,8 @@ def train_test(
         loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
     elif args.loss_type == "CE":
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
-    # elif args.loss_type == "FocalLoss":
-    #     loss_fn = sigmoid_focal_loss()
+    elif args.loss_type == "FocalLoss":
+        loss_fn = FocalLoss()
     model.train()
 # ============ training ================
     for epochs in range(args.num_epochs):
@@ -94,8 +94,8 @@ def train_test(
                 correct_t += pred_t.eq(label_t).sum().item()
                 train_len += len(label_t)
             elif args.loss_type == "FocalLoss":
-                loss = sigmoid_focal_loss(
-                    predict_t.mean(dim=1), label_t, reduction="mean")
+                loss = loss_fn(
+                    predict_t, label_t.long())
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()

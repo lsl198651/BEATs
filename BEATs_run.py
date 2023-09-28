@@ -29,9 +29,9 @@ parser.add_argument("--timem_value", type=int, default=0,
                     help="time mask max length")
 parser.add_argument("--mask", type=bool, default=False,
                     help="number of classes", choices=[True, False])
-parser.add_argument("--testset_balance", type=bool, default=False,
+parser.add_argument("--trainset_balence", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
-parser.add_argument("--Data_Augmentation", type=bool, default=False,
+parser.add_argument("--Data_Augmentation", type=bool, default=True,
                     help="Add data augmentation", choices=[True, False],)
 parser.add_argument("--train_total", type=bool, default=True,
                     help="use grad_no_requiredn", choices=[True, False],)
@@ -106,7 +106,7 @@ logging.info(f"# lr_scheduler = {args.scheduler_flag}")
 logging.info(f"# Padding_size = {padding_size}")
 logging.info(f"# Loss_fn = {args.loss_type}")
 logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
-logging.info(f"# Testset_balance = {args.testset_balance}")
+logging.info(f"# Trainset_balance = {args.trainset_balence}")
 logging.info(f"# train_total = {args.train_total}")
 logging.info(f"# Masking = {args.mask}")
 logging.info(f"# Train_a/p = {train_absent_size}/{train_present_size}")
