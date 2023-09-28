@@ -124,7 +124,7 @@ def get_wav_data(dir_path, num=0):
                 if file_name[4] == "Present":  # Present
                     label.append(1)  # 说明该听诊区无杂音
 
-    return np.array(wav), np.array(label), file_names, wav_nums, num
+    return wav, label, file_names, wav_nums, num
 
 # ------------------/ 计算音频长度 /------------------ #
 
@@ -193,13 +193,13 @@ class MyDataset(Dataset):
     def __init__(self, wavlabel, wavdata):
         # 直接传递data和label
         # self.len = wavlen
-        self.data = torch.from_numpy(wavdata)
-        self.label = torch.from_numpy(wavlabel)
+        self.data = torch.tensor(wavdata)
+        self.label = torch.tensor(wavlabel)
 
     def __getitem__(self, index):
         # 根据索引返回数据和对应的标签
-        dataitem = torch.Tensor(self.data[index])
-        labelitem = torch.Tensor(self.label[index])
+        dataitem = self.data[index]
+        labelitem = self.label[index]
         return dataitem.float(), labelitem.float()
 
     def __len__(self):
@@ -219,22 +219,22 @@ class DatasetClass(Dataset):
     def __init__(self, wavlabel, wavdata, wavidx):
         # 直接传递data和label
         # self.len = wavlen
-        self.data = torch.from_numpy(wavdata)
-        self.label = torch.from_numpy(wavlabel)
-        self.id = torch.from_numpy(wavidx)
+        self.data = torch.tensor(wavdata)
+        self.label = torch.tensor(wavlabel)
+        self.id = torch.tensor(wavidx)
 
     def __getitem__(self, index):
         # 根据索引返回数据和对应的标签
-        dataitem = torch.Tensor(self.data[index])
-        labelitem = torch.Tensor(self.label[index])
-        return dataitem.float(), labelitem.float()
+        dataitem = self.data[index]
+        labelitem = self.label[index]
+        return dataitem.float(), labelitem
 
     def __len__(self):
         # 返回文件数据的数目
         return len(self.data)
 
     def get_idx(self, index):
-        iditem = torch.Tensor(self.id[index])
+        iditem = self.id[index]
         return iditem
 # ------------------/ BiFocal Loss /------------------ #
 

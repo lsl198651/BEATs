@@ -107,15 +107,14 @@ absent_train_features, absent_train_label, absent_train_names, absent_train_inde
     absent_train_path
 )  # absent
 absent_test_features, absent_test_label, absent_test_names, absent_test_index, data_id = get_wav_data(
-    absent_test_path,
+    absent_test_path, data_id
 )  # absent
 present_train_features, present_train_label, present_train_names, present_train_index, data_id = get_wav_data(
-    present_train_path
+    present_train_path, data_id
 )  # present
 present_test_features, present_test_label, present_test_names, present_test_index, data_id = get_wav_data(
     present_test_path, data_id
 )  # present
-
 
 # 保存增强后的特征和标签
 # x 0.8
@@ -133,7 +132,6 @@ present_train_features_11, present_train_label_11, present_train_names_11, prese
 present_train_features_12, present_train_label_12, present_train_names_12, present_train_index_12, data_id = get_wav_data(
     present_train_path_12, data_id
 )
-
 # 反转后的特征和标签
 present_train_features_revert, present_train_label_revert, present_train_names_revert, present_train_index_revert, data_id = get_wav_data(
     present_train_path_reverse, data_id
@@ -155,8 +153,8 @@ present_train_dic_revert = dict(
     zip(present_train_index_revert, present_train_names_revert))
 
 
-# # # ========================/ save as npy file /========================== #
-# 保存特征数据
+# ========================/ 保存数据 /========================== #
+# -------------------------/ 保存特征数据 /------------------------- #
 if not os.path.exists(npy_path_padded):
     os.makedirs(npy_path_padded)
 
@@ -179,7 +177,7 @@ np.save(npy_path_padded + r"\present_train_features_12_norm.npy",
 np.save(npy_path_padded + r"\present_train_features_reverse_norm.npy",
         present_train_features_revert)
 
-# 保存标签数据
+# -------------------------/ 保存标签数据 /------------------------- #
 np.save(npy_path_padded + r"\absent_train_label_norm.npy", absent_train_label)
 np.save(npy_path_padded + r"\absent_test_label_norm.npy", absent_test_label)
 np.save(npy_path_padded + r"\present_train_label_norm.npy", present_train_label)
@@ -197,15 +195,35 @@ np.save(npy_path_padded + r"\present_train_label_12_norm.npy",
 np.save(npy_path_padded + r"\present_train_label_reverse_norm.npy",
         present_train_label_revert)
 
-naz_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\npz_files"
+# -------------------------/ 保存索引数据 /------------------------- #
+np.save(npy_path_padded + r"\absent_train_index_norm.npy", absent_train_index)
+np.save(npy_path_padded + r"\absent_test_index_norm.npy", absent_test_index)
+np.save(npy_path_padded + r"\present_train_index_norm.npy", present_train_index)
+np.save(npy_path_padded + r"\present_test_index_norm.npy", present_test_index)
+
+np.save(npy_path_padded + r"\present_train_index_8_norm.npy",
+        present_train_index_8)
+np.save(npy_path_padded + r"\present_train_index_9_norm.npy",
+        present_train_index_9)
+np.save(npy_path_padded + r"\present_train_index_11_norm.npy",
+        present_train_index_11)
+np.save(npy_path_padded + r"\present_train_index_12_norm.npy",
+        present_train_index_11)
+
+np.save(npy_path_padded + r"\present_train_index_reverse_norm.npy",
+        present_train_index_revert)
+
+npz_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\npz_files"
+if not os.path.exists(npz_path):
+    os.makedirs(npz_path)
 # 保存字典数据
-np.save(naz_path + r"\absent_train_names_norm.npz", absent_train_dic)
-np.save(naz_path + r"\absent_test_names_norm.npz", absent_train_dic)
-np.save(naz_path + r"\present_train_names_norm.npz", present_train_dic)
-np.save(naz_path + r"\present_test_names_norm.npz", present_test_dic)
-np.save(naz_path + r"\present_train_names_8_norm.npz", present_train_dic_8)
-np.save(naz_path + r"\present_train_names_9_norm.npz", present_train_dic_9)
-np.save(naz_path + r"\present_train_names_11_norm.npz", present_train_dic_11)
-np.save(naz_path + r"\present_train_names_12_norm.npz", present_train_dic_12)
-np.save(naz_path + r"\present_train_names_reverse_norm.npz",
+np.save(npz_path + r"\absent_train_names_norm.npz", absent_train_dic)
+np.save(npz_path + r"\absent_test_names_norm.npz", absent_train_dic)
+np.save(npz_path + r"\present_train_names_norm.npz", present_train_dic)
+np.save(npz_path + r"\present_test_names_norm.npz", present_test_dic)
+np.save(npz_path + r"\present_train_names_8_norm.npz", present_train_dic_8)
+np.save(npz_path + r"\present_train_names_9_norm.npz", present_train_dic_9)
+np.save(npz_path + r"\present_train_names_11_norm.npz", present_train_dic_11)
+np.save(npz_path + r"\present_train_names_12_norm.npz", present_train_dic_12)
+np.save(npz_path + r"\present_train_names_reverse_norm.npz",
         present_train_dic_revert)

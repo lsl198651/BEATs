@@ -46,12 +46,9 @@ parser.add_argument("--confusion_matrix_path", type=float,
 parser.add_argument("--beta", type=float, default=(0.9, 0.999), help="beta")
 args = parser.parse_args()
 
-train_features, train_label, test_features, test_label = get_features(
+train_features, train_label, test_features, test_label, train_index, test_index = get_features(
     args=args)
 
-
-train_index = np.arange(len(train_label))
-test_index = np.arange(len(test_label))
 # ========================/ setup loader /========================== #
 if args.samplerWeight == True:
     weights = [3 if label == 1 else 1 for label in train_label]
