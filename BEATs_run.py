@@ -29,9 +29,9 @@ parser.add_argument("--timem_value", type=int, default=0,
                     help="time mask max length")
 parser.add_argument("--mask", type=bool, default=False,
                     help="number of classes", choices=[True, False])
-parser.add_argument("--trainset_balence", type=bool, default=False,
+parser.add_argument("--trainset_balence", type=bool, default=True,
                     help="balance absent and present in testset", choices=[True, False],)
-parser.add_argument("--Data_Augmentation", type=bool, default=True,
+parser.add_argument("--Data_Augmentation", type=bool, default=False,
                     help="Add data augmentation", choices=[True, False],)
 parser.add_argument("--train_total", type=bool, default=True,
                     help="use grad_no_requiredn", choices=[True, False],)
@@ -61,11 +61,12 @@ if args.samplerWeight == True:
     train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
                               sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True,)
 else:
-    train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=test_index),
+    train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
                               batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True,)
 
 val_loader = DataLoader(
-    MyDataset(wavlabel=test_label, wavdata=test_features),
+    DatasetClass(wavlabel=test_label,
+                 wavdata=test_features, wavidx=test_index),
     batch_size=args.batch_size, shuffle=True, drop_last=True, pin_memory=True,
 )
 

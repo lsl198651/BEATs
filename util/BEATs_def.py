@@ -91,6 +91,7 @@ def get_wav_data(dir_path, num=0):
     wav = []
     label = []
     file_names = []
+    wav_nums = []
     data_length = 6000
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
@@ -99,6 +100,7 @@ def get_wav_data(dir_path, num=0):
                 # 序号
                 num = num+1
                 file_names.append(subfile)
+                wav_nums.append(num)
                 # 数据读取
                 print("reading: " + subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
@@ -122,7 +124,7 @@ def get_wav_data(dir_path, num=0):
                 if file_name[4] == "Present":  # Present
                     label.append(1)  # 说明该听诊区无杂音
 
-    return np.array(wav), np.array(label), np.array(file_names)
+    return np.array(wav), np.array(label), file_names, wav_nums, num
 
 # ------------------/ 计算音频长度 /------------------ #
 
@@ -209,6 +211,7 @@ class MyDataset(Dataset):
 class DatasetClass(Dataset):
     """继承Dataset类，重写__getitem__和__len__方法
     添加get_idx方法，返回id
+    input: wavlabel, wavdata, wavidx
 
     """
 
