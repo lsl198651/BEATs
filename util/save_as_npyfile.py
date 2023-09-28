@@ -101,7 +101,7 @@ present_train_path_11 = wav_filepath+r"\trainset\time_stretch1.1"
 present_train_path_12 = wav_filepath+r"\trainset\time_stretch1.2"
 present_train_path_reverse = wav_filepath+r"\trainset\reverse"
 # ========================/ get lists /========================== #
-npy_path_padded = wav_filepath+r"\npyFile_padded\normalized"
+
 
 absent_train_features, absent_train_label, absent_train_names, absent_train_index, data_id = get_wav_data(
     absent_train_path
@@ -155,6 +155,7 @@ present_train_dic_revert = dict(
 
 # ========================/ 保存数据 /========================== #
 # -------------------------/ 保存特征数据 /------------------------- #
+npy_path_padded = wav_filepath+r"\npyFile_padded\normalized\list_npy_files"
 if not os.path.exists(npy_path_padded):
     os.makedirs(npy_path_padded)
 
