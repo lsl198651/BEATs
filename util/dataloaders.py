@@ -3,7 +3,7 @@ import random
 
 
 def get_features(args):
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized"
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\list_npy_files"
 # ------------------------/ load features /-------------------------- #
     absent_train_features = np.load(
         npy_path_padded + r"\absent_train_features_norm.npy", allow_pickle=True
@@ -29,6 +29,20 @@ def get_features(args):
     )
     present_test_label = np.load(
         npy_path_padded + r"\present_test_label_norm.npy", allow_pickle=True
+    )
+#  =============================/ load index /============================= #
+
+    absent_test_index = np.load(
+        npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
+    )
+    absent_train_index = np.load(
+        npy_path_padded + r"\absent_train_index_norm.npy", allow_pickle=True
+    )
+    present_train_index = np.load(
+        npy_path_padded + r"\present_train_index_norm.npy", allow_pickle=True
+    )
+    present_test_index = np.load(
+        npy_path_padded + r"\present_test_index_norm.npy", allow_pickle=True
     )
 
     if args.Data_Augmentation is True:
@@ -64,7 +78,22 @@ def get_features(args):
         present_train_label_reserse = np.load(
             npy_path_padded + r"\present_train_label_reverse_norm.npy", allow_pickle=True
         )
-
+        # ------------------------/ load index /-------------------------- #
+        present_train_index_8 = np.load(
+            npy_path_padded + r"\present_train_index_8_norm.npy", allow_pickle=True
+        )
+        present_train_index_9 = np.load(
+            npy_path_padded + r"\present_train_index_9_norm.npy", allow_pickle=True
+        )
+        present_train_index_11 = np.load(
+            npy_path_padded + r"\present_train_index_11_norm.npy", allow_pickle=True
+        )
+        present_train_index_12 = np.load(
+            npy_path_padded + r"\present_train_index_12_norm.npy", allow_pickle=True
+        )
+        present_train_index_reverse = np.load(
+            npy_path_padded + r"\present_train_index_reverse_norm.npy", allow_pickle=True
+        )
         if args.trainset_balence is True:
             absent_size = int(
                 (
@@ -81,11 +110,37 @@ def get_features(args):
             )
             absent_train_features = absent_train_features[List_train]
             absent_train_label = absent_train_label[List_train]
-        train_label = absent_train_label + present_train_label + present_train_label_8 + \
-            present_train_label_9 + present_train_label_11+present_train_label_12
-        train_features = absent_train_features + present_train_features + present_train_features_8 + \
-            present_train_features_9 + present_train_features_11 + present_train_features_12
-
+            absent_train_index = absent_train_index[List_train]
+        train_label = np.hstack(
+            (
+                absent_train_label,
+                present_train_label,
+                present_train_label_8,
+                present_train_label_9,
+                present_train_label_12,
+                present_train_label_11,
+            )
+        )
+        train_features = np.vstack(
+            (
+                absent_train_features,
+                present_train_features,
+                present_train_features_8,
+                present_train_features_9,
+                present_train_features_12,
+                present_train_features_11,
+            )
+        )
+        train_index = np.hstack(
+            (
+                absent_train_index,
+                present_train_index,
+                present_train_index_8,
+                present_train_index_9,
+                present_train_index_11,
+                present_train_index_12
+            )
+        )
     else:
         if args.trainset_balence is True:
             absent_size = int(present_train_features.shape[0] * args.ap_ratio)
@@ -94,57 +149,34 @@ def get_features(args):
             )
             absent_train_features = absent_train_features[List_train]
             absent_train_label = absent_train_label[List_train]
-        train_label = absent_train_label + present_train_label
-
-        train_features = absent_train_features + present_train_features
-
-    test_label = absent_test_label+present_test_label
-    test_features = absent_test_features + present_test_features
-
-#  =============================/ load index /============================= #
-    npz_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\npz_files"
-
-    absent_test_index = np.load(
-        npz_path + r"\absent_test_index_norm.npy", allow_pickle=True
-    )
-    absent_train_index = np.load(
-        npz_path + r"\absent_train_index_norm.npy", allow_pickle=True
-    )
-    present_train_index = np.load(
-        npz_path + r"\present_train_index_norm.npy", allow_pickle=True
-    )
-    present_test_index = np.load(
-        npz_path + r"\present_test_index_norm.npy", allow_pickle=True
-    )
-    if args.Data_Augmentation is True:
-        present_train_index_8 = np.load(
-            npz_path + r"\present_train_index_8_norm.npy", allow_pickle=True
+            absent_train_index = absent_train_index[List_train]
+        train_label = np.hstack(
+            (
+                absent_train_label,
+                present_train_label,
+            )
         )
-        present_train_index_9 = np.load(
-            npz_path + r"\present_train_index_9_norm.npy", allow_pickle=True
+        train_features = np.vstack(
+            (
+                absent_train_features,
+                present_train_features,
+            )
         )
-        present_train_index_11 = np.load(
-            npz_path + r"\present_train_index_11_norm.npy", allow_pickle=True
+        train_index = np.hstack(
+            (
+                absent_train_index,
+                present_train_index
+            )
         )
-        present_train_index_12 = np.load(
-            npz_path + r"\present_train_index_12_norm.npy", allow_pickle=True
-        )
-        present_train_index_reverse = np.load(
-            npz_path + r"\present_train_index_reverse_norm.npy", allow_pickle=True
-        )
-
-        train_index = absent_train_index + present_train_index + present_train_index_8 + \
-            present_train_index_9 + present_train_index_11 + present_train_index_12
-    else:
-        train_index = absent_train_index + present_train_index
-
-    test_index = absent_test_index + present_test_index
+    test_label = np.hstack((absent_test_label, present_test_label))
+    test_features = np.vstack((absent_test_features, present_test_features))
+    test_index = np.hstack((absent_test_index, present_test_index))
 
     return (
-        train_features.astype(float),
-        train_label.astype(int),
-        test_features.astype(float),
-        test_label.astype(int),
+        train_features,
+        train_label,
+        test_features,
+        test_label,
         train_index,
         test_index,
     )

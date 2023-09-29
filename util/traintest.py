@@ -8,6 +8,8 @@ from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from util.BEATs_def import FocalLoss, BCEFocalLoss, sigmoid_focal_loss
 import logging
+import csv
+import pandas as pd
 
 
 def train_test(
@@ -18,7 +20,8 @@ def train_test(
     optimizer=None,
     args=None,
 ):
-
+    error_index_path = r"./error_index/" + \
+        str(datetime.now().strftime("%Y-%m%d %H%M"))
     tb_writer = SummaryWriter(
         r"./tensorboard/" + str(datetime.now().strftime("%Y-%m%d %H%M")))
     confusion_matrix_path = r"./confusion_matrix/" + \
@@ -62,9 +65,9 @@ def train_test(
         correct_t = 0
         train_len = 0
 
-        for data_t, label_t in train_loader:
-            data_t, label_t, padding = data_t.to(
-                device), label_t.to(device), padding.to(device)
+        for data_t, label_t, index_t in train_loader:
+            data_t, label_t, padding, index_t = data_t.to(
+                device), label_t.to(device), padding.to(device), index_t.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
             predict_t = model(data_t, padding)
             if args.loss_type == "BCE":
@@ -113,14 +116,16 @@ def train_test(
         model.eval()
         label = []
         pred = []
+        error_index = []
         test_loss = 0
         correct_v = 0
         with torch.no_grad():
-            for data_v, label_v in test_loader:
-                data_v, label_v, padding = (
+            for data_v, label_v, index_v in test_loader:
+                data_v, label_v, padding, index_v = (
                     data_v.to(device),
                     label_v.to(device),
                     padding.to(device),
+                    index_v.to(device),
                 )
                 optimizer.zero_grad()
                 predict_v = model(data_v, padding)
@@ -143,15 +148,22 @@ def train_test(
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
                 elif args.loss_type == "FocalLoss":
-                    loss_v = sigmoid_focal_loss(
-                        predict_v.mean(dim=1), label_v, reduction="mean")
+                    loss_v = loss_fn(
+                        predict_v, label_v.long())
                     # get the index of the max log-probability
                     pred_v = predict_v.max(1, keepdim=True)[1]
                     test_loss += loss_v.item()
                     pred_v = pred_v.squeeze(1)
                     correct_v += pred_v.eq(label_v).sum().item()
+
+                    idx_v = index_v[torch.nonzero(
+                        torch.eq(pred_v.ne(label_v), False))]
+                    idx_v = idx_v.squeeze()
+                    error_index.extend(idx_v.cpu().tolist())
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
+            pd.DataFrame(error_index).to_csv(error_index_path+" epoch" +
+                                             str(epochs)+".csv", index=False, header=False)
 
         for group in optimizer.param_groups:
             lr_now = group["lr"]

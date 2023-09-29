@@ -4,4 +4,6 @@ confusion_matrix
 ResultFile
 tensorboard
 .pyc
+error_index
+.vscode
 __pycache__

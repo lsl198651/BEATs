@@ -227,15 +227,16 @@ class DatasetClass(Dataset):
         # 根据索引返回数据和对应的标签
         dataitem = self.data[index]
         labelitem = self.label[index]
-        return dataitem.float(), labelitem
+        iditem = self.id[index]
+        return dataitem.float(), labelitem, iditem
 
     def __len__(self):
         # 返回文件数据的数目
         return len(self.data)
 
-    def get_idx(self, index):
-        iditem = self.id[index]
-        return iditem
+    # def get_idx(self, index):
+    #     iditem = self.id[index]
+    #     return iditem
 # ------------------/ BiFocal Loss /------------------ #
 
 
@@ -307,7 +308,6 @@ def sigmoid_focal_loss(
     targets: torch.Tensor,
     alpha: float = 0.25,
     gamma: float = 2,
-    reduction: str = "mean",
 ) -> torch.Tensor:
     """
     Loss used in RetinaNet for dense detection: https://arxiv.org/abs/1708.02002.
