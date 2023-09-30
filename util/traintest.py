@@ -9,6 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from util.BEATs_def import FocalLoss, BCEFocalLoss, sigmoid_focal_loss
 import logging
 import csv
+import os
 import pandas as pd
 
 
@@ -22,6 +23,8 @@ def train_test(
 ):
     error_index_path = r"./error_index/" + \
         str(datetime.now().strftime("%Y-%m%d %H%M"))
+    if not os.path.exists(error_index_path):
+        os.makedirs(error_index_path)
     tb_writer = SummaryWriter(
         r"./tensorboard/" + str(datetime.now().strftime("%Y-%m%d %H%M")))
     confusion_matrix_path = r"./confusion_matrix/" + \
@@ -157,13 +160,13 @@ def train_test(
                     correct_v += pred_v.eq(label_v).sum().item()
 
                     idx_v = index_v[torch.nonzero(
-                        torch.eq(pred_v.ne(label_v), False))]
+                        torch.eq(pred_v.ne(label_v), True))]
                     idx_v = idx_v.squeeze()
                     error_index.extend(idx_v.cpu().tolist())
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
-            pd.DataFrame(error_index).to_csv(error_index_path+" epoch" +
-                                             str(epochs)+".csv", index=False, header=False)
+            pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
+                                             str(epochs+1)+".csv", index=False, header=False)
 
         for group in optimizer.param_groups:
             lr_now = group["lr"]

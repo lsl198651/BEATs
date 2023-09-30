@@ -187,7 +187,6 @@ np.save(npy_path_padded + r"\absent_train_index_norm.npy", absent_train_index)
 np.save(npy_path_padded + r"\absent_test_index_norm.npy", absent_test_index)
 np.save(npy_path_padded + r"\present_train_index_norm.npy", present_train_index)
 np.save(npy_path_padded + r"\present_test_index_norm.npy", present_test_index)
-
 np.save(npy_path_padded + r"\present_train_index_8_norm.npy",
         present_train_index_8)
 np.save(npy_path_padded + r"\present_train_index_9_norm.npy",
@@ -196,9 +195,23 @@ np.save(npy_path_padded + r"\present_train_index_11_norm.npy",
         present_train_index_11)
 np.save(npy_path_padded + r"\present_train_index_12_norm.npy",
         present_train_index_11)
-
 np.save(npy_path_padded + r"\present_train_index_reverse_norm.npy",
         present_train_index_revert)
+# -------------------------/ 保存名称数据 /------------------------- #
+np.save(npy_path_padded + r"\absent_train_names_norm.npy", absent_train_names)
+np.save(npy_path_padded + r"\absent_test_names_norm.npy", absent_test_names)
+np.save(npy_path_padded + r"\present_train_names_norm.npy", present_train_names)
+np.save(npy_path_padded + r"\present_test_names_norm.npy", present_test_names)
+np.save(npy_path_padded + r"\present_train_names_8_norm.npy",
+        present_train_names_8)
+np.save(npy_path_padded + r"\present_train_names_9_norm.npy",
+        present_train_names_9)
+np.save(npy_path_padded + r"\present_train_names_11_norm.npy",
+        present_train_names_11)
+np.save(npy_path_padded + r"\present_train_names_12_norm.npy",
+        present_train_names_11)
+np.save(npy_path_padded + r"\present_train_names_reverse_norm.npy",
+        present_train_names_revert)
 
 index_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\index_files"
 if not os.path.exists(index_path):
@@ -217,23 +230,23 @@ present_train_dic_reverse = zip(
     present_train_index_revert, present_train_names_revert)
 
 pd.DataFrame(absent_train_dic).to_csv(
-    index_path+"absent_train_disc.csv", index=False, header=False)
+    index_path+"\absent_train_disc.csv", index=False, header=False)
 pd.DataFrame(absent_test_dic).to_csv(
-    index_path+"absent_test_dic.csv", index=False, header=False)
+    index_path+"\absent_test_dic.csv", index=False, header=False)
 pd.DataFrame(present_train_dic).to_csv(
-    index_path+"present_train_dic.csv", index=False, header=False)
+    index_path+"\present_train_dic.csv", index=False, header=False)
 pd.DataFrame(present_test_dic).to_csv(
-    index_path+"present_test_dic.csv", index=False, header=False)
+    index_path+"\present_test_dic.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_8).to_csv(
-    index_path+"present_train_dic_8.csv", index=False, header=False)
+    index_path+"\present_train_dic_8.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_9).to_csv(
-    index_path+"present_train_dic_9.csv", index=False, header=False)
+    index_path+"\present_train_dic_9.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_11).to_csv(
-    index_path+"present_train_dic_11.csv", index=False, header=False)
+    index_path+"\present_train_dic_11.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_12).to_csv(
-    index_path+"present_train_dic_12.csv", index=False, header=False)
+    index_path+"\present_train_dic_12.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_reverse).to_csv(
-    index_path+"present_train_dic_reverse.csv", index=False, header=False)
+    index_path+"\present_train_dic_reverse.csv", index=False, header=False)
 
 # 保存字典数据
 # np.savez(npz_path + r"\absent_train_dic.npz", absent_train_dic)
