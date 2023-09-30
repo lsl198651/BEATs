@@ -102,6 +102,7 @@ def get_features(args):
                     + present_train_features_9.shape[0]
                     + present_train_features_11.shape[0]
                     + present_train_features_12.shape[0]
+                    + present_train_features_reserse.shape[0]
                 )
                 * args.ap_ratio
             )
@@ -117,8 +118,9 @@ def get_features(args):
                 present_train_label,
                 present_train_label_8,
                 present_train_label_9,
-                present_train_label_12,
                 present_train_label_11,
+                present_train_label_12,
+                present_train_label_reserse
             )
         )
         train_features = np.vstack(
@@ -127,8 +129,9 @@ def get_features(args):
                 present_train_features,
                 present_train_features_8,
                 present_train_features_9,
-                present_train_features_12,
                 present_train_features_11,
+                present_train_features_12,
+                present_train_features_reserse
             )
         )
         train_index = np.hstack(
@@ -138,7 +141,9 @@ def get_features(args):
                 present_train_index_8,
                 present_train_index_9,
                 present_train_index_11,
-                present_train_index_12
+                present_train_index_12,
+                present_train_index_reverse
+
             )
         )
     else:

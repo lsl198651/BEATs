@@ -31,7 +31,7 @@ parser.add_argument("--mask", type=bool, default=False,
                     help="number of classes", choices=[True, False])
 parser.add_argument("--trainset_balence", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
-parser.add_argument("--Data_Augmentation", type=bool, default=False,
+parser.add_argument("--Data_Augmentation", type=bool, default=True,
                     help="Add data augmentation", choices=[True, False],)
 parser.add_argument("--train_total", type=bool, default=True,
                     help="use grad_no_requiredn", choices=[True, False],)
