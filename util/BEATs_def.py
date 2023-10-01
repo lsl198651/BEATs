@@ -25,14 +25,23 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from pydub import AudioSegment
-from make_dataset import csv_reader_cl, csv_reader_row
 
 
+# read csv file by column
 def csv_reader_cl(file_name, clo_num):
     with open(file_name, encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
         column = [row[clo_num] for row in reader]
     return column
+
+
+# read the csv row_num-th row
+def csv_reader_row(file_name, row_num):
+    with open(file_name, "r") as f:
+        reader = csv.reader(f)
+        row = list(reader)
+    return row[row_num]
+
 
 # ------------------/ 将wav文件夹复制到指定路径 /------------------ #
 
@@ -323,8 +332,9 @@ def segment_classifier(result_list_1=[]):
         else:  # 如果id_pos在字典中，就把value添加到对应的键值对的值中
             id_idx_dic[id_pos].append(data_index)
 
-    # 这里result_list_1列表，用来存储分类结果为1对应的id
-    result_list_1 = get_segment_target_list()
+    # 这里result_list_1列表，用来存储分类结果为1对应的id,test输出的结果
+    result_list_1 = []
+
     # 创建一个空字典，用来存储分类结果
     result_dic = {}
     # 这样就生成了每个听诊区对应的数据索引，然后就可以根据索引读取数据了
@@ -341,6 +351,8 @@ def segment_classifier(result_list_1=[]):
         # 计算平均值作为每一段的最终分类结果，大于0.5就是1，小于0.5就是0,返回字典
         result_dic[id_pos] = value_list.mean()
 
+    # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
+    segment_target = get_segment_target_list()
     # 创建两个列表，分别保存outcome和target列表
     outcome_list = []
     target_list = []
@@ -350,7 +362,7 @@ def segment_classifier(result_list_1=[]):
             outcome_list.append(1)
         else:
             outcome_list.append(0)
-        if id_pos in target_list:
+        if id_pos in segment_target:
             target_list.append(1)
         else:
             target_list.append(0)

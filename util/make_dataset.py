@@ -157,7 +157,7 @@ def period_div(
                     Diastolic_state = "nan"
                 if os.path.exists(tsv_path):
                     # 切割数据
-                    state_div2(
+                    state_div(
                         tsv_path,
                         wav_path,
                         dir_path + "\\",
