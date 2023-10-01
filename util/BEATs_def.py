@@ -322,6 +322,7 @@ def segment_classifier(result_list_1=[]):
             id_idx_dic[id_pos] = [data_index]
         else:  # 如果id_pos在字典中，就把value添加到对应的键值对的值中
             id_idx_dic[id_pos].append(data_index)
+
     # 这里result_list_1列表，用来存储分类结果为1对应的id
     result_list_1 = get_segment_target_list()
     # 创建一个空字典，用来存储分类结果
@@ -360,7 +361,6 @@ def segment_classifier(result_list_1=[]):
         target_list)).sum()/len(target_list)
     # 计算混淆矩阵
     segment_confusion_matrix = confusion_matrix(target_list, outcome_list)
-
     return segment_acc, segment_confusion_matrix
 
 # ------------------/ BiFocal Loss /------------------ #
