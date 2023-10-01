@@ -310,7 +310,7 @@ def copy_states_data(folder, patient_id, murmur, type):
 csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
 # get dataset tag from table
 row_line = csv_reader_row(csv_path, 0)
-tag_list = list()
+tag_list = []
 
 # get index for 'Patient ID' and 'Outcome'
 tag_list.append(row_line.index("Patient ID"))

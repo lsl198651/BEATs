@@ -25,6 +25,7 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from pydub import AudioSegment
+from make_dataset import csv_reader_cl, csv_reader_row
 
 
 def csv_reader_cl(file_name, clo_num):
@@ -238,16 +239,60 @@ class DatasetClass(Dataset):
     #     iditem = self.id[index]
     #     return iditem
 
+
+# ------------------/ get segment target list /------------------ #
+def get_segment_target_list():
+    """__description__:
+        根据csv文件生成并返回segment_target_list
+        列表包含所有present的id和对应的位置
+    """
+    # def csv_reader_cl(file_name, clo_num):
+    #     with open(file_name, encoding="utf-8") as csvfile:
+    #         reader = csv.reader(csvfile)
+    #         column = [row[clo_num] for row in reader]
+    #     return column
+    # def csv_reader_row(file_name, row_num):
+    #     with open(file_name, "r") as f:
+    #         reader = csv.reader(f)
+    #         row = list(reader)
+    #     return row[row_num]
+    absent_test_id_path = r"D:\Shilong\murmur\03_circor_states\absent_test_id.csv"
+    present_test_id_path = r"D:\Shilong\murmur\03_circor_states\present_test_id.csv"
+    csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
+    # get dataset tag from table
+    row_line = csv_reader_row(csv_path, 0)
+    tag_list = []
+    # get index for 'Patient ID' and 'Outcome'
+    tag_list.append(row_line.index("Patient ID"))
+    tag_list.append(row_line.index("Murmur"))
+    tag_list.append(row_line.index("Murmur locations"))
+    absent_test_id = csv_reader_cl(absent_test_id_path, 0)
+    present_test_id = csv_reader_cl(present_test_id_path, 0)
+    id_data = csv_reader_cl(csv_path, tag_list[0])
+    Murmur = csv_reader_cl(csv_path, tag_list[1])
+    Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
+
+    test_id = absent_test_id+present_test_id
+    segment_target = []
+    # print(absent_test_id)
+    for id in test_id:
+        murmurs = Murmur_locations[id_data.index(id)]
+        if murmurs != 'nan':
+            locations = murmurs.split('+')
+            for loc in locations:
+                segment_target.append(id+'_'+loc)
+    print(segment_target)
+    return segment_target
+
 # ------------------/ segments classifier /------------------ #
 
 
-def segment_classifier(result_list_1=[], target_list=[]):
+def segment_classifier(result_list_1=[]):
     """info
 
     Args:
         result_list_1 (list, optional): 此列表用来存储分类结果为1对应的id.从test结果中生成传入.
         target_list (list, optional): _description_. 这是有杂音（=1）的音频target列表，在列表中对应为1，不在则对应为0.
-
     Returns:
         _type_: _description_
     """
@@ -278,6 +323,7 @@ def segment_classifier(result_list_1=[], target_list=[]):
         else:  # 如果id_pos在字典中，就把value添加到对应的键值对的值中
             id_idx_dic[id_pos].append(data_index)
     # 这里result_list_1列表，用来存储分类结果为1对应的id
+    result_list_1 = get_segment_target_list()
     # 创建一个空字典，用来存储分类结果
     result_dic = {}
     # 这样就生成了每个听诊区对应的数据索引，然后就可以根据索引读取数据了
@@ -299,7 +345,7 @@ def segment_classifier(result_list_1=[], target_list=[]):
     target_list = []
     # 最后，根据target_list，将分类结果转换为0和1并产生outcome_list
     for id_pos, result_value in result_dic.items():
-        if result_value > 0.5:
+        if result_value >= 0.5:
             outcome_list.append(1)
         else:
             outcome_list.append(0)

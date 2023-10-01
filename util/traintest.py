@@ -112,7 +112,6 @@ def train_test(
                 pred_t = pred_t.squeeze(1)
                 correct_t += pred_t.eq(label_t).sum().item()
                 train_len += len(label_t)
-
         if args.scheduler_flag is not None:
             scheduler.step()
         # evaluate model
