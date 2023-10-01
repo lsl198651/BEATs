@@ -237,10 +237,90 @@ class DatasetClass(Dataset):
     # def get_idx(self, index):
     #     iditem = self.id[index]
     #     return iditem
+
+# ------------------/ segments classifier /------------------ #
+
+
+def segment_classifier(result_list_1=[], target_list=[]):
+    """info
+
+    Args:
+        result_list_1 (list, optional): 此列表用来存储分类结果为1对应的id.从test结果中生成传入.
+        target_list (list, optional): _description_. 这是有杂音（=1）的音频target列表，在列表中对应为1，不在则对应为0.
+
+    Returns:
+        _type_: _description_
+    """
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\list_npy_files"
+    absent_test_index = np.load(
+        npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
+    )
+    present_test_index = np.load(
+        npy_path_padded + r"\present_test_index_norm.npy", allow_pickle=True
+    )
+    absent_test_names = np.load(
+        npy_path_padded + r"\absent_test_names_norm.npy", allow_pickle=True
+    )
+    present_test_names = np.load(
+        npy_path_padded + r"\present_test_names_norm.npy", allow_pickle=True
+    )
+    absent_test_dic = dict(zip(absent_test_names, absent_test_index, ))
+    present_test_dic = dict(zip(present_test_names, present_test_index, ))
+    # 所有测试数据的字典
+    test_dic = {**absent_test_dic, **present_test_dic}
+    # 创建id_pos:idx的字典
+    id_idx_dic = {}
+    # 遍历test_dic，生成id_pos:idx的字典
+    for file_name, data_index in test_dic.items():
+        id_pos = file_name.split('_')[0]+'_'+file_name.split('_')[1]
+        if not id_pos in id_idx_dic.keys():  # 如果id_pos不在字典中，就创建一个新的键值对
+            id_idx_dic[id_pos] = [data_index]
+        else:  # 如果id_pos在字典中，就把value添加到对应的键值对的值中
+            id_idx_dic[id_pos].append(data_index)
+    # 这里result_list_1列表，用来存储分类结果为1对应的id
+    # 创建一个空字典，用来存储分类结果
+    result_dic = {}
+    # 这样就生成了每个听诊区对应的数据索引，然后就可以根据索引读取数据了
+    for id_pos, data_index in id_idx_dic.items():
+        # 创建空列表用于保存数据索引对应的值
+        value_list = []
+        # 遍历这个id_pos对应的所有数据索引
+        for idx in data_index:
+            # 根据索引读取数据
+            if idx in result_list_1:
+                value_list.append(1)
+            else:
+                value_list.append(0)
+        # 计算平均值作为每一段的最终分类结果，大于0.5就是1，小于0.5就是0,返回字典
+        result_dic[id_pos] = value_list.mean()
+
+    # 创建两个列表，分别保存outcome和target列表
+    outcome_list = []
+    target_list = []
+    # 最后，根据target_list，将分类结果转换为0和1并产生outcome_list
+    for id_pos, result_value in result_dic.items():
+        if result_value > 0.5:
+            outcome_list.append(1)
+        else:
+            outcome_list.append(0)
+        if id_pos in target_list:
+            target_list.append(1)
+        else:
+            target_list.append(0)
+
+    # 计算准确率和混淆矩阵
+    # 计算准确率
+    segment_acc = (np.array(outcome_list) == np.array(
+        target_list)).sum()/len(target_list)
+    # 计算混淆矩阵
+    segment_confusion_matrix = confusion_matrix(target_list, outcome_list)
+
+    return segment_acc, segment_confusion_matrix
+
 # ------------------/ BiFocal Loss /------------------ #
 
 
-class BCEFocalLoss(torch.nn.Module):
+class BCEFocalLoss(nn.Module):
     def __init__(self, gamma=2, alpha=0.25, reduction='mean'):
         super(BCEFocalLoss, self).__init__()
         self.gamma = gamma
