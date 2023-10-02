@@ -20,13 +20,6 @@ import pandas as pd
 # make dictionary
 
 
-def mkdir(path):
-    folder = os.path.exists(path)
-    # judge wether make dir or not
-    if not folder:
-        os.makedirs(path)
-
-
 # read csv file by column
 def csv_reader_cl(file_name, clo_num):
     with open(file_name, encoding="utf-8") as csvfile:
@@ -157,7 +150,7 @@ def period_div(
                     Diastolic_state = "nan"
                 if os.path.exists(tsv_path):
                     # 切割数据
-                    state_div(
+                    state_div2(
                         tsv_path,
                         wav_path,
                         dir_path + "\\",

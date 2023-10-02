@@ -27,7 +27,15 @@ from torch.autograd import Variable
 from pydub import AudioSegment
 
 
+def mkdir(path):
+    folder = os.path.exists(path)
+    # judge wether make dir or not
+    if not folder:
+        os.makedirs(path)
+
 # read csv file by column
+
+
 def csv_reader_cl(file_name, clo_num):
     with open(file_name, encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)

@@ -101,6 +101,12 @@ present_train_path_9 = wav_filepath+r"\trainset\time_stretch0.9"
 present_train_path_11 = wav_filepath+r"\trainset\time_stretch1.1"
 present_train_path_12 = wav_filepath+r"\trainset\time_stretch1.2"
 present_train_path_reverse = wav_filepath+r"\trainset\reverse"
+present_train_path_reverse8 = wav_filepath+r"\trainset\reverse0.8"
+present_train_path_reverse9 = wav_filepath+r"\trainset\reverse0.9"
+present_train_path_reverse11 = wav_filepath+r"\trainset\reverse1.1"
+present_train_path_reverse12 = wav_filepath+r"\trainset\reverse1.2"
+
+
 # ========================/ get lists /========================== #
 
 
@@ -134,8 +140,20 @@ present_train_features_12, present_train_label_12, present_train_names_12, prese
     present_train_path_12, data_id
 )
 # 反转后的特征和标签
-present_train_features_revert, present_train_label_revert, present_train_names_revert, present_train_index_revert, data_id = get_wav_data(
+present_train_features_reverse, present_train_label_reverse, present_train_names_reverse, present_train_index_reverse,  data_id = get_wav_data(
     present_train_path_reverse, data_id
+)  # present
+present_train_features_reverse8, present_train_label_reverse8, present_train_names_reverse8, present_train_index_reverse8, data_id = get_wav_data(
+    present_train_path_reverse8, data_id
+)  # present
+present_train_features_reverse9, present_train_label_reverse9, present_train_names_reverse9, present_train_index_reverse9, data_id = get_wav_data(
+    present_train_path_reverse9, data_id
+)  # present
+present_train_features_reverse11, present_train_label_reverse11, present_train_names_reverse11, present_train_index_reverse11, data_id = get_wav_data(
+    present_train_path_reverse11, data_id
+)  # present
+present_train_features_reverse12, present_train_label_reverse12, present_train_names_reverse12, present_train_index_reverse12, data_id = get_wav_data(
+    present_train_path_reverse12, data_id
 )  # present
 
 
@@ -162,7 +180,15 @@ np.save(npy_path_padded + r"\present_train_features_11_norm.npy",
 np.save(npy_path_padded + r"\present_train_features_12_norm.npy",
         present_train_features_12)
 np.save(npy_path_padded + r"\present_train_features_reverse_norm.npy",
-        present_train_features_revert)
+        present_train_features_reverse)
+np.save(npy_path_padded + r"\present_train_features_reverse8_norm.npy",
+        present_train_features_reverse8)
+np.save(npy_path_padded + r"\present_train_features_reverse9_norm.npy",
+        present_train_features_reverse9)
+np.save(npy_path_padded + r"\present_train_features_reverse11_norm.npy",
+        present_train_features_reverse11)
+np.save(npy_path_padded + r"\present_train_features_reverse12_norm.npy",
+        present_train_features_reverse12)
 
 # -------------------------/ 保存标签数据 /------------------------- #
 np.save(npy_path_padded + r"\absent_train_label_norm.npy", absent_train_label)
@@ -180,7 +206,15 @@ np.save(npy_path_padded + r"\present_train_label_12_norm.npy",
         present_train_label_11)
 
 np.save(npy_path_padded + r"\present_train_label_reverse_norm.npy",
-        present_train_label_revert)
+        present_train_label_reverse)
+np.save(npy_path_padded + r"\present_train_label_reverse8_norm.npy",
+        present_train_label_reverse8)
+np.save(npy_path_padded + r"\present_train_label_reverse9_norm.npy",
+        present_train_label_reverse9)
+np.save(npy_path_padded + r"\present_train_label_reverse11_norm.npy",
+        present_train_label_reverse11)
+np.save(npy_path_padded + r"\present_train_label_reverse12_norm.npy",
+        present_train_label_reverse12)
 
 # -------------------------/ 保存索引数据 /------------------------- #
 np.save(npy_path_padded + r"\absent_train_index_norm.npy", absent_train_index)
@@ -196,7 +230,17 @@ np.save(npy_path_padded + r"\present_train_index_11_norm.npy",
 np.save(npy_path_padded + r"\present_train_index_12_norm.npy",
         present_train_index_11)
 np.save(npy_path_padded + r"\present_train_index_reverse_norm.npy",
-        present_train_index_revert)
+        present_train_index_reverse)
+np.save(npy_path_padded + r"\present_train_index_reverse8_norm.npy",
+        present_train_index_reverse8)
+np.save(npy_path_padded + r"\present_train_index_reverse9_norm.npy",
+        present_train_index_reverse9)
+np.save(npy_path_padded + r"\present_train_index_reverse11_norm.npy",
+        present_train_index_reverse11)
+np.save(npy_path_padded + r"\present_train_index_reverse12_norm.npy",
+        present_train_index_reverse12)
+
+
 # -------------------------/ 保存名称数据 /------------------------- #
 np.save(npy_path_padded + r"\absent_train_names_norm.npy", absent_train_names)
 np.save(npy_path_padded + r"\absent_test_names_norm.npy", absent_test_names)
@@ -211,12 +255,19 @@ np.save(npy_path_padded + r"\present_train_names_11_norm.npy",
 np.save(npy_path_padded + r"\present_train_names_12_norm.npy",
         present_train_names_11)
 np.save(npy_path_padded + r"\present_train_names_reverse_norm.npy",
-        present_train_names_revert)
+        present_train_names_reverse)
+np.save(npy_path_padded + r"\present_train_names_reverse8_norm.npy",
+        present_train_names_reverse8)
+np.save(npy_path_padded + r"\present_train_names_reverse9_norm.npy",
+        present_train_names_reverse9)
+np.save(npy_path_padded + r"\present_train_names_reverse11_norm.npy",
+        present_train_names_reverse11)
+np.save(npy_path_padded + r"\present_train_names_reverse12_norm.npy",
+        present_train_names_reverse12)
 
 index_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\index_files"
 if not os.path.exists(index_path):
     os.makedirs(index_path)
-
 # 生成字典
 absent_train_dic = zip(absent_train_index, absent_train_names)
 absent_test_dic = zip(absent_test_index, absent_test_names)
@@ -227,7 +278,15 @@ present_train_dic_9 = zip(present_train_index_9, present_train_names_9)
 present_train_dic_11 = zip(present_train_index_11, present_train_names_11)
 present_train_dic_12 = zip(present_train_index_12, present_train_names_12)
 present_train_dic_reverse = zip(
-    present_train_index_revert, present_train_names_revert)
+    present_train_index_reverse, present_train_names_reverse)
+present_train_dic_reverse8 = zip(
+    present_train_index_reverse8, present_train_names_reverse8)
+present_train_dic_reverse9 = zip(
+    present_train_index_reverse9, present_train_names_reverse9)
+present_train_dic_reverse11 = zip(
+    present_train_index_reverse11, present_train_names_reverse11)
+present_train_dic_reverse12 = zip(
+    present_train_index_reverse12, present_train_names_reverse12)
 
 pd.DataFrame(absent_train_dic).to_csv(
     index_path+"\absent_train_disc.csv", index=False, header=False)
@@ -247,6 +306,14 @@ pd.DataFrame(present_train_dic_12).to_csv(
     index_path+"\present_train_dic_12.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_reverse).to_csv(
     index_path+"\present_train_dic_reverse.csv", index=False, header=False)
+pd.DataFrame(present_train_dic_reverse8).to_csv(
+    index_path+"\present_train_dic_reverse8.csv", index=False, header=False)
+pd.DataFrame(present_train_dic_reverse9).to_csv(
+    index_path+"\present_train_dic_reverse9.csv", index=False, header=False)
+pd.DataFrame(present_train_dic_reverse11).to_csv(
+    index_path+"\present_train_dic_reverse11.csv", index=False, header=False)
+pd.DataFrame(present_train_dic_reverse12).to_csv(
+    index_path+"\present_train_dic_reverse12.csv", index=False, header=False)
 
 # 保存字典数据
 # np.savez(npz_path + r"\absent_train_dic.npz", absent_train_dic)

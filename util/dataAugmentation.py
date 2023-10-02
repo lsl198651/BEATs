@@ -2,26 +2,23 @@ import os
 import numpy as np
 import librosa
 import soundfile as sf
-from BEATs_def import wav_reverse
+from BEATs_def import wav_reverse, mkdir
 from pydub import AudioSegment
 
 # 数据增强文件
 speed_factor1 = 1.2
 speed_factor0 = 0.9
 # 原始数据path
-path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch0.8'
+path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch1.2'
 # 时域伸缩后保存的path
 time_path1 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch0.9'
 time_path2 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch1.2'
 # 反转后保存的path
-reverse_path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\reverse0.8'
+reverse_path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\reverse1.2'
 
-if not os.path.exists(time_path1):
-    os.makedirs(time_path1)
-if not os.path.exists(time_path2):
-    os.makedirs(time_path2)
-if not os.path.exists(reverse_path):
-    os.makedirs(reverse_path)
+mkdir(time_path1)
+mkdir(time_path2)
+mkdir(reverse_path)
 
 for root, dir, file in os.walk(path):
     for filename in file:
