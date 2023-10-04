@@ -289,31 +289,31 @@ present_train_dic_reverse12 = zip(
     present_train_index_reverse12, present_train_names_reverse12)
 
 pd.DataFrame(absent_train_dic).to_csv(
-    index_path+"\absent_train_disc.csv", index=False, header=False)
+    index_path+r"\absent_train_disc.csv", index=False, header=False)
 pd.DataFrame(absent_test_dic).to_csv(
-    index_path+"\absent_test_dic.csv", index=False, header=False)
+    index_path+r"\absent_test_dic.csv", index=False, header=False)
 pd.DataFrame(present_train_dic).to_csv(
-    index_path+"\present_train_dic.csv", index=False, header=False)
+    index_path+r"\present_train_dic.csv", index=False, header=False)
 pd.DataFrame(present_test_dic).to_csv(
-    index_path+"\present_test_dic.csv", index=False, header=False)
+    index_path+r"\present_test_dic.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_8).to_csv(
-    index_path+"\present_train_dic_8.csv", index=False, header=False)
+    index_path+r"\present_train_dic_8.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_9).to_csv(
-    index_path+"\present_train_dic_9.csv", index=False, header=False)
+    index_path+r"\present_train_dic_9.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_11).to_csv(
-    index_path+"\present_train_dic_11.csv", index=False, header=False)
+    index_path+r"\present_train_dic_11.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_12).to_csv(
-    index_path+"\present_train_dic_12.csv", index=False, header=False)
+    index_path+r"\present_train_dic_12.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_reverse).to_csv(
-    index_path+"\present_train_dic_reverse.csv", index=False, header=False)
+    index_path+r"\present_train_dic_reverse.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_reverse8).to_csv(
-    index_path+"\present_train_dic_reverse8.csv", index=False, header=False)
+    index_path+r"\present_train_dic_reverse8.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_reverse9).to_csv(
-    index_path+"\present_train_dic_reverse9.csv", index=False, header=False)
+    index_path+r"\present_train_dic_reverse9.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_reverse11).to_csv(
-    index_path+"\present_train_dic_reverse11.csv", index=False, header=False)
+    index_path+r"\present_train_dic_reverse11.csv", index=False, header=False)
 pd.DataFrame(present_train_dic_reverse12).to_csv(
-    index_path+"\present_train_dic_reverse12.csv", index=False, header=False)
+    index_path+r"\present_train_dic_reverse12.csv", index=False, header=False)
 
 # 保存字典数据
 # np.savez(npz_path + r"\absent_train_dic.npz", absent_train_dic)

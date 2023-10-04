@@ -62,6 +62,19 @@ def get_features(args):
         present_train_features_reserse = np.load(
             npy_path_padded + r"\present_train_features_reverse_norm.npy", allow_pickle=True
         )
+        present_train_features_reserse8 = np.load(
+            npy_path_padded + r"\present_train_features_reverse8_norm.npy", allow_pickle=True
+        )
+        present_train_features_reserse9 = np.load(
+            npy_path_padded + r"\present_train_features_reverse9_norm.npy", allow_pickle=True
+        )
+        present_train_features_reserse11 = np.load(
+            npy_path_padded + r"\present_train_features_reverse11_norm.npy", allow_pickle=True
+        )
+        present_train_features_reserse12 = np.load(
+            npy_path_padded + r"\present_train_features_reverse12_norm.npy", allow_pickle=True
+        )
+
         # ------------------------/ load labels /-------------------------- #
         present_train_label_8 = np.load(
             npy_path_padded + r"\present_train_label_8_norm.npy", allow_pickle=True
@@ -78,6 +91,18 @@ def get_features(args):
         present_train_label_reserse = np.load(
             npy_path_padded + r"\present_train_label_reverse_norm.npy", allow_pickle=True
         )
+        present_train_label_reserse8 = np.load(
+            npy_path_padded + r"\present_train_label_reverse8_norm.npy", allow_pickle=True
+        )
+        present_train_label_reserse9 = np.load(
+            npy_path_padded + r"\present_train_label_reverse9_norm.npy", allow_pickle=True
+        )
+        present_train_label_reserse11 = np.load(
+            npy_path_padded + r"\present_train_label_reverse11_norm.npy", allow_pickle=True
+        )
+        present_train_label_reserse12 = np.load(
+            npy_path_padded + r"\present_train_label_reverse12_norm.npy", allow_pickle=True
+        )
         # ------------------------/ load index /-------------------------- #
         present_train_index_8 = np.load(
             npy_path_padded + r"\present_train_index_8_norm.npy", allow_pickle=True
@@ -91,9 +116,23 @@ def get_features(args):
         present_train_index_12 = np.load(
             npy_path_padded + r"\present_train_index_12_norm.npy", allow_pickle=True
         )
+        # -
         present_train_index_reverse = np.load(
             npy_path_padded + r"\present_train_index_reverse_norm.npy", allow_pickle=True
         )
+        present_train_index_reverse8 = np.load(
+            npy_path_padded + r"\present_train_index_reverse8_norm.npy", allow_pickle=True
+        )
+        present_train_index_reverse9 = np.load(
+            npy_path_padded + r"\present_train_index_reverse9_norm.npy", allow_pickle=True
+        )
+        present_train_index_reverse11 = np.load(
+            npy_path_padded + r"\present_train_index_reverse11_norm.npy", allow_pickle=True
+        )
+        present_train_index_reverse12 = np.load(
+            npy_path_padded + r"\present_train_index_reverse12_norm.npy", allow_pickle=True
+        )
+
         if args.trainset_balence is True:
             absent_size = int(
                 (
@@ -102,7 +141,11 @@ def get_features(args):
                     + present_train_features_9.shape[0]
                     + present_train_features_11.shape[0]
                     + present_train_features_12.shape[0]
-                    + present_train_features_reserse.shape[0]
+                    + present_train_features_reserse.shape[0],
+                    +present_train_features_reserse8.shape[0],
+                    +present_train_features_reserse9.shape[0],
+                    +present_train_features_reserse11.shape[0],
+                    +present_train_features_reserse12.shape[0]
                 )
                 * args.ap_ratio
             )
@@ -120,7 +163,11 @@ def get_features(args):
                 present_train_label_9,
                 present_train_label_11,
                 present_train_label_12,
-                present_train_label_reserse
+                present_train_label_reserse,
+                present_train_label_reserse8,
+                present_train_label_reserse9,
+                present_train_label_reserse11,
+                present_train_label_reserse12,
             )
         )
         train_features = np.vstack(
@@ -131,7 +178,11 @@ def get_features(args):
                 present_train_features_9,
                 present_train_features_11,
                 present_train_features_12,
-                present_train_features_reserse
+                present_train_features_reserse,
+                present_train_features_reserse8,
+                present_train_features_reserse9,
+                present_train_features_reserse11,
+                present_train_features_reserse12,
             )
         )
         train_index = np.hstack(
@@ -142,8 +193,11 @@ def get_features(args):
                 present_train_index_9,
                 present_train_index_11,
                 present_train_index_12,
-                present_train_index_reverse
-
+                present_train_index_reverse,
+                present_train_index_reverse8,
+                present_train_index_reverse9,
+                present_train_index_reverse11,
+                present_train_index_reverse12,
             )
         )
     else:
