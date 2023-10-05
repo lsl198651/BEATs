@@ -157,8 +157,7 @@ def train_test(
                 #     pred.extend(pred_v.cpu().tolist())
                 #     label.extend(label_v.cpu().tolist())
                 elif args.loss_type == "FocalLoss" or "CE":
-                    loss_v = loss_fn(
-                        predict_v, label_v.long())
+                    loss_v = loss_fn(predict_v, label_v.long())
                     # get the index of the max log-probability
                     pred_v = predict_v.max(1, keepdim=True)[1]
                     test_loss += loss_v.item()
