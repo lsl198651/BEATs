@@ -141,16 +141,22 @@ def train_test(
                     correct_v += predict_v2.eq(label_v).sum().item()
                     pred.extend(predict_v2.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
-                elif args.loss_type == "CE":
-                    loss_v = loss_fn(predict_v, label_v.long())
-                    # get the index of the max log-probability
-                    pred_v = predict_v.max(1, keepdim=True)[1]
-                    test_loss += loss_v.item()
-                    pred_v = pred_v.squeeze(1)
-                    correct_v += pred_v.eq(label_v).sum().item()
-                    pred.extend(pred_v.cpu().tolist())
-                    label.extend(label_v.cpu().tolist())
-                elif args.loss_type == "FocalLoss":
+                # elif args.loss_type == "CE":
+                #     loss_v = loss_fn(predict_v, label_v.long())
+                #     # get the index of the max log-probability
+                #     pred_v = predict_v.max(1, keepdim=True)[1]
+                #     test_loss += loss_v.item()
+                #     pred_v = pred_v.squeeze(1)
+                #     correct_v += pred_v.eq(label_v).sum().item()
+                #     idx_v = index_v[torch.nonzero(
+                #         torch.eq(pred_v.ne(label_v), True))]
+                #     idx_v = idx_v.squeeze()
+                #     result_list_present.extend(index_v[torch.nonzero(
+                #         torch.eq(pred_v.eq(1), True))])
+                #     error_index.extend(idx_v.cpu().tolist())
+                #     pred.extend(pred_v.cpu().tolist())
+                #     label.extend(label_v.cpu().tolist())
+                elif args.loss_type == "FocalLoss" or "CE":
                     loss_v = loss_fn(
                         predict_v, label_v.long())
                     # get the index of the max log-probability
@@ -161,10 +167,8 @@ def train_test(
                     idx_v = index_v[torch.nonzero(
                         torch.eq(pred_v.ne(label_v), True))]
                     idx_v = idx_v.squeeze()
-
                     result_list_present.extend(index_v[torch.nonzero(
                         torch.eq(pred_v.eq(1), True))])
-
                     error_index.extend(idx_v.cpu().tolist())
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())

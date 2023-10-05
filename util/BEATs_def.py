@@ -374,7 +374,6 @@ def segment_classifier(result_list_1=[]):
             target_list.append(1)
         else:
             target_list.append(0)
-
     # 计算准确率和混淆矩阵
     # 计算准确率
     segment_acc = (np.array(outcome_list) == np.array(
