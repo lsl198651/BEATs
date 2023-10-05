@@ -6,7 +6,7 @@ from torch import optim
 from transformers import optimization
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
-from util.BEATs_def import FocalLoss, BCEFocalLoss, sigmoid_focal_loss
+from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list
 import logging
 import csv
 import os
@@ -119,6 +119,7 @@ def train_test(
         label = []
         pred = []
         error_index = []
+        result_list_present = []
         test_loss = 0
         correct_v = 0
         with torch.no_grad():
@@ -157,33 +158,35 @@ def train_test(
                     test_loss += loss_v.item()
                     pred_v = pred_v.squeeze(1)
                     correct_v += pred_v.eq(label_v).sum().item()
-
                     idx_v = index_v[torch.nonzero(
                         torch.eq(pred_v.ne(label_v), True))]
                     idx_v = idx_v.squeeze()
+
+                    result_list_present.extend(index_v[torch.nonzero(
+                        torch.eq(pred_v.eq(1), True))])
+
                     error_index.extend(idx_v.cpu().tolist())
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
+            segment_acc, segment_confusion_matrix = segment_classifier(
+                result_list_present)
 
         for group in optimizer.param_groups:
             lr_now = group["lr"]
         lr.append(lr_now)
-
         # 更新权值
         test_loss /= len(pred)
         train_loss /= train_len
         train_acc = correct_t / train_len
         test_acc = correct_v / len(pred)
         # acc = accuracy_score(pred , target)
-
         max_train_acc.append(train_acc)
         max_test_acc.append(test_acc)
         max_train_acc_value = max(max_train_acc)
         max_test_acc_value = max_test_acc[max_train_acc.index(
             max_train_acc_value)]
-
         tb_writer.add_scalar("train_acc", train_acc, epochs)
         tb_writer.add_scalar("test_acc", test_acc, epochs)
         tb_writer.add_scalar("train_loss", train_loss, epochs)
@@ -200,6 +203,8 @@ def train_test(
         logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
         logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
         logging.info(f"max_lr:{max(lr):.1e}, min_lr:{min(lr):.1e}")
+        logging.info(f"segmt_acc:{segment_acc:.3%}")
+        logging.info(f"segment_confusion_matrix:{segment_confusion_matrix}")
         logging.info(f"======================================")
         # 画混淆矩阵
         draw_confusion_matrix(

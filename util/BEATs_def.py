@@ -341,7 +341,7 @@ def segment_classifier(result_list_1=[]):
             id_idx_dic[id_pos].append(data_index)
 
     # 这里result_list_1列表，用来存储分类结果为1对应的id,test输出的结果
-    result_list_1 = []
+    # result_list_1 = []
 
     # 创建一个空字典，用来存储分类结果
     result_dic = {}
