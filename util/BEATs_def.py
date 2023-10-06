@@ -286,7 +286,7 @@ def get_segment_target_list():
     absent_test_id = csv_reader_cl(absent_test_id_path, 0)
     present_test_id = csv_reader_cl(present_test_id_path, 0)
     id_data = csv_reader_cl(csv_path, tag_list[0])
-    Murmur = csv_reader_cl(csv_path, tag_list[1])
+    # Murmur = csv_reader_cl(csv_path, tag_list[1])
     Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
 
     test_id = absent_test_id+present_test_id
@@ -298,7 +298,7 @@ def get_segment_target_list():
             locations = murmurs.split('+')
             for loc in locations:
                 segment_target.append(id+'_'+loc)
-    print(segment_target)
+    # print(segment_target)
     return segment_target
 
 # ------------------/ segments classifier /------------------ #
@@ -357,7 +357,7 @@ def segment_classifier(result_list_1=[]):
             else:
                 value_list.append(0)
         # 计算平均值作为每一段的最终分类结果，大于0.5就是1，小于0.5就是0,返回字典
-        result_dic[id_pos] = value_list.mean()
+        result_dic[id_pos] = np.mean(value_list)
 
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
     segment_target = get_segment_target_list()
