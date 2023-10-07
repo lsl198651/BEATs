@@ -84,22 +84,22 @@ def train_test(
                 # predict_t2 = predict_t2.squeeze(1)
                 correct_t += predict_t2.eq(label_t).sum().item()
                 train_len += len(label_t)
-            elif args.loss_type == "CE":
-                loss = loss_fn(predict_t, label_t.long())
-                # scaler.scale(loss).backward()
-                # scaler.step(optimizer)
-                # scaler.update()
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-                train_loss += loss.item()
-                # get the index of the max log-probability
-                pred_t = predict_t.max(1, keepdim=True)[1]
-                # label_t = torch.int64(label_t)
-                pred_t = pred_t.squeeze(1)
-                correct_t += pred_t.eq(label_t).sum().item()
-                train_len += len(label_t)
-            elif args.loss_type == "FocalLoss":
+            # elif args.loss_type == "CE":
+            #     loss = loss_fn(predict_t, label_t.long())
+            #     # scaler.scale(loss).backward()
+            #     # scaler.step(optimizer)
+            #     # scaler.update()
+            #     optimizer.zero_grad()
+            #     loss.backward()
+            #     optimizer.step()
+            #     train_loss += loss.item()
+            #     # get the index of the max log-probability
+            #     pred_t = predict_t.max(1, keepdim=True)[1]
+            #     # label_t = torch.int64(label_t)
+            #     pred_t = pred_t.squeeze(1)
+            #     correct_t += pred_t.eq(label_t).sum().item()
+            #     train_len += len(label_t)
+            elif args.loss_type == "FocalLoss" or "CE":
                 loss = loss_fn(
                     predict_t, label_t.long())
                 optimizer.zero_grad()
@@ -167,15 +167,13 @@ def train_test(
                         torch.eq(pred_v.ne(label_v), True))]
                     idx_v = idx_v.squeeze()
                     result_list_present.extend(index_v[torch.nonzero(
-                        torch.eq(pred_v.eq(1), True))])
+                        torch.eq(pred_v.eq(1), True))].cpu().tolist())
                     error_index.extend(idx_v.cpu().tolist())
                     pred.extend(pred_v.cpu().tolist())
-                    label.extend(label_v.cpu().tolist())
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
             segment_acc, segment_confusion_matrix = segment_classifier(
                 result_list_present)
-
         for group in optimizer.param_groups:
             lr_now = group["lr"]
         lr.append(lr_now)
@@ -195,7 +193,6 @@ def train_test(
         tb_writer.add_scalar("train_loss", train_loss, epochs)
         tb_writer.add_scalar("test_loss", test_loss, epochs)
         tb_writer.add_scalar("learning_rate", lr_now, epochs)
-
         # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
         logging.info(f"learning_rate: {lr_now:.1e}")

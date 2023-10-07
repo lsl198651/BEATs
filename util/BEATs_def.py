@@ -358,7 +358,6 @@ def segment_classifier(result_list_1=[]):
                 value_list.append(0)
         # 计算平均值作为每一段的最终分类结果，大于0.5就是1，小于0.5就是0,返回字典
         result_dic[id_pos] = np.mean(value_list)
-
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
     segment_target = get_segment_target_list()
     # 创建两个列表，分别保存outcome和target列表

@@ -10,6 +10,11 @@ from util.dataloaders import get_features
 from util.traintest import train_test
 from util.BEATs_def import (MyDataset, logger_init, DatasetClass)
 
+
+print(torch.version.cuda)  # 查看cuda版本
+print(torch.cuda.is_available())  # 查看cuda是否可用
+print(torch.cuda.device_count())  # 查看可行的cuda数目
+
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--batch_size", type=int, default=128,

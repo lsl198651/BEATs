@@ -279,7 +279,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         x, _ = self.BEATs.extract_features(x, padding_mask, args=self.args)
         # dropout
         # with torch.enable_grad():
-        y = self.last_Dropout(x)
+        x = self.last_Dropout(x)
         x = x.reshape(x.size(0), -1)
         output = self.fc_layer(x)
         # output = torch.sigmoid(output)
