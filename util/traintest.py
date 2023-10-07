@@ -168,11 +168,13 @@ def train_test(
                     idx_v = idx_v.squeeze()
                     result_list_present.extend(index_v[torch.nonzero(
                         torch.eq(pred_v.eq(1), True))].cpu().tolist())
+                    # result_list_present = result_list_present.squeeze()
                     error_index.extend(idx_v.cpu().tolist())
                     pred.extend(pred_v.cpu().tolist())
+                    label.extend(label_v.cpu().tolist())
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
-            segment_acc, segment_confusion_matrix = segment_classifier(
+            segment_acc, segment_cm = segment_classifier(
                 result_list_present)
         for group in optimizer.param_groups:
             lr_now = group["lr"]
@@ -204,7 +206,7 @@ def train_test(
         logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
         logging.info(f"max_lr:{max(lr):.1e}, min_lr:{min(lr):.1e}")
         logging.info(f"segmt_acc:{segment_acc:.3%}")
-        logging.info(f"segment_cm:{segment_confusion_matrix}")
+        logging.info(f"segment_cm:{segment_cm}")
         logging.info(f"======================================")
         # 画混淆矩阵
         draw_confusion_matrix(
