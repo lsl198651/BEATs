@@ -4,6 +4,7 @@ import librosa
 import numpy as np
 import soundfile as sf
 from BEATs_def import get_wav_data, get_patientid
+from dataAugmentation import data_Auge
 import pandas as pd
 
 
@@ -13,9 +14,9 @@ murmur_ap = ["Absent\\", "Present\\"]
 period = ["Systolic", "Diastolic"]
 
 # ========================/ get lists /========================== #
-dataset_path = r'D:\Shilong\murmur\01_dataset\01_s1s2'
-file_path_train = r'D:\Shilong\murmur\01_dataset\01_s1s2\train'
-file_path_test = r'D:\Shilong\murmur\01_dataset\01_s1s2\test'
+dataset_path = r'D:\Shilong\murmur\01_dataset\04_newDataset'
+file_path_train = r'D:\Shilong\murmur\01_dataset\04_newDataset\train'
+file_path_test = r'D:\Shilong\murmur\01_dataset\04_newDataset\test'
 target_dir_train_a = dataset_path+r'\trainset\absent'
 target_dir_train_p = dataset_path+r'\trainset\present'
 target_dir_test_a = dataset_path+r'\testset\absent'
@@ -29,53 +30,31 @@ if not os.path.exists(target_dir_test_a):
     os.makedirs(target_dir_test_a)
 if not os.path.exists(target_dir_test_p):
     os.makedirs(target_dir_test_p)
-# 复制到trainset和testset
-# for root, dir, file in os.walk(file_path_train):
-#     for subfile in file:
-#         files = os.path.join(root, subfile)
-#         print(subfile)
-#         state = subfile.split("_")[4]
-#         if state == 'Absent':
-#             shutil.copy(files, target_dir_train_a + "\\")
-#         if state == 'Present':
-#             shutil.copy(files, target_dir_train_p + "\\")
-
-# for root, dir, file in os.walk(file_path_test):
-#     for subfile in file:
-#         files = os.path.join(root, subfile)
-#         print(subfile)
-#         state = subfile.split("_")[4]
-#         if state == 'Absent':
-#             shutil.copy(files, target_dir_test_a + "\\")
-#         if state == 'Present':
-#             shutil.copy(files, target_dir_test_p + "\\")
+# # 复制到trainset和testset
+# trainset
+for root, dir, file in os.walk(file_path_train):
+    for subfile in file:
+        files = os.path.join(root, subfile)
+        print(subfile)
+        state = subfile.split("_")[4]
+        if state == 'Absent':
+            shutil.copy(files, target_dir_train_a + "\\")
+        if state == 'Present':
+            shutil.copy(files, target_dir_train_p + "\\")
+# testset
+for root, dir, file in os.walk(file_path_test):
+    for subfile in file:
+        files = os.path.join(root, subfile)
+        print(subfile)
+        state = subfile.split("_")[4]
+        if state == 'Absent':
+            shutil.copy(files, target_dir_test_a + "\\")
+        if state == 'Present':
+            shutil.copy(files, target_dir_test_p + "\\")
 
 
 # ========================/ Data Augementation /========================== #
-# 数据增强文件
-speed_factor1 = 1.1
-speed_factor0 = 0.8
-time_path1 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch0.9'
-time_path2 = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\time_stretch1.2'
-path = r'D:\Shilong\murmur\01_dataset\01_s1s2\trainset\present'
-if not os.path.exists(time_path1):
-    os.makedirs(time_path1)
-if not os.path.exists(time_path2):
-    os.makedirs(time_path2)
-
-# for root, dir, file in os.walk(path):
-#     for filename in file:
-#         print("processing "+filename)
-#         wav_path = os.path.join(root, filename)
-#         data, sr = librosa.load(wav_path, sr=4000)
-
-#         data_time_stretch = librosa.effects.time_stretch(
-#             data, rate=speed_factor1)
-#         sf.write(os.path.join(time_path1, filename+'_.wav'), data, sr)
-
-#         data_time_stretch = librosa.effects.time_stretch(
-#             data, rate=speed_factor0)
-#         sf.write(os.path.join(time_path2, filename+'_.wav'), data, sr)
+data_Auge()
 
 # ========================/ file path /========================== #
 # get absent / present patient_id
@@ -91,7 +70,7 @@ Systolic_murmur_timing_path = (
 )
 Murmur_locations_path = csv_folder+r"\Murmur_locations.csv"
 
-wav_filepath = r"D:\Shilong\murmur\01_dataset\01_s1s2"
+wav_filepath = r"D:\Shilong\murmur\01_dataset\04_newDataset"
 absent_train_path = wav_filepath+r"\trainset\absent"
 absent_test_path = wav_filepath+r"\testset\absent"
 present_train_path = wav_filepath+r"\trainset\present"
@@ -265,7 +244,7 @@ np.save(npy_path_padded + r"\present_train_names_reverse11_norm.npy",
 np.save(npy_path_padded + r"\present_train_names_reverse12_norm.npy",
         present_train_names_reverse12)
 
-index_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\index_files"
+index_path = r"D:\Shilong\murmur\01_dataset\04_newDataset\npyFile_padded\normalized\index_files"
 if not os.path.exists(index_path):
     os.makedirs(index_path)
 # 生成字典
