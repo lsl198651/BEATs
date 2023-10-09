@@ -174,7 +174,7 @@ def train_test(
                     label.extend(label_v.cpu().tolist())
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
-            segment_acc, segment_cm = segment_classifier(
+            segment_acc, segment_cm, patient_acc, patient_cm = segment_classifier(
                 result_list_present)
         for group in optimizer.param_groups:
             lr_now = group["lr"]
@@ -196,6 +196,7 @@ def train_test(
         tb_writer.add_scalar("test_loss", test_loss, epochs)
         tb_writer.add_scalar("learning_rate", lr_now, epochs)
         # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
+        logging.info(f"======================================")
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
         logging.info(f"learning_rate: {lr_now:.1e}")
         logging.info(
@@ -207,7 +208,9 @@ def train_test(
         logging.info(f"max_lr:{max(lr):.1e}, min_lr:{min(lr):.1e}")
         logging.info(f"segmt_acc:{segment_acc:.3%}")
         logging.info(f"segment_cm:{segment_cm}")
-        logging.info(f"======================================")
+        logging.info(f"patient_acc:{patient_acc:.3%}")
+        logging.info(f"patient_cm:{patient_cm}")
+
         # 画混淆矩阵
         draw_confusion_matrix(
             label,

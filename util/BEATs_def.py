@@ -33,28 +33,29 @@ def mkdir(path):
     if not folder:
         os.makedirs(path)
 
-# read csv file by column
+#
 
 
 def csv_reader_cl(file_name, clo_num):
+    """read csv file by column
+    """
     with open(file_name, encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
         column = [row[clo_num] for row in reader]
     return column
 
 
-# read the csv row_num-th row
+#
 def csv_reader_row(file_name, row_num):
+    """read the csv row_num-th row"""
     with open(file_name, "r") as f:
         reader = csv.reader(f)
         row = list(reader)
     return row[row_num]
 
 
-# ------------------/ 将wav文件夹复制到指定路径 /------------------ #
-
-
 def copy_wav(folder, idlist, mur, traintest):
+    """将wav文件夹复制到指定路径"""
     for patient_id in idlist:
         dir_path = folder + "\\" + mur + "\\" + patient_id
         # print(dir_path)
@@ -66,20 +67,18 @@ def copy_wav(folder, idlist, mur, traintest):
                 shutil.copytree(subdir_path, traintest + "\\" + subdir)
     # idlist.to_scv(folder+"\\"+traintest+"\\"+mur+traintest+".csv", index=False, header=False)
 
-# ------------------/ 读csv文件 /------------------ #
-
 
 def get_patientid(csv_path):
+    """读csv文件"""
     # 'import csv' is required
     with open(csv_path) as csvfile:
         reader = csv.reader(csvfile)
         id = [row[0] for row in reader]  # weight 同列的数据
     return id
 
-# ------------------/ 归一化 /------------------ #
-
 
 def wav_normalize(data):
+    """归一化"""
     _range = np.max(data) - np.min(data)
     for i in range(data.shape[0]):
         if _range == 0:
@@ -88,10 +87,9 @@ def wav_normalize(data):
             data[i] = (data[i] - np.min(data)) / _range
     return data
 
-# ------------------/ 倒放 /------------------ #
-
 
 def wav_reverse(dir_path, save_path):
+    """倒放"""
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
@@ -102,10 +100,9 @@ def wav_reverse(dir_path, save_path):
             reverse_name = subfile.split(".")[0]+"_reverse"
             backplay.export(save_path+reverse_name+".wav", format="wav")
 
-# ------------------/ 返回数据文件 /------------------ #
-
 
 def get_wav_data(dir_path, num=0):
+    """返回数据文件"""
     wav = []
     label = []
     file_names = []
@@ -144,10 +141,9 @@ def get_wav_data(dir_path, num=0):
 
     return wav, label, file_names, wav_nums, num
 
-# ------------------/ 计算音频长度 /------------------ #
-
 
 def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
+    """计算音频长度"""
     slen = []
     dlen = []
     # label=[]
@@ -171,10 +167,9 @@ def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
                     dlen.append(waveform_16k.size)
     return np.array(slen), np.array(dlen)
 
-# ------------------/ 读取csv文件返回feature和label /------------------ #
-
 
 def get_mel_features(dir_path, absent_id, present_id):
+    """读取csv文件返回feature和label"""
     feature_list = []
     label_list = []
     for root, dir, file in os.walk(dir_path):
@@ -201,8 +196,6 @@ def get_mel_features(dir_path, absent_id, present_id):
                 label_list.append(0)
     return np.array(feature_list), np.array(label_list)
 
-# ------------------/ dataset Class /------------------ #
-
 
 class MyDataset(Dataset):
     """my dataset."""
@@ -225,7 +218,6 @@ class MyDataset(Dataset):
         return len(self.data)
 
 
-# ------------------/ dataset Class /------------------ #
 class DatasetClass(Dataset):
     """继承Dataset类，重写__getitem__和__len__方法
     添加get_idx方法，返回id
@@ -257,22 +249,11 @@ class DatasetClass(Dataset):
     #     return iditem
 
 
-# ------------------/ get segment target list /------------------ #
 def get_segment_target_list():
-    """__description__:
+    """ get segment target list
         根据csv文件生成并返回segment_target_list
         列表包含所有present的id和对应的位置
     """
-    # def csv_reader_cl(file_name, clo_num):
-    #     with open(file_name, encoding="utf-8") as csvfile:
-    #         reader = csv.reader(csvfile)
-    #         column = [row[clo_num] for row in reader]
-    #     return column
-    # def csv_reader_row(file_name, row_num):
-    #     with open(file_name, "r") as f:
-    #         reader = csv.reader(f)
-    #         row = list(reader)
-    #     return row[row_num]
     absent_test_id_path = r"D:\Shilong\murmur\03_circor_states\absent_test_id.csv"
     present_test_id_path = r"D:\Shilong\murmur\03_circor_states\present_test_id.csv"
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
@@ -283,33 +264,46 @@ def get_segment_target_list():
     tag_list.append(row_line.index("Patient ID"))
     tag_list.append(row_line.index("Murmur"))
     tag_list.append(row_line.index("Murmur locations"))
+    tag_list.append(row_line.index("Recording locations:"))
     absent_test_id = csv_reader_cl(absent_test_id_path, 0)
     present_test_id = csv_reader_cl(present_test_id_path, 0)
     id_data = csv_reader_cl(csv_path, tag_list[0])
-    # Murmur = csv_reader_cl(csv_path, tag_list[1])
+    Murmur = csv_reader_cl(csv_path, tag_list[1])
     Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
-
+    Recording_locations = csv_reader_cl(csv_path, tag_list[3])
+    # 测试集中所有的id
     test_id = absent_test_id+present_test_id
-    segment_target = []
+    # 创建一个空列表segment_present，用来存储有杂音的音频的id和位置
+    segment_present = []
     # print(absent_test_id)
     for id in test_id:
         murmurs = Murmur_locations[id_data.index(id)]
         if murmurs != 'nan':
             locations = murmurs.split('+')
             for loc in locations:
-                segment_target.append(id+'_'+loc)
-    # print(segment_target)
-    return segment_target
+                segment_present.append(id+'_'+loc)
 
-# ------------------/ segments classifier /------------------ #
+    # 这个列表好像没用到
+    patient_target = []
+    # 创建一个空字典，用来存储有杂音的音频的id和位置,formate: id:locations
+    patient_dic = {}
+    # print(absent_test_id)
+    for id in test_id:
+        # murmur = Murmur[id_data.index(id)]
+        # if murmur=='present':
+        #     patient_target.append(1)
+        # else:
+        #     patient_target.append(0)
+        locations = Recording_locations[id_data.index(id)]
+        patient_dic[id] = locations
+        return segment_present, patient_dic, absent_test_id, present_test_id
 
 
 def segment_classifier(result_list_1=[]):
-    """info
-
+    """本fn计算了针对每个location和patient的acc和cm
     Args:
         result_list_1 (list, optional): 此列表用来存储分类结果为1对应的id.从test结果中生成传入.
-        target_list (list, optional): _description_. 这是有杂音（=1）的音频target列表，在列表中对应为1，不在则对应为0.
+        segment_present (list, optional): _description_. 这是有杂音（=1）的音频target列表，在列表中对应为1，不在则对应为0.
     Returns:
         _type_: _description_
     """
@@ -342,8 +336,10 @@ def segment_classifier(result_list_1=[]):
 
     # 这里result_list_1列表，用来存储分类结果为1对应的id,test输出的结果
     # result_list_1 = []
-
-    # 创建一个空字典，用来存储分类结果
+    # ------------------------------------------------------------ #
+    # -------------------/ segment classifier /------------------- #
+    # ------------------------------------------------------------ #
+    # 创建一个空字典，用来存储分类结果,formate: id_pos: result
     result_dic = {}
     # 这样就生成了每个听诊区对应的数据索引，然后就可以根据索引读取数据了
     for id_pos, data_index in id_idx_dic.items():
@@ -359,32 +355,75 @@ def segment_classifier(result_list_1=[]):
         # 计算平均值作为每一段的最终分类结果，大于0.5就是1，小于0.5就是0,返回字典
         result_dic[id_pos] = np.mean(value_list)
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
-    segment_target = get_segment_target_list()
+    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list()
     # 创建两个列表，分别保存outcome和target列表
-    outcome_list = []
-    target_list = []
+    segment_output = []
+    segment_target = []
     # 最后，根据target_list，将分类结果转换为0和1并产生outcome_list
     for id_pos, result_value in result_dic.items():
         if result_value >= 0.5:
-            outcome_list.append(1)
+            segment_output.append(1)
         else:
-            outcome_list.append(0)
-        if id_pos in segment_target:
-            target_list.append(1)
+            segment_output.append(0)
+        if id_pos in segment_present:
+            segment_target.append(1)
         else:
-            target_list.append(0)
+            segment_target.append(0)
     # 计算准确率和混淆矩阵
     # 计算准确率
-    segment_acc = (np.array(outcome_list) == np.array(
-        target_list)).sum()/len(target_list)
+    segment_acc = (np.array(segment_output) == np.array(
+        segment_target)).sum()/len(segment_target)
     # 计算混淆矩阵
-    segment_confusion_matrix = confusion_matrix(target_list, outcome_list)
-    return segment_acc, segment_confusion_matrix
+    segment_cm = confusion_matrix(segment_target, segment_output)
+    # -------------------------------------------------------- #
+    # -----------------/ patient classifier /----------------- #
+    # -------------------------------------------------------- #
+    # patient_result_dic用于保存每个患者每个听诊区的分类结果，formate: id: location1_result,location2_result
+    patient_result_dic = {}
+    print(patient_dic)
+    for patient_id, locations in patient_dic.items():
+        for location in locations.split('+'):
+            id_loc = patient_id+'_'+location
+            if id_loc in result_dic.keys():
+                if not patient_id in patient_result_dic.keys():
+                    patient_result_dic[patient_id] = result_dic[id_loc]
+                else:
+                    patient_result_dic[patient_id] += result_dic[id_loc]
+            else:
+                print('[waring]: '+id_loc+' not in result_dic')
+    # 遍历patient_result_dic，计算每个患者的最终分类结果
+    patient_output_dic = {}
+    patient_output = []
+    patient_target = []
+    for patient_id, result in patient_result_dic.items():
+        # 做output
+        if np.mean(result) == 0:
+            patient_output_dic[patient_id] = 0
+            patient_output.append(0)
+        else:
+            patient_output_dic[patient_id] = 1
+            patient_output.append(1)
+        # 做target
+        if patient_id in absent_test_id:
+            patient_target.append(0)
+        elif patient_target in present_test_id:
+            patient_target.append(1)
+        else:
+            print('[waring]: '+patient_id+' not in test_id')
+    # 计算准确率和混淆矩阵
+    # 计算准确率
+    patient_acc = (np.array(patient_output) == np.array(
+        patient_target)).sum()/len(patient_target)
+    # 计算混淆矩阵
+    patient_cm = confusion_matrix(patient_target, patient_output)
+    return segment_acc, segment_cm, patient_acc, patient_cm
 
 # ------------------/ BiFocal Loss /------------------ #
 
 
 class BCEFocalLoss(nn.Module):
+    """BiFocal Loss"""
+
     def __init__(self, gamma=2, alpha=0.25, reduction='mean'):
         super(BCEFocalLoss, self).__init__()
         self.gamma = gamma
@@ -404,10 +443,10 @@ class BCEFocalLoss(nn.Module):
             loss = torch.sum(loss)
         return loss
 
-# ------------------/ Focal Loss /------------------ #
-
 
 class FocalLoss(nn.Module):
+    """Focal Loss"""
+
     def __init__(self, gamma=2, alpha=0.25, size_average=True):
         super(FocalLoss, self).__init__()
         self.gamma = gamma
@@ -442,9 +481,6 @@ class FocalLoss(nn.Module):
             return loss.mean()
         else:
             return loss.sum()
-
-
-# ------------------/ Focal Loss /------------------ #
 
 
 def sigmoid_focal_loss(
@@ -489,13 +525,12 @@ def sigmoid_focal_loss(
     loss = loss.mean()
     return loss
 
-# ------------------/ logging init /------------------ #
-
 
 def logger_init(
     log_level=logging.DEBUG,
     log_dir=r"./ResultFile",
 ):
+    """初始化logging"""
     # 指定路径
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
@@ -514,10 +549,10 @@ def logger_init(
     )
     logging.disable(logging.DEBUG)
 
-# ------------------/ logging formate /------------------ #
-
 
 class save_info(object):
+    """设置logging格式"""
+
     def __init__(self, epoch_num, epoch, train_loss, test_acc, test_loss):
         self.epoch = epoch
         self.train_loss = train_loss
@@ -533,9 +568,6 @@ class save_info(object):
             + str("{:.3f}".format(self.test_loss))
         )
         logging.info(f"======================================")
-
-
-# ------------------/ train and test /------------------ #
 
 
 def draw_confusion_matrix(
