@@ -28,7 +28,7 @@ def data_Auge():
 
     for root, dir, file in os.walk(path):
         for filename in file:
-            print("processing "+filename)
+            print("time sprocessing "+filename)
             wav_path = os.path.join(root, filename)
             data, sr = librosa.load(wav_path, sr=4000)
 
@@ -64,7 +64,7 @@ def data_Auge():
 
     for root, dir, file in os.walk(time_path0):
         for filename in file:
-            print("processing "+filename)
+            print("倒放processing "+filename)
             wav_path = os.path.join(root, filename)
 
             # 倒放
@@ -77,7 +77,7 @@ def data_Auge():
 
     for root, dir, file in os.walk(time_path1):
         for filename in file:
-            print("processing "+filename)
+            print("倒放processing "+filename)
             wav_path = os.path.join(root, filename)
 
             # 倒放
@@ -90,7 +90,7 @@ def data_Auge():
 
     for root, dir, file in os.walk(time_path2):
         for filename in file:
-            print("processing "+filename)
+            print("倒放processing "+filename)
             wav_path = os.path.join(root, filename)
 
             # 倒放
@@ -103,7 +103,7 @@ def data_Auge():
 
     for root, dir, file in os.walk(time_path3):
         for filename in file:
-            print("processing "+filename)
+            print("倒放processing "+filename)
             wav_path = os.path.join(root, filename)
 
             # 倒放

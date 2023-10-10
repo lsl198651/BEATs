@@ -314,8 +314,8 @@ def segment_classifier(result_list_1=[]):
     present_test_names = np.load(
         npy_path_padded + r"\present_test_names_norm.npy", allow_pickle=True
     )
-    absent_test_dic = dict(zip(absent_test_names, absent_test_index, ))
-    present_test_dic = dict(zip(present_test_names, present_test_index, ))
+    absent_test_dic = dict(zip(absent_test_names, absent_test_index))
+    present_test_dic = dict(zip(present_test_names, present_test_index))
     # 所有测试数据的字典
     test_dic = {**absent_test_dic, **present_test_dic}
     # 创建id_pos:idx的字典

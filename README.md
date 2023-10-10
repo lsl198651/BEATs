@@ -69,3 +69,8 @@ def forward(self, x, padding_mask: torch.Tensor = None):
   ```
 
 - 学习率设为可调，如 cosine 函数
+
+### 数据集生成：
+
+1. make dataset
+2. save as npy file
