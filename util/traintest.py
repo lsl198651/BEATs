@@ -174,8 +174,8 @@ def train_test(
         logging.info(
             f"max_acc t: {max_train_acc_value:.3%} v: {max_test_acc_value:.3%}")
         logging.info(f"lr max:{max(lr):.1e} min:{min(lr):.1e}")
-        logging.info(f"segmt_acc:{segment_acc:.3%}")
-        logging.info(f"segment_cm:{segment_cm}")
+        logging.info(f"location_acc:{segment_acc:.3%}")
+        logging.info(f"location_cm:{segment_cm}")
         logging.info(f"patient_acc:{patient_acc:.3%}")
         logging.info(f"patient_cm:{patient_cm}")
 

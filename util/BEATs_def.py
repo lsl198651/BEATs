@@ -327,7 +327,6 @@ def segment_classifier(result_list_1=[]):
             id_idx_dic[id_pos] = [data_index]
         else:  # 如果id_pos在字典中，就把value添加到对应的键值对的值中
             id_idx_dic[id_pos].append(data_index)
-
     # 这里result_list_1列表，用来存储分类结果为1对应的id,test输出的结果
     # result_list_1 = []
     # ------------------------------------------------------------ #
@@ -369,52 +368,56 @@ def segment_classifier(result_list_1=[]):
         segment_target)).sum()/len(segment_target)
     # 计算混淆矩阵
     segment_cm = confusion_matrix(segment_target, segment_output)
-    patient_class = True
-    if (patient_class == True):
-        # -------------------------------------------------------- #
-        # -----------------/ patient classifier /----------------- #
-        # -------------------------------------------------------- #
-        # patient_result_dic用于保存每个患者每个听诊区的分类结果，formate: id: location1_result,location2_result
-        patient_result_dic = {}
-        print(patient_dic)
-        for patient_id, locations in patient_dic.items():
-            for location in locations.split('+'):
-                id_loc = patient_id+'_'+location
-                if id_loc in result_dic.keys():
-                    if not patient_id in patient_result_dic.keys():
-                        patient_result_dic[patient_id] = result_dic[id_loc]
-                    else:
-                        patient_result_dic[patient_id] += result_dic[id_loc]
+
+    # -------------------------------------------------------- #
+    # -----------------/ patient classifier /----------------- #
+    # -------------------------------------------------------- #
+    # patient_result_dic用于保存每个患者每个听诊区的分类结果，formate: id: location1_result,location2_result
+    # ------------------修复bug----------------
+    patient_dic['50115'] = 'AV+MV'
+    patient_dic['49748'] = 'TV+MV'
+    patient_dic['50802'] = 'PV+MV'
+    patient_dic['50782'] = 'PV+TV'
+    patient_dic['49952'] = 'AV+PV+TV'
+    # ------------------修复bug---------------
+    patient_result_dic = {}
+    # print(patient_dic)
+    for patient_id, locations in patient_dic.items():
+        for location in locations.split('+'):
+            id_loc = patient_id+'_'+location
+            if id_loc in result_dic.keys():
+                if not patient_id in patient_result_dic.keys():
+                    patient_result_dic[patient_id] = result_dic[id_loc]
                 else:
-                    print('[waring]: '+id_loc+' not in result_dic')
-        # 遍历patient_result_dic，计算每个患者的最终分类结果
-        patient_output_dic = {}
-        patient_output = []
-        patient_target = []
-        for patient_id, result in patient_result_dic.items():
-            # 做output
-            if np.mean(result) == 0:
-                patient_output_dic[patient_id] = 0
-                patient_output.append(0)
+                    patient_result_dic[patient_id] += result_dic[id_loc]
             else:
-                patient_output_dic[patient_id] = 1
-                patient_output.append(1)
-            # 做target
-            if patient_id in absent_test_id:
-                patient_target.append(0)
-            elif patient_target in present_test_id:
-                patient_target.append(1)
-            else:
-                print('[waring]: '+patient_id+' not in test_id')
-        # 计算准确率和混淆矩阵
-        # 计算准确率
-        patient_acc = (np.array(patient_output) == np.array(
-            patient_target)).sum()/len(patient_target)
-        # 计算混淆矩阵
-        patient_cm = confusion_matrix(patient_target, patient_output)
-        return segment_acc, segment_cm, patient_acc, patient_cm
-    else:
-        return segment_acc, segment_cm, 0, 0
+                print('[waring]: '+id_loc+' not in result_dic')
+    # 遍历patient_result_dic，计算每个患者的最终分类结果
+    patient_output_dic = {}
+    patient_output = []
+    patient_target = []
+    for patient_id, result in patient_result_dic.items():
+        # 做output
+        if np.mean(result) == 0:
+            patient_output_dic[patient_id] = 0
+            patient_output.append(0)
+        else:
+            patient_output_dic[patient_id] = 1
+            patient_output.append(1)
+        # 做target
+        if patient_id in absent_test_id:
+            patient_target.append(0)
+        elif patient_id in present_test_id:
+            patient_target.append(1)
+        else:
+            print('[waring]: '+patient_id+' not in test_id')
+    # 计算准确率和混淆矩阵
+    # 计算准确率
+    patient_acc = (np.array(patient_output) == np.array(
+        patient_target)).sum()/len(patient_target)
+    # 计算混淆矩阵
+    patient_cm = confusion_matrix(patient_target, patient_output)
+    return segment_acc, segment_cm, patient_acc, patient_cm
 
 
 class BCEFocalLoss(nn.Module):
