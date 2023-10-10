@@ -8,7 +8,7 @@ from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list
 import logging
-import csv
+
 import os
 import pandas as pd
 
@@ -84,21 +84,6 @@ def train_test(
                 # predict_t2 = predict_t2.squeeze(1)
                 correct_t += predict_t2.eq(label_t).sum().item()
                 train_len += len(label_t)
-            # elif args.loss_type == "CE":
-            #     loss = loss_fn(predict_t, label_t.long())
-            #     # scaler.scale(loss).backward()
-            #     # scaler.step(optimizer)
-            #     # scaler.update()
-            #     optimizer.zero_grad()
-            #     loss.backward()
-            #     optimizer.step()
-            #     train_loss += loss.item()
-            #     # get the index of the max log-probability
-            #     pred_t = predict_t.max(1, keepdim=True)[1]
-            #     # label_t = torch.int64(label_t)
-            #     pred_t = pred_t.squeeze(1)
-            #     correct_t += pred_t.eq(label_t).sum().item()
-            #     train_len += len(label_t)
             elif args.loss_type == "FocalLoss" or "CE":
                 loss = loss_fn(
                     predict_t, label_t.long())
@@ -141,21 +126,6 @@ def train_test(
                     correct_v += predict_v2.eq(label_v).sum().item()
                     pred.extend(predict_v2.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
-                # elif args.loss_type == "CE":
-                #     loss_v = loss_fn(predict_v, label_v.long())
-                #     # get the index of the max log-probability
-                #     pred_v = predict_v.max(1, keepdim=True)[1]
-                #     test_loss += loss_v.item()
-                #     pred_v = pred_v.squeeze(1)
-                #     correct_v += pred_v.eq(label_v).sum().item()
-                #     idx_v = index_v[torch.nonzero(
-                #         torch.eq(pred_v.ne(label_v), True))]
-                #     idx_v = idx_v.squeeze()
-                #     result_list_present.extend(index_v[torch.nonzero(
-                #         torch.eq(pred_v.eq(1), True))])
-                #     error_index.extend(idx_v.cpu().tolist())
-                #     pred.extend(pred_v.cpu().tolist())
-                #     label.extend(label_v.cpu().tolist())
                 elif args.loss_type == "FocalLoss" or "CE":
                     loss_v = loss_fn(predict_v, label_v.long())
                     # get the index of the max log-probability
@@ -199,10 +169,8 @@ def train_test(
         logging.info(f"======================================")
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
         logging.info(f"learning_rate: {lr_now:.1e}")
-        logging.info(
-            f"train_acc: {train_acc:.3%} train_loss: {train_loss:.4f}")
-        logging.info(
-            f"test_acc: {test_acc:.3%} test_loss: {test_loss:.4f}")
+        logging.info(f"ACC t: {train_acc:.3%} v: {test_acc:.3%}")
+        logging.info(f"Loss t: {train_loss:.4f} v: {test_loss:.4f}")
         logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
         logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
         logging.info(f"max_lr:{max(lr):.1e}, min_lr:{min(lr):.1e}")
