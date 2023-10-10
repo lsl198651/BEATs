@@ -156,14 +156,14 @@ class BEATs(nn.Module):
         for waveform in source:
             waveform = waveform.unsqueeze(0) * 2 ** 15
             fbank = ta_kaldi.fbank(
-                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10, window_type='hamming')
 
             if args.mask is True:
-                freqm_value = 30  # 横向
-                timem_value = 1  # 纵向
+                # freqm_value = 30  # 横向
+                # timem_value = 1  # 纵向
                 # SpecAug, not do for eval set
-                freqm = TT.FrequencyMasking(freq_mask_param=freqm_value)
-                timem = TT.TimeMasking(time_mask_param=timem_value)
+                freqm = TT.FrequencyMasking(freq_mask_param=args.freqm_value)
+                timem = TT.TimeMasking(time_mask_param=args.timem_value)
                 fbank = torch.transpose(fbank, 0, 1)
                 # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
                 fbank = fbank.unsqueeze(0)
@@ -200,7 +200,7 @@ class BEATs(nn.Module):
 
         fbank = fbank.unsqueeze(1)
         # fbank送入卷积层patch_embedding
-        features = self.patch_embedding(torch.log10(fbank))
+        features = self.patch_embedding(fbank)
         features = features.reshape(features.shape[0], features.shape[1], -1)
         # 求转置
         features = features.transpose(1, 2)
@@ -282,7 +282,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         x = self.last_Dropout(x)
         x = x.reshape(x.size(0), -1)
         output = self.fc_layer(x)
-        # output = torch.softmax(output, dim=1)
+        output = torch.softmax(output, dim=1)
         # FC 修改层数记得修改logging
         # if self.layers == 2:
         #     y = self.fc_layer(y)

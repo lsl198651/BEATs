@@ -254,8 +254,8 @@ def get_segment_target_list():
         根据csv文件生成并返回segment_target_list
         列表包含所有present的id和对应的位置
     """
-    absent_test_id_path = r"D:\Shilong\murmur\03_circor_states\absent_test_id.csv"
-    present_test_id_path = r"D:\Shilong\murmur\03_circor_states\present_test_id.csv"
+    absent_test_id_path = r"D:\Shilong\murmur\01_dataset\04_newDataset\absent_test_id.csv"
+    present_test_id_path = r"D:\Shilong\murmur\01_dataset\04_newDataset\present_test_id.csv"
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
     # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
@@ -301,7 +301,7 @@ def segment_classifier(result_list_1=[]):
     Returns:
         _type_: _description_
     """
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\list_npy_files"
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\04_newDataset\npyFile_padded\normalized\list_npy_files"
     absent_test_index = np.load(
         npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
     )
@@ -369,7 +369,7 @@ def segment_classifier(result_list_1=[]):
         segment_target)).sum()/len(segment_target)
     # 计算混淆矩阵
     segment_cm = confusion_matrix(segment_target, segment_output)
-    patient_class = False
+    patient_class = True
     if (patient_class == True):
         # -------------------------------------------------------- #
         # -----------------/ patient classifier /----------------- #
