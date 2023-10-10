@@ -367,7 +367,8 @@ def segment_classifier(result_list_1=[]):
     segment_acc = (np.array(segment_output) == np.array(
         segment_target)).sum()/len(segment_target)
     # 计算混淆矩阵
-    segment_cm = confusion_matrix(segment_target, segment_output)
+    segment_cm = confusion_matrix(
+        segment_target, segment_output, labels=[0, 1])
 
     # -------------------------------------------------------- #
     # -----------------/ patient classifier /----------------- #
@@ -416,7 +417,8 @@ def segment_classifier(result_list_1=[]):
     patient_acc = (np.array(patient_output) == np.array(
         patient_target)).sum()/len(patient_target)
     # 计算混淆矩阵
-    patient_cm = confusion_matrix(patient_target, patient_output)
+    patient_cm = confusion_matrix(
+        patient_target, patient_output, labels=[0, 1])
     return segment_acc, segment_cm, patient_acc, patient_cm
 
 

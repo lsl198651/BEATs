@@ -1,6 +1,7 @@
 from torch.cuda.amp import autocast, GradScaler
 import torch
 import torch.nn as nn
+from sklearn.metrics import confusion_matrix
 from util.BEATs_def import draw_confusion_matrix
 from torch import optim
 from transformers import optimization
@@ -144,8 +145,9 @@ def train_test(
                     label.extend(label_v.cpu().tolist())
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
-            segment_acc, segment_cm, patient_acc, patient_cm = segment_classifier(
+            location_acc, location_cm, patient_acc, patient_cm = segment_classifier(
                 result_list_present)
+            segment_cm = confusion_matrix(label, pred, labels=[0, 1])
         for group in optimizer.param_groups:
             lr_now = group["lr"]
         lr.append(lr_now)
@@ -170,12 +172,13 @@ def train_test(
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
         logging.info(f"learning_rate: {lr_now:.1e}")
         logging.info(f"ACC t: {train_acc:.3%} v: {test_acc:.3%}")
+        logging.info(f"segment_cm:{segment_cm}")
         logging.info(f"Loss t: {train_loss:.4f} v: {test_loss:.4f}")
         logging.info(
             f"max_acc t: {max_train_acc_value:.3%} v: {max_test_acc_value:.3%}")
         logging.info(f"lr max:{max(lr):.1e} min:{min(lr):.1e}")
-        logging.info(f"location_acc:{segment_acc:.3%}")
-        logging.info(f"location_cm:{segment_cm}")
+        logging.info(f"location_acc:{location_acc:.3%}")
+        logging.info(f"location_cm:{location_cm}")
         logging.info(f"patient_acc:{patient_acc:.3%}")
         logging.info(f"patient_cm:{patient_cm}")
 
