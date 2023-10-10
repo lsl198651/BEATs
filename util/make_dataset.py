@@ -96,7 +96,7 @@ def period_div(
     murmur,
     patient_id_list,
     positoin,
-    patient_id,
+    id_data,
     Murmur_locations,
     Systolic_murmur_timing,
     Diastolic_murmur_timing,
@@ -107,7 +107,7 @@ def period_div(
                 dir_path = path + mur + patient_id + "\\" + patient_id + pos
                 tsv_path = dir_path + ".tsv"
                 wav_path = dir_path + ".wav"
-                index = patient_id.index(patient_id)
+                index = id_data.index(patient_id)
                 wav_location = pos[1:]  # 听诊区域
                 locations = Murmur_locations[index].split("+")  # 有杂音的区域
                 # 此听诊区有杂音
@@ -295,7 +295,7 @@ tag_list.append(row_line.index("Systolic murmur timing"))
 tag_list.append(row_line.index("Diastolic murmur timing"))
 
 # for tag_index in tag_list:
-patient_id = csv_reader_cl(csv_path, tag_list[0])
+id_data = csv_reader_cl(csv_path, tag_list[0])
 Murmur = csv_reader_cl(csv_path, tag_list[1])
 Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
 Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
@@ -327,9 +327,9 @@ present_id = [out for out, Murmur in enumerate(Murmur) if Murmur == "Present"]
 
 # get 'Absent' and 'Present' and 'Unknown' patients ID
 for id in absent_id:
-    absent_patient_id.append(patient_id[id])
+    absent_patient_id.append(id_data[id])
 for id in present_id:
-    present_patient_id.append(patient_id[id])
+    present_patient_id.append(id_data[id])
 
 absent_id_path = r"D:\Shilong\murmur\01_dataset\04_newDataset\absent_id.csv"
 patient_id_path = r"D:\Shilong\murmur\01_dataset\04_newDataset\patient_id.csv"
@@ -367,7 +367,7 @@ period_div(
     murmur,
     absent_patient_id,
     positoin,
-    patient_id,
+    id_data,
     Murmur_locations,
     Systolic_murmur_timing,
     Diastolic_murmur_timing,
@@ -378,7 +378,7 @@ period_div(
     murmur,
     present_patient_id,
     positoin,
-    patient_id,
+    id_data,
     Murmur_locations,
     Systolic_murmur_timing,
     Diastolic_murmur_timing,
