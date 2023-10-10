@@ -171,9 +171,9 @@ def train_test(
         logging.info(f"learning_rate: {lr_now:.1e}")
         logging.info(f"ACC t: {train_acc:.3%} v: {test_acc:.3%}")
         logging.info(f"Loss t: {train_loss:.4f} v: {test_loss:.4f}")
-        logging.info(f"max_train_acc: {max_train_acc_value:.3%}")
-        logging.info(f"max_test_acc: {max_test_acc_value:.3%}")
-        logging.info(f"max_lr:{max(lr):.1e}, min_lr:{min(lr):.1e}")
+        logging.info(
+            f"max_acc t: {max_train_acc_value:.3%} v: {max_test_acc_value:.3%}")
+        logging.info(f"lr max:{max(lr):.1e} min:{min(lr):.1e}")
         logging.info(f"segmt_acc:{segment_acc:.3%}")
         logging.info(f"segment_cm:{segment_cm}")
         logging.info(f"patient_acc:{patient_acc:.3%}")

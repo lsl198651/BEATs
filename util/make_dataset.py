@@ -144,7 +144,6 @@ def period_div(
                     )
 
 
-# preprocessed PCGs were segmented into four heart sound states
 def state_div(
     tsvname,
     wavname,
@@ -155,6 +154,7 @@ def state_div(
     Systolic_state,
     Diastolic_state,
 ):
+    """切割出s1+收缩和s2+舒张"""
     index_file = index_load(tsvname)
     recording, fs = librosa.load(wavname, sr=4000)
     num = 0
@@ -195,8 +195,6 @@ def state_div(
                 fs,
             )
 
-# preprocessed PCGs were segmented into four heart sound states
-
 
 def state_div2(
     tsvname,
@@ -208,6 +206,7 @@ def state_div2(
     Systolic_state,
     Diastolic_state,
 ):
+    """切割出收缩期和舒张期"""
     index_file = index_load(tsvname)
     recording, fs = librosa.load(wavname, sr=4000)
     num1 = 0

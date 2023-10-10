@@ -282,7 +282,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         x = self.last_Dropout(x)
         x = x.reshape(x.size(0), -1)
         output = self.fc_layer(x)
-        output = torch.softmax(output, dim=1)
+        # output = torch.softmax(output, dim=1)
         # FC 修改层数记得修改logging
         # if self.layers == 2:
         #     y = self.fc_layer(y)
