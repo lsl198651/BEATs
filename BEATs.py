@@ -200,7 +200,7 @@ class BEATs(nn.Module):
 
         fbank = fbank.unsqueeze(1)
         # fbank送入卷积层patch_embedding
-        features = self.patch_embedding(fbank)
+        features = self.patch_embedding(torch.log10(fbank))
         features = features.reshape(features.shape[0], features.shape[1], -1)
         # 求转置
         features = features.transpose(1, 2)
