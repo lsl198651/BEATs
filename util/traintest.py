@@ -184,8 +184,7 @@ def train_test(
 
         # 画混淆矩阵
         draw_confusion_matrix(
-            label,
-            pred,
+            segment_cm
             ["Absent", "Present"],
             "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
             pdf_save_path=confusion_matrix_path,

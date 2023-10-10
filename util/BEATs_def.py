@@ -572,8 +572,7 @@ class save_info(object):
 
 
 def draw_confusion_matrix(
-    label_true,
-    label_pred,
+    cm,
     label_name,
     title="Confusion Matrix",
     pdf_save_path=None,
@@ -601,11 +600,7 @@ def draw_confusion_matrix(
                           dpi=300)
 
     """
-    cm = confusion_matrix(label_true, label_pred)
-
     row_sums = np.sum(cm, axis=1)  # 计算每行的和
-    cm2 = cm / row_sums[:, np.newaxis]  # 广播计算每个元素占比
-
     cm = cm.T
     plt.imshow(cm.T, cmap="Reds")
     plt.title(title)
