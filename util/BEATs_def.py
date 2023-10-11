@@ -353,12 +353,14 @@ def segment_classifier(result_list_1=[]):
     segment_output = []
     segment_target = []
     # 最后，根据target_list，将分类结果转换为0和1并产生outcome_list
-    for id_pos, result_value in result_dic.items():
-        if result_value >= 0.5:
+    for id_loc, result_value in result_dic.items():
+        if result_value > 0.5:
             segment_output.append(1)
+            result_dic[id_loc] = 1
         else:
             segment_output.append(0)
-        if id_pos in segment_present:
+            result_dic[id_loc] = 0
+        if id_loc in segment_present:
             segment_target.append(1)
         else:
             segment_target.append(0)
@@ -368,8 +370,7 @@ def segment_classifier(result_list_1=[]):
         segment_target)).sum()/len(segment_target)
     # 计算混淆矩阵
     segment_cm = confusion_matrix(
-        segment_target, segment_output, labels=[0, 1])
-
+        segment_target, segment_output)
     # -------------------------------------------------------- #
     # -----------------/ patient classifier /----------------- #
     # -------------------------------------------------------- #
@@ -385,26 +386,28 @@ def segment_classifier(result_list_1=[]):
     # print(patient_dic)
     for patient_id, locations in patient_dic.items():
         for location in locations.split('+'):
-            id_loc = patient_id+'_'+location
-            if id_loc in result_dic.keys():
+            id_location = patient_id+'_'+location
+            if id_location in result_dic.keys():
                 if not patient_id in patient_result_dic.keys():
-                    patient_result_dic[patient_id] = result_dic[id_loc]
+                    patient_result_dic[patient_id] = result_dic[id_location]
                 else:
-                    patient_result_dic[patient_id] += result_dic[id_loc]
+                    patient_result_dic[patient_id] += result_dic[id_location]
             else:
-                print('[waring]: '+id_loc+' not in result_dic')
+                print('[waring]: '+id_location+' not in result_dic')
     # 遍历patient_result_dic，计算每个患者的最终分类结果
     patient_output_dic = {}
     patient_output = []
     patient_target = []
     for patient_id, result in patient_result_dic.items():
         # 做output
-        if np.mean(result) == 0:
+        if result == 0:    # 全为0 absent
             patient_output_dic[patient_id] = 0
             patient_output.append(0)
-        else:
+        elif result > 0:  # 不全为0 present
             patient_output_dic[patient_id] = 1
             patient_output.append(1)
+        else:
+            print('[waring]: result value error')  # 有负数
         # 做target
         if patient_id in absent_test_id:
             patient_target.append(0)
@@ -418,7 +421,7 @@ def segment_classifier(result_list_1=[]):
         patient_target)).sum()/len(patient_target)
     # 计算混淆矩阵
     patient_cm = confusion_matrix(
-        patient_target, patient_output, labels=[0, 1])
+        patient_target, patient_output)
     return segment_acc, segment_cm, patient_acc, patient_cm
 
 
