@@ -167,6 +167,7 @@ def train_test(
         tb_writer.add_scalar("train_loss", train_loss, epochs)
         tb_writer.add_scalar("test_loss", test_loss, epochs)
         tb_writer.add_scalar("learning_rate", lr_now, epochs)
+        tb_writer.add_scalar("patient_acc", patient_acc, epochs)
         # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
         logging.info(f"======================================")
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
