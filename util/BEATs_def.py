@@ -544,7 +544,7 @@ def logger_init(
     log_path = os.path.join(
         log_dir, str(datetime.now().strftime("%Y-%m%d %H%M")) + ".log"
     )
-    formatter = "[%(asctime)s - %(levelname)s] %(message)s"
+    formatter = "[%(asctime)s] %(message)s"
     logging.basicConfig(
         level=log_level,
         format=formatter,
