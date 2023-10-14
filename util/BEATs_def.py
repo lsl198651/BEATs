@@ -276,15 +276,16 @@ def get_segment_target_list():
     # 创建一个空列表segment_present，用来存储有杂音的音频的id和位置
     segment_present = []
     # print(absent_test_id)
-    for id in test_id:
-        murmurs = Murmur_locations[id_data.index(id)]
-        if murmurs != 'nan':
-            locations = murmurs.split('+')
+    for id in present_test_id:
+        murmurs = Murmur[id_data.index(id)]
+        murmur_locations = Murmur_locations[id_data.index(id)]
+        if murmurs == 'Present':
+            locations = murmur_locations.split('+')
             for loc in locations:
                 segment_present.append(id+'_'+loc)
-    # 这个列表好像没用到
-    patient_target = []
-    # 创建一个空字典，用来存储有杂音的音频的id和位置,formate: id:locations
+        else:
+            print('[waring]: '+id+' murmurs is not present')
+    # 创建一个空字典，用来存储id和对应的听诊区,formate: id:locations
     patient_dic = {}
     # print(absent_test_id)
     for id in test_id:
@@ -354,7 +355,7 @@ def segment_classifier(result_list_1=[]):
     segment_target = []
     # 最后，根据target_list，将分类结果转换为0和1并产生outcome_list
     for id_loc, result_value in result_dic.items():
-        if result_value > 0.5:
+        if result_value >= 0.5:
             segment_output.append(1)
             result_dic[id_loc] = 1
         else:

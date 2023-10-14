@@ -7,3 +7,4 @@ tensorboard
 error_index
 .vscode
 __pycache__
+*.csv

@@ -100,7 +100,7 @@ def train_test(
                 train_len += len(label_t)
         if args.scheduler_flag is not None:
             scheduler.step()
-        # evaluate model
+        # ============ evalue ================
         model.eval()
         label = []
         pred = []
