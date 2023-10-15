@@ -140,7 +140,10 @@ def train_test(
                     result_list_present.extend(index_v[torch.nonzero(
                         torch.eq(pred_v.eq(1), True))].cpu().tolist())
                     # result_list_present = result_list_present.squeeze()
-                    error_index.extend(idx_v.cpu().tolist())
+                    try:
+                        error_index.extend(idx_v.cpu().tolist())
+                    except TypeError:
+                        print("TypeError: 'int' object is not iterable")
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
             # error_index = error_index.squeeze()
