@@ -136,13 +136,14 @@ def train_test(
                     correct_v += pred_v.eq(label_v).sum().item()
                     idx_v = index_v[torch.nonzero(
                         torch.eq(pred_v.ne(label_v), True))]
-                    idx_v = idx_v.squeeze()
+                    # idx_v = idx_v.squeeze()
                     result_list_present.extend(index_v[torch.nonzero(
                         torch.eq(pred_v.eq(1), True))].cpu().tolist())
                     # result_list_present = result_list_present.squeeze()
                     error_index.extend(idx_v.cpu().tolist())
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
+            # error_index = error_index.squeeze()
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
             location_acc, location_cm, patient_acc, patient_cm = segment_classifier(
