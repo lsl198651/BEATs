@@ -30,7 +30,7 @@ class BEATsConfig:
         self.embed_dim: int = 512  # patch embedding dimension
         self.conv_bias: bool = False  # include bias in conv encoder
 
-        self.encoder_layers: int = 8  # num encoder layers in the transformer
+        self.encoder_layers: int = 2  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
         self.encoder_attention_heads: int = 12  # num encoder attention heads
@@ -148,16 +148,16 @@ class BEATs(nn.Module):
     def preprocess(
             self,
             source: torch.Tensor,
-            fbank_mean: float = 15.41663,
-            fbank_std: float = 6.55582,
+            # fbank_mean: float = 15.41663,
+            # fbank_std: float = 6.55582,
             args=None,
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
-            waveform = waveform.unsqueeze(0) * 2 ** 15
+            # waveform = waveform.unsqueeze(0) * 2 ** 15 # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
-
             if args.mask is True:
                 # freqm_value = 30  # 横向
                 # timem_value = 1  # 纵向
@@ -172,7 +172,8 @@ class BEATs(nn.Module):
                 # squeeze it back, it is just a trick to satisfy new torchaudio version
                 fbank = fbank.squeeze(0)
                 fbank = torch.transpose(fbank, 0, 1)
-
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         fbank = (fbank - fbank_mean) / (2 * fbank_std)
@@ -182,15 +183,15 @@ class BEATs(nn.Module):
         self,
         source: torch.Tensor,
         padding_mask: Optional[torch.Tensor] = None,
-        fbank_mean: float = 15.41663,
-        fbank_std: float = 6.55582,
+        # fbank_mean: float = 15.41663,
+        # fbank_std: float = 6.55582,
         args=None,
     ):
         # wav提取fbank系数
         fbank = self.preprocess(
             source,
-            fbank_mean=fbank_mean,
-            fbank_std=fbank_std,
+            # fbank_mean=fbank_mean,
+            # fbank_std=fbank_std,
             args=args,
         )
         # 如果有padding-mask的话进行forward-padding-mask
