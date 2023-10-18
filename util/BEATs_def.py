@@ -607,7 +607,7 @@ def draw_confusion_matrix(
     """
     row_sums = np.sum(cm, axis=1)  # 计算每行的和
     cm = cm.T
-    plt.imshow(cm.T, cmap="Reds")
+    plt.imshow(cm.T, cmap="Green")
     plt.title(title)
     plt.xlabel("Predict label")
     plt.ylabel("Truth label")
