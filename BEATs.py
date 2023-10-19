@@ -157,7 +157,7 @@ class BEATs(nn.Module):
             # waveform = waveform.unsqueeze(0) * 2 ** 15 # wavform × 2^15
             waveform = waveform.unsqueeze(0)
             fbank = ta_kaldi.fbank(
-                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10, window_type='hamming')
             if args.mask is True:
                 # freqm_value = 30  # 横向
                 # timem_value = 1  # 纵向

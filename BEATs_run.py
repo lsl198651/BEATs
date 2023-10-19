@@ -12,7 +12,7 @@ from util.BEATs_def import (MyDataset, logger_init, DatasetClass)
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--batch_size", type=int, default=128,
+parser.add_argument("--batch_size", type=int, default=512,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
                     default=0.0000001, help="learning_rate for training")
