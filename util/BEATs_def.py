@@ -417,6 +417,14 @@ def segment_classifier(result_list_1=[]):
             patient_target.append(1)
         else:
             print('[waring]: '+patient_id+' not in test_id')
+    # 统计patient的错误id
+    patient_id_test = list(patient_output_dic.keys())
+    patient_label_test = list(patient_output_dic.values())
+    patient_error_id = []
+    for patient_index in range(len(patient_label_test)):
+        if patient_label_test[patient_index] != patient_target[patient_index]:
+            patient_error_id.append(patient_id_test[patient_index])
+
     # 计算准确率和混淆矩阵
     # 计算准确率
     patient_acc = (np.array(patient_output) == np.array(
@@ -424,7 +432,7 @@ def segment_classifier(result_list_1=[]):
     # 计算混淆矩阵
     patient_cm = confusion_matrix(
         patient_target, patient_output)
-    return segment_acc, segment_cm, patient_acc, patient_cm
+    return segment_acc, segment_cm, patient_acc, patient_cm, patient_error_id
 
 
 class BCEFocalLoss(nn.Module):
@@ -607,7 +615,7 @@ def draw_confusion_matrix(
     """
     row_sums = np.sum(cm, axis=1)  # 计算每行的和
     cm = cm.T
-    plt.imshow(cm.T, cmap="Reads")
+    plt.imshow(cm.T, cmap="Reds")
     plt.title(title)
     plt.xlabel("Predict label")
     plt.ylabel("Truth label")

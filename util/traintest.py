@@ -24,8 +24,12 @@ def train_test(
 ):
     error_index_path = r"./error_index/" + \
         str(datetime.now().strftime("%Y-%m%d %H%M"))
+    patient_error_index_path = r"./patient_error_index/" + \
+        str(datetime.now().strftime("%Y-%m%d %H%M"))
     if not os.path.exists(error_index_path):
         os.makedirs(error_index_path)
+    if not os.path.exists(patient_error_index_path):
+        os.makedirs(patient_error_index_path)
     tb_writer = SummaryWriter(
         r"./tensorboard/" + str(datetime.now().strftime("%Y-%m%d %H%M")))
     confusion_matrix_path = r"./confusion_matrix/" + \
@@ -149,8 +153,10 @@ def train_test(
             # error_index = error_index.squeeze()
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
-            location_acc, location_cm, patient_acc, patient_cm = segment_classifier(
+            location_acc, location_cm, patient_acc, patient_cm, patient_error_id = segment_classifier(
                 result_list_present)
+            pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
+                                                  str(epochs+1)+".csv", index=False, header=False)
             segment_cm = confusion_matrix(label, pred, labels=[0, 1])
         for group in optimizer.param_groups:
             lr_now = group["lr"]
