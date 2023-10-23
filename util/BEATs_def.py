@@ -424,6 +424,7 @@ def segment_classifier(result_list_1=[]):
     for patient_index in range(len(patient_label_test)):
         if patient_label_test[patient_index] != patient_target[patient_index]:
             patient_error_id.append(patient_id_test[patient_index])
+    print(patient_error_id)
 
     # 计算准确率和混淆矩阵
     # 计算准确率
