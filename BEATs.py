@@ -31,7 +31,7 @@ class BEATsConfig:
         self.conv_bias: bool = False  # include bias in conv encoder
 
         self.encoder_layers: int = 4  # num encoder layers in the transformer
-        self.encoder_embed_dim: int = 768  # encoder embedding dimension
+        self.encoder_embed_dim: int = 553  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
         self.encoder_attention_heads: int = 12  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
