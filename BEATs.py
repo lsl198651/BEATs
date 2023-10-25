@@ -31,7 +31,7 @@ class BEATsConfig:
         self.conv_bias: bool = False  # include bias in conv encoder
 
         self.encoder_layers: int = 4  # num encoder layers in the transformer
-        self.encoder_embed_dim: int = 553  # encoder embedding dimension
+        self.encoder_embed_dim: int = 768  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
         self.encoder_attention_heads: int = 12  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
@@ -46,10 +46,10 @@ class BEATsConfig:
         self.dropout: float = 0.1  # dropout probability for the transformer
         self.attention_dropout: float = 0.1  # dropout probability for attention weights
         self.activation_dropout: float = (
-            0.0  # dropout probability after activation in FFN
+            0.1  # dropout probability after activation in FFN
         )
         self.encoder_layerdrop: float = (
-            0.0  # probability of dropping a tarnsformer layer
+            0.1  # probability of dropping a tarnsformer layer
         )
         self.dropout_input: float = (
             0.0  # dropout to apply to the input (after feat extr)

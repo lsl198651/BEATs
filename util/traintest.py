@@ -64,7 +64,7 @@ def train_test(
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
-    model.train()
+
 # ============ training ================
     for epochs in range(args.num_epochs):
         # train model
