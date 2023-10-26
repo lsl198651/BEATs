@@ -174,9 +174,9 @@ class BEATs(nn.Module):
                 fbank = torch.transpose(fbank, 0, 1)
             fbank_mean = fbank.mean()
             fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / (2 * fbank_std)
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
-        fbank = (fbank - fbank_mean) / (2 * fbank_std)
         return fbank
 
     def extract_features(
