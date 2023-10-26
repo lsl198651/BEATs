@@ -101,7 +101,7 @@ def train_test(
                 # label_t = torch.int64(label_t)
                 pred_t = pred_t.squeeze(1)
                 correct_t += pred_t.eq(label_t).sum().item()
-                train_len += len(label_t)
+                train_len += len(pred_t)
         if args.scheduler_flag is not None:
             scheduler.step()
         # ============ evalue ================
