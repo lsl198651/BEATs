@@ -46,10 +46,10 @@ class BEATsConfig:
         self.dropout: float = 0.1  # dropout probability for the transformer
         self.attention_dropout: float = 0.1  # dropout probability for attention weights
         self.activation_dropout: float = (
-            0.1  # dropout probability after activation in FFN
+            0.0  # dropout probability after activation in FFN
         )
         self.encoder_layerdrop: float = (
-            0.1  # probability of dropping a tarnsformer layer
+            0.0  # probability of dropping a tarnsformer layer
         )
         self.dropout_input: float = (
             0.0  # dropout to apply to the input (after feat extr)
