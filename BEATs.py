@@ -154,8 +154,8 @@ class BEATs(nn.Module):
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
-            waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
-            # waveform = waveform.unsqueeze(0)
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
             if args.mask is True:
@@ -183,15 +183,11 @@ class BEATs(nn.Module):
         self,
         source: torch.Tensor,
         padding_mask: Optional[torch.Tensor] = None,
-        # fbank_mean: float = 15.41663,
-        # fbank_std: float = 6.55582,
         args=None,
     ):
         # wav提取fbank系数
         fbank = self.preprocess(
             source,
-            # fbank_mean=fbank_mean,
-            # fbank_std=fbank_std,
             args=args,
         )
         # 如果有padding-mask的话进行forward-padding-mask
@@ -268,10 +264,10 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
-            nn.Linear(768*16, 768*8),
+            nn.Linear(768*16, 768),
             nn.ReLU(),
-            nn.Linear(768*8, 768),
-            nn.ReLU(),
+            # nn.Linear(768, 768),
+            # nn.ReLU(),
             nn.Linear(768, 32),
             nn.ReLU(),
             nn.Linear(32, 2),
