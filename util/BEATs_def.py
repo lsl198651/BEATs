@@ -80,11 +80,12 @@ def get_patientid(csv_path):
 
 def wav_normalize(data):
     """归一化"""
-    data = data.reshape(1, -1)
+    # data = data.reshape(1, -1)
     # print("sorce"+data)
     # data = preprocessing.MinMaxScaler((-1, 1)).fit_transform(data)
     # print(data)
-    data = 2*(data-np.mean(data))/(np.max(data)-np.min(data))
+    range = np.max(data) - np.min(data)
+    data = 2*(data-np.mean(data))/range
     return data
 
 
@@ -122,14 +123,14 @@ def get_wav_data(dir_path, num=0):
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
                 y_16k_norm = wav_normalize(y_16k)  # 归一化
                 print("num is "+str(num), "y_16k size: "+str(y_16k_norm.size))
-                if y_16k_norm.shape[1] < data_length:
+                if y_16k_norm.shape[0] < data_length:
                     y_16k_norm = np.pad(
                         y_16k_norm,
-                        ((0, 0), (0, data_length - y_16k_norm.shape[1])),
+                        ((0, data_length - y_16k_norm.shape[0])),
                         "constant",
                         constant_values=(0, 0),
                     )
-                elif y_16k_norm.shape[1] > data_length:
+                elif y_16k_norm.shape[0] > data_length:
                     y_16k_norm = y_16k_norm[-data_length:]
                 wav.append(y_16k_norm)
                 file_name = subfile.split("_")
