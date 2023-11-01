@@ -25,6 +25,7 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from pydub import AudioSegment
+from sklearn import preprocessing
 
 
 def mkdir(path):
@@ -79,12 +80,11 @@ def get_patientid(csv_path):
 
 def wav_normalize(data):
     """归一化"""
-    _range = np.max(data) - np.min(data)
-    for i in range(data.shape[0]):
-        if _range == 0:
-            data[i] = 0
-        else:
-            data[i] = (data[i] - np.min(data)) / _range
+    data = data.reshape(1, -1)
+    # print("sorce"+data)
+    # data = preprocessing.MinMaxScaler((-1, 1)).fit_transform(data)
+    # print(data)
+    data = 2*(data-np.mean(data))/(np.max(data)-np.min(data))
     return data
 
 
@@ -122,15 +122,15 @@ def get_wav_data(dir_path, num=0):
                 y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
                 y_16k_norm = wav_normalize(y_16k)  # 归一化
                 print("num is "+str(num), "y_16k size: "+str(y_16k_norm.size))
-                if y_16k_norm.shape[0] < data_length:
+                if y_16k_norm.shape[1] < data_length:
                     y_16k_norm = np.pad(
                         y_16k_norm,
-                        (0, data_length - y_16k_norm.shape[0]),
+                        ((0, 0), (0, data_length - y_16k_norm.shape[1])),
                         "constant",
                         constant_values=(0, 0),
                     )
-                elif y_16k_norm.shape[0] > data_length:
-                    y_16k_norm = y_16k_norm[0:data_length]
+                elif y_16k_norm.shape[1] > data_length:
+                    y_16k_norm = y_16k_norm[-data_length:]
                 wav.append(y_16k_norm)
                 file_name = subfile.split("_")
                 # 标签读取
