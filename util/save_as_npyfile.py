@@ -13,45 +13,6 @@ murmur_positoin = ["_AV", "_MV", "_PV", "_TV"]
 murmur_ap = ["Absent\\", "Present\\"]
 period = ["Systolic", "Diastolic"]
 
-# ========================/ get lists /========================== #
-dataset_path = r'D:\Shilong\murmur\01_dataset\01_s1s2'
-file_path_train = r'D:\Shilong\murmur\01_dataset\01_s1s2\train'
-file_path_test = r'D:\Shilong\murmur\01_dataset\01_s1s2\test'
-target_dir_train_a = dataset_path+r'\trainset\absent'
-target_dir_train_p = dataset_path+r'\trainset\present'
-target_dir_test_a = dataset_path+r'\testset\absent'
-target_dir_test_p = dataset_path+r'\testset\present'
-
-if not os.path.exists(target_dir_train_a):
-    os.makedirs(target_dir_train_a)
-if not os.path.exists(target_dir_train_p):
-    os.makedirs(target_dir_train_p)
-if not os.path.exists(target_dir_test_a):
-    os.makedirs(target_dir_test_a)
-if not os.path.exists(target_dir_test_p):
-    os.makedirs(target_dir_test_p)
-# # 复制到trainset和testset
-# # trainset
-# for root, dir, file in os.walk(file_path_train):
-#     for subfile in file:
-#         files = os.path.join(root, subfile)
-#         print(subfile)
-#         state = subfile.split("_")[4]
-#         if state == 'Absent':
-#             shutil.copy(files, target_dir_train_a + "\\")
-#         if state == 'Present':
-#             shutil.copy(files, target_dir_train_p + "\\")
-# # testset
-# for root, dir, file in os.walk(file_path_test):
-#     for subfile in file:
-#         files = os.path.join(root, subfile)
-#         print(subfile)
-#         state = subfile.split("_")[4]
-#         if state == 'Absent':
-#             shutil.copy(files, target_dir_test_a + "\\")
-#         if state == 'Present':
-#             shutil.copy(files, target_dir_test_p + "\\")
-
 
 # ========================/ Data Augementation /========================== #
 """数据增强，包括时间拉伸和反转"""
@@ -71,7 +32,7 @@ Systolic_murmur_timing_path = (
 )
 Murmur_locations_path = csv_folder+r"\Murmur_locations.csv"
 
-wav_filepath = r"D:\Shilong\murmur\01_dataset\01_s1s2"
+wav_filepath = r"D:\Shilong\murmur\01_dataset\05_5fold"
 absent_train_path = wav_filepath+r"\trainset\absent"
 absent_test_path = wav_filepath+r"\testset\absent"
 present_train_path = wav_filepath+r"\trainset\present"
@@ -245,7 +206,7 @@ np.save(npy_path_padded + r"\present_train_names_reverse11_norm.npy",
 np.save(npy_path_padded + r"\present_train_names_reverse12_norm.npy",
         present_train_names_reverse12)
 
-index_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\index_files"
+index_path = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\normalized\index_files"
 if not os.path.exists(index_path):
     os.makedirs(index_path)
 # 生成字典
