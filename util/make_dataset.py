@@ -483,17 +483,17 @@ if __name__ == '__main__':
                 raise ValueError("src_fold_path not exist")
             else:
                 os.makedirs(target_dir)
-                for root, dir, file in os.walk(src_fold_path):
-                    for subfile in file:
-                        files = os.path.join(root, subfile)
-                        print(subfile)
-                        state = subfile.split("_")[4]
-                        if state == 'Absent':
-                            shutil.copy(files, target_dir + "\\absent\\")
-                        elif state == 'Present':
-                            shutil.copy(files, target_dir + "\\present\\")
-                        else:
-                            raise ValueError("state error")
+            for root, dir, file in os.walk(src_fold_path):
+                for subfile in file:
+                    files = os.path.join(root, subfile)
+                    print(subfile)
+                    state = subfile.split("_")[4]
+                    if state == 'Absent':
+                        shutil.copy(files, target_dir + "\\absent\\")
+                    elif state == 'Present':
+                        shutil.copy(files, target_dir + "\\present\\")
+                    else:
+                        raise ValueError("state error")
 
     # # 复制到trainset和testset
     # # trainset
