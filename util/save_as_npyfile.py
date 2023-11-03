@@ -16,36 +16,42 @@ period = ["Systolic", "Diastolic"]
 
 # ========================/ Data Augementation /========================== #
 """数据增强，包括时间拉伸和反转"""
-# data_Auge()
+root_path = r"D:\Shilong\murmur\01_dataset\05_5fold"
+for k in range(5):
+    src_fold_root_path = root_path+r"\fold_set_"+str(k)
+    data_Auge(src_fold_root_path)
+    for folder in os.listdir(src_fold_root_path):
+    if k==0:
+        absent_train_features, absent_train_label, absent_train_names, absent_train_index, data_id = get_wav_data(absent_train_path)  # absent
 
 # ========================/ file path /========================== #
 # get absent / present patient_id
-csv_folder = r"D:\Shilong\murmur\03_circor_statest"
-id_data_path = csv_folder+r"\id_data.csv"
-absent_csv_path = csv_folder+r"\absent_id.csv"
-present_csv_path = csv_folder+r"\present_id.csv"
-Diastolic_murmur_timing_path = (
-    csv_folder+r"\Diastolic_murmur_timing.csv"
-)
-Systolic_murmur_timing_path = (
-    csv_folder+r"\Systolic_murmur_timing.csv"
-)
-Murmur_locations_path = csv_folder+r"\Murmur_locations.csv"
+# csv_folder = r"D:\Shilong\murmur\03_circor_statest"
+# id_data_path = csv_folder+r"\id_data.csv"
+# absent_csv_path = csv_folder+r"\absent_id.csv"
+# present_csv_path = csv_folder+r"\present_id.csv"
+# Diastolic_murmur_timing_path = (
+#     csv_folder+r"\Diastolic_murmur_timing.csv"
+# )
+# Systolic_murmur_timing_path = (
+#     csv_folder+r"\Systolic_murmur_timing.csv"
+# )
+# Murmur_locations_path = csv_folder+r"\Murmur_locations.csv"
 
-wav_filepath = r"D:\Shilong\murmur\01_dataset\05_5fold"
-absent_train_path = wav_filepath+r"\trainset\absent"
-absent_test_path = wav_filepath+r"\testset\absent"
-present_train_path = wav_filepath+r"\trainset\present"
-present_test_path = wav_filepath+r"\testset\present"
-present_train_path_8 = wav_filepath+r"\trainset\time_stretch0.8"
-present_train_path_9 = wav_filepath+r"\trainset\time_stretch0.9"
-present_train_path_11 = wav_filepath+r"\trainset\time_stretch1.1"
-present_train_path_12 = wav_filepath+r"\trainset\time_stretch1.2"
-present_train_path_reverse = wav_filepath+r"\trainset\reverse"
-present_train_path_reverse8 = wav_filepath+r"\trainset\reverse0.8"
-present_train_path_reverse9 = wav_filepath+r"\trainset\reverse0.9"
-present_train_path_reverse11 = wav_filepath+r"\trainset\reverse1.1"
-present_train_path_reverse12 = wav_filepath+r"\trainset\reverse1.2"
+wav_filepath = root_path+r"\fold_set_"+str(k)
+absent_train_path = wav_filepath+r"\absent"
+absent_test_path = wav_filepath+r"\absent"
+present_train_path = wav_filepath+r"\present"
+present_test_path = wav_filepath+r"\present"
+present_train_path_8 = wav_filepath+r"\time_stretch0.8"
+present_train_path_9 = wav_filepath+r"\time_stretch0.9"
+present_train_path_11 = wav_filepath+r"\time_stretch1.1"
+present_train_path_12 = wav_filepath+r"\time_stretch1.2"
+present_train_path_reverse = wav_filepath+r"\reverse"
+present_train_path_reverse8 = wav_filepath+r"\reverse0.8"
+present_train_path_reverse9 = wav_filepath+r"\reverse0.9"
+present_train_path_reverse11 = wav_filepath+r"\reverse1.1"
+present_train_path_reverse12 = wav_filepath+r"\reverse1.2"
 
 
 # ========================/ get lists /========================== #

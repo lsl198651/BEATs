@@ -317,7 +317,7 @@ if __name__ == '__main__':
     tag_list.append(row_line.index("Systolic murmur timing"))
     tag_list.append(row_line.index("Diastolic murmur timing"))
 
-    # for tag_index in tag_list:
+    # # for tag_index in tag_list:
     id_data = csv_reader_cl(csv_path, tag_list[0])
     Murmur = csv_reader_cl(csv_path, tag_list[1])
     Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
@@ -422,10 +422,10 @@ if __name__ == '__main__':
         Diastolic_murmur_timing,
     )
 
-    absent_train_id_path = root_path+r"\absent_train_id.csv"
-    absent_test_id_path = root_path+r"\absent_test_id.csv"
-    present_train_id_path = root_path+r"\present_train_id.csv"
-    present_test_id_path = root_path+r"\present_test_id.csv"
+    # absent_train_id_path = root_path+r"\absent_train_id.csv"
+    # absent_test_id_path = root_path+r"\absent_test_id.csv"
+    # present_train_id_path = root_path+r"\present_train_id.csv"
+    # present_test_id_path = root_path+r"\present_test_id.csv"
 
     # 将absent_id和present_id按照8:2随机选取id划分为训练集和测试集
     # absent_train_id = random.sample(
@@ -477,12 +477,14 @@ if __name__ == '__main__':
 
     for k in range(5):
         for murmur in ['Absent', 'Present']:
-            src_fold_path = root_path+r"\fold_"+str(k)+r"\\"+murmur+r"\\"
+            src_fold_path = root_path+r"\fold_"+str(k)+"\\"+murmur+"\\"
             target_dir = root_path+r'\fold_set_'+str(k)
             if not os.path.exists(target_dir):
-                raise ValueError("src_fold_path not exist")
-            else:
                 os.makedirs(target_dir)
+            if not os.path.exists(target_dir + "\\absent\\"):
+                os.makedirs(target_dir + "\\absent\\")
+            if not os.path.exists(target_dir + "\\present\\"):
+                os.makedirs(target_dir + "\\present\\")
             for root, dir, file in os.walk(src_fold_path):
                 for subfile in file:
                     files = os.path.join(root, subfile)
@@ -494,6 +496,11 @@ if __name__ == '__main__':
                         shutil.copy(files, target_dir + "\\present\\")
                     else:
                         raise ValueError("state error")
+
+    for k in range(5):
+        src_fold_root_path = root_path+r"'\fold_set_"+str(k)
+        for murmur in ['absent', 'present']:
+            src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
 
     # # 复制到trainset和testset
     # # trainset
