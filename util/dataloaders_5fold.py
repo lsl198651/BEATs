@@ -211,48 +211,18 @@ def fold5_dataloader(train_folder, test_folder):
         (
             test_feature_dic[test_folder[0]]['absent'],
             test_feature_dic[test_folder[0]]['present'],
-            # test_feature_dic[test_folder[0]][data_class[2]],
-            # test_feature_dic[test_folder[0]][data_class[3]],
-            # test_feature_dic[test_folder[0]][data_class[4]],
-            # test_feature_dic[test_folder[0]][data_class[5]],
-            # test_feature_dic[test_folder[0]][data_class[6]],
-            # test_feature_dic[test_folder[0]][data_class[7]],
-            # test_feature_dic[test_folder[0]][data_class[8]],
-            # test_feature_dic[test_folder[0]][data_class[9]],
-            # test_feature_dic[test_folder[0]][data_class[10]]
-
         )
     )
     test_label = np.hstack(
         (
             test_labels_dic[test_folder[0]]['absent'],
             test_labels_dic[test_folder[0]]['present'],
-            # test_labels_dic[test_folder[0]][data_class[2]],
-            # test_labels_dic[test_folder[0]][data_class[3]],
-            # test_labels_dic[test_folder[0]][data_class[4]],
-            # test_labels_dic[test_folder[0]][data_class[5]],
-            # test_labels_dic[test_folder[0]][data_class[6]],
-            # test_labels_dic[test_folder[0]][data_class[7]],
-            # test_labels_dic[test_folder[0]][data_class[8]],
-            # test_labels_dic[test_folder[0]][data_class[9]],
-            # test_labels_dic[test_folder[0]][data_class[10]]
-
         )
     )
     test_index = np.hstack(
         (
             test_index_dic[test_folder[0]]['absent'],
             test_index_dic[test_folder[0]]['present'],
-            # test_index_dic[test_folder[0]][data_class[2]],
-            # test_index_dic[test_folder[0]][data_class[3]],
-            # test_index_dic[test_folder[0]][data_class[4]],
-            # test_index_dic[test_folder[0]][data_class[5]],
-            # test_index_dic[test_folder[0]][data_class[6]],
-            # test_index_dic[test_folder[0]][data_class[7]],
-            # test_index_dic[test_folder[0]][data_class[8]],
-            # test_index_dic[test_folder[0]][data_class[9]],
-            # test_index_dic[test_folder[0]][data_class[10]]
-
         )
     )
     return train_features, train_label, test_features, test_label, train_index, test_index
