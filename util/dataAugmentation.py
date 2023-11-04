@@ -126,5 +126,5 @@ def data_Auge(root_path):
             backplay = wav.reverse()
             # 存为相关格式倒放文件
             reverse_name = filename.split(".")[0]+"_reverse"
-            backplay.export(reverse_path3+"\\" +
+            backplay.export(reverse_path4+"\\" +
                             reverse_name+'.wav', format="wav")
