@@ -60,9 +60,7 @@ def get_features(train_fold: list, test_fold: list):
     return train_feature_dic, train_labels_dic, train_index_dic, test_feature_dic, test_labels_dic, test_index_dic, os.listdir(src_fold_root_path)
 
 
-if __name__ == "__main__":
-    train_folder = ['0', '1', '2', '3']
-    test_folder = ['4']
+def fold5_dataloader(train_folder, test_folder):
     train_feature_dic, train_labels_dic, train_index_dic, test_feature_dic, test_labels_dic, test_index_dic, data_class = get_features(
         train_folder, test_folder)
     for k in train_folder:
@@ -179,6 +177,7 @@ if __name__ == "__main__":
             train_index_dic[train_folder[0]][data_class[7]],
             train_index_dic[train_folder[0]][data_class[8]],
             train_index_dic[train_folder[0]][data_class[9]],
+            train_index_dic[train_folder[0]][data_class[10]],
             train_index_dic[train_folder[1]][data_class[0]],
             train_index_dic[train_folder[1]][data_class[1]],
             train_index_dic[train_folder[1]][data_class[2]],
@@ -189,6 +188,7 @@ if __name__ == "__main__":
             train_index_dic[train_folder[1]][data_class[7]],
             train_index_dic[train_folder[1]][data_class[8]],
             train_index_dic[train_folder[1]][data_class[9]],
+            train_index_dic[train_folder[1]][data_class[10]],
             train_index_dic[train_folder[2]][data_class[0]],
             train_index_dic[train_folder[2]][data_class[1]],
             train_index_dic[train_folder[2]][data_class[2]],
@@ -199,6 +199,7 @@ if __name__ == "__main__":
             train_index_dic[train_folder[2]][data_class[7]],
             train_index_dic[train_folder[2]][data_class[8]],
             train_index_dic[train_folder[2]][data_class[9]],
+            train_index_dic[train_folder[2]][data_class[10]],
             train_index_dic[train_folder[3]][data_class[0]],
             train_index_dic[train_folder[3]][data_class[1]],
             train_index_dic[train_folder[3]][data_class[2]],
@@ -209,6 +210,7 @@ if __name__ == "__main__":
             train_index_dic[train_folder[3]][data_class[7]],
             train_index_dic[train_folder[3]][data_class[8]],
             train_index_dic[train_folder[3]][data_class[9]],
+            train_index_dic[train_folder[3]][data_class[10]]
         )
     )
     test_features = np.vstack(
@@ -223,6 +225,7 @@ if __name__ == "__main__":
             test_feature_dic[test_folder[0]][data_class[7]],
             test_feature_dic[test_folder[0]][data_class[8]],
             test_feature_dic[test_folder[0]][data_class[9]],
+            test_feature_dic[test_folder[0]][data_class[10]]
 
         )
     )
@@ -238,6 +241,7 @@ if __name__ == "__main__":
             test_labels_dic[test_folder[0]][data_class[7]],
             test_labels_dic[test_folder[0]][data_class[8]],
             test_labels_dic[test_folder[0]][data_class[9]],
+            test_labels_dic[test_folder[0]][data_class[10]]
 
         )
     )
@@ -253,7 +257,8 @@ if __name__ == "__main__":
             test_index_dic[test_folder[0]][data_class[7]],
             test_index_dic[test_folder[0]][data_class[8]],
             test_index_dic[test_folder[0]][data_class[9]],
+            test_index_dic[test_folder[0]][data_class[10]]
 
         )
     )
-    print('tataset is ok')
+    return train_features, train_label, test_features, test_label, train_index, test_index
