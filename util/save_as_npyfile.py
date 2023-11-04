@@ -17,12 +17,34 @@ period = ["Systolic", "Diastolic"]
 # ========================/ Data Augementation /========================== #
 """数据增强，包括时间拉伸和反转"""
 root_path = r"D:\Shilong\murmur\01_dataset\05_5fold"
+npy_path_padded = root_path+r"\npyFile_padded\normalized\npy_files"
+index_path = root_path + r"\npyFile_padded\normalized\index_files"
+if not os.path.exists(npy_path_padded):
+    os.makedirs(npy_path_padded)
+if not os.path.exists(index_path):
+    os.makedirs(index_path)
 for k in range(5):
     src_fold_root_path = root_path+r"\fold_set_"+str(k)
-    data_Auge(src_fold_root_path)
+# data_Auge(src_fold_root_path)
     for folder in os.listdir(src_fold_root_path):
-    if k==0:
-        absent_train_features, absent_train_label, absent_train_names, absent_train_index, data_id = get_wav_data(absent_train_path)  # absent
+        dataset_path = os.path.join(src_fold_root_path, folder)
+        if k == 0 and folder == "absent":
+            features, label, names, index, data_id = get_wav_data(
+                dataset_path, num=0)  # absent
+        else:
+            features, label, names, index, data_id = get_wav_data(
+                dataset_path, data_id)  # absent
+        np.save(npy_path_padded +
+                f"\\{folder}_features_norm_fold{k}_id{data_id}.npy", features)
+        np.save(npy_path_padded +
+                f"\\{folder}_labels_norm_fold{k}_id{data_id}.npy", label)
+        np.save(npy_path_padded +
+                f"\\{folder}_index_norm_fold{k}_id{data_id}.npy", index)
+        np.save(npy_path_padded +
+                f"\\{folder}_name_norm_fold{k}_id{data_id}.npy", names)
+        absent_train_dic = zip(index, names)
+        pd.DataFrame(absent_train_dic).to_csv(
+            index_path+f"\\fold{k}_{folder}_disc.csv", index=False, header=False)
 
 # ========================/ file path /========================== #
 # get absent / present patient_id
@@ -106,13 +128,12 @@ present_train_features_reverse12, present_train_label_reverse12, present_train_n
 
 # ========================/ 保存数据 /========================== #
 # -------------------------/ 保存特征数据 /------------------------- #
-npy_path_padded = wav_filepath+r"\npyFile_padded\normalized11\list_npy_files"
-if not os.path.exists(npy_path_padded):
-    os.makedirs(npy_path_padded)
+
 
 np.save(npy_path_padded + r"\absent_train_features_norm.npy",
         absent_train_features)
-np.save(npy_path_padded + r"\absent_test_features_norm.npy", absent_test_features)
+np.save(npy_path_padded + r"\absent_test_features_norm.npy",
+        absent_test_features)
 np.save(npy_path_padded + r"\present_train_features_norm.npy",
         present_train_features)
 np.save(npy_path_padded + r"\present_test_features_norm.npy",
