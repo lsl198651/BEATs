@@ -63,12 +63,6 @@ def get_features(train_fold: list, test_fold: list):
 def fold5_dataloader(train_folder, test_folder):
     train_feature_dic, train_labels_dic, train_index_dic, test_feature_dic, test_labels_dic, test_index_dic, data_class = get_features(
         train_folder, test_folder)
-    for k in train_folder:
-        for n in data_class:
-            print(train_feature_dic[k][n].shape)
-            # print(train_labels_dic[k][n].shape)
-            # print(train_index_dic[k][n].shape)
-
     train_features = np.vstack(
         (
             train_feature_dic[train_folder[0]][data_class[0]],
