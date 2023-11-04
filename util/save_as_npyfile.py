@@ -17,8 +17,8 @@ period = ["Systolic", "Diastolic"]
 # ========================/ Data Augementation /========================== #
 """数据增强，包括时间拉伸和反转"""
 root_path = r"D:\Shilong\murmur\01_dataset\05_5fold"
-npy_path_padded = root_path+r"\npyFile_padded\normalized\npy_files"
-index_path = root_path + r"\npyFile_padded\normalized\index_files"
+npy_path_padded = root_path+r"\npyFile_padded\npy_files"
+index_path = root_path + r"\npyFile_padded\index_files"
 if not os.path.exists(npy_path_padded):
     os.makedirs(npy_path_padded)
 if not os.path.exists(index_path):
@@ -35,13 +35,13 @@ for k in range(5):
             features, label, names, index, data_id = get_wav_data(
                 dataset_path, data_id)  # absent
         np.save(npy_path_padded +
-                f"\\{folder}_features_norm_fold{k}_id{data_id}.npy", features)
+                f"\\{folder}_features_norm_fold{k}.npy", features)
         np.save(npy_path_padded +
-                f"\\{folder}_labels_norm_fold{k}_id{data_id}.npy", label)
+                f"\\{folder}_labels_norm_fold{k}.npy", label)
         np.save(npy_path_padded +
-                f"\\{folder}_index_norm_fold{k}_id{data_id}.npy", index)
+                f"\\{folder}_index_norm_fold{k}.npy", index)
         np.save(npy_path_padded +
-                f"\\{folder}_name_norm_fold{k}_id{data_id}.npy", names)
+                f"\\{folder}_name_norm_fold{k}.npy", names)
         absent_train_dic = zip(index, names)
         pd.DataFrame(absent_train_dic).to_csv(
             index_path+f"\\fold{k}_{folder}_disc.csv", index=False, header=False)

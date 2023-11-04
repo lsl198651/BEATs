@@ -52,7 +52,7 @@ def data_Auge(root_path):
             sf.write(os.path.join(time_path3, filename +
                      '_08.wav'), data_time_stretch, sr)
 
-    # 反转后保存的path
+    # 反转后保存的path,队原数据和后的数据反转
     reverse_path0 = root_path+r'\reverse1.2'
     reverse_path1 = root_path+r'\reverse1.1'
     reverse_path2 = root_path+r'\reverse0.9'
