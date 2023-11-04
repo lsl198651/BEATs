@@ -369,7 +369,7 @@ if __name__ == '__main__':
             root_path+r"\absent_fold_"+str(k)+".csv", index=False, header=False)
     for k, v in fold_present.items():
         pd.DataFrame(data=v, index=None).to_csv(
-            root_path+r"\presentt_fold_"+str(k)+".csv", index=False, header=False)
+            root_path+r"\present_fold_"+str(k)+".csv", index=False, header=False)
     # save patient id as csv
     pd.DataFrame(data=absent_patient_id, index=None).to_csv(
         absent_id_path, index=False, header=False)

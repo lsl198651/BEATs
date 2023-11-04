@@ -255,8 +255,8 @@ def get_segment_target_list():
         根据csv文件生成并返回segment_target_list
         列表包含所有present的id和对应的位置
     """
-    absent_test_id_path = r"D:\Shilong\murmur\01_dataset\05_5fold\absent_test_id.csv"
-    present_test_id_path = r"D:\Shilong\murmur\01_dataset\05_5fold\present_test_id.csv"
+    absent_test_id_path = r"D:\Shilong\murmur\01_dataset\05_5fold\absent_fold_4.csv"
+    present_test_id_path = r"D:\Shilong\murmur\01_dataset\05_5fold\present_fold_4.csv"
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
     # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
@@ -291,6 +291,7 @@ def get_segment_target_list():
     # print(absent_test_id)
     for id in test_id:
         locations = Recording_locations[id_data.index(id)]
+        # 针对有多个听诊区的情况，将杂音位置用+连接
         patient_dic[id] = locations
     return segment_present, patient_dic, absent_test_id, present_test_id
 
@@ -318,13 +319,13 @@ def segment_classifier(result_list_1=[], test_fold=['4']):
     # )
     for k in test_fold:
         absent_test_index = np.load(
-            npy_path_padded + f"\\absent_features_norm_fold{k}.npy", allow_pickle=True)
+            npy_path_padded + f"\\absent_index_norm_fold{k}.npy", allow_pickle=True)
         present_test_index = np.load(
-            npy_path_padded + f"\\present_features_norm_fold{k}.npy", allow_pickle=True)
+            npy_path_padded + f"\\present_index_norm_fold{k}.npy", allow_pickle=True)
         absent_test_names = np.load(
-            npy_path_padded + f"\\absent_names_norm_fold{k}.npy", allow_pickle=True)
+            npy_path_padded + f"\\absent_name_norm_fold{k}.npy", allow_pickle=True)
         present_test_names = np.load(
-            npy_path_padded + f"\\present_names_norm_fold{k}.npy", allow_pickle=True)
+            npy_path_padded + f"\\present_name_norm_fold{k}.npy", allow_pickle=True)
 
     absent_test_dic = dict(zip(absent_test_names, absent_test_index))
     present_test_dic = dict(zip(present_test_names, present_test_index))
@@ -353,6 +354,7 @@ def segment_classifier(result_list_1=[], test_fold=['4']):
         # 遍历这个id_pos对应的所有数据索引
         for idx in data_index:
             # 根据索引读取数据
+            # ---------这里有bug-------------
             if idx in result_list_1:
                 value_list.append(1)
             else:
@@ -398,7 +400,8 @@ def segment_classifier(result_list_1=[], test_fold=['4']):
     patient_result_dic = {}
     # print(patient_dic)
     for patient_id, locations in patient_dic.items():
-        for location in locations.split('+'):
+        locations = locations.split('+')
+        for location in np.unique(locations):
             id_location = patient_id+'_'+location
             if id_location in result_dic.keys():
                 if not patient_id in patient_result_dic.keys():
