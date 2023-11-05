@@ -301,7 +301,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     Returns:
         _type_: _description_
     """
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files"
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
     # absent_test_index = np.load(
     #     npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
     # )
@@ -316,13 +316,13 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     # )
     for k in test_fold:
         absent_test_index = np.load(
-            npy_path_padded + f"\\absent_index_norm_fold{k}.npy", allow_pickle=True)
+            npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)
         present_test_index = np.load(
-            npy_path_padded + f"\\present_index_norm_fold{k}.npy", allow_pickle=True)
+            npy_path_padded + f"\\present_index_norm01_fold{k}.npy", allow_pickle=True)
         absent_test_names = np.load(
-            npy_path_padded + f"\\absent_name_norm_fold{k}.npy", allow_pickle=True)
+            npy_path_padded + f"\\absent_name_norm01_fold{k}.npy", allow_pickle=True)
         present_test_names = np.load(
-            npy_path_padded + f"\\present_name_norm_fold{k}.npy", allow_pickle=True)
+            npy_path_padded + f"\\present_name_norm01_fold{k}.npy", allow_pickle=True)
 
     absent_test_dic = dict(zip(absent_test_names, absent_test_index))
     present_test_dic = dict(zip(present_test_names, present_test_index))

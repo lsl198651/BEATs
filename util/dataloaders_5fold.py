@@ -5,10 +5,10 @@ import os
 
 
 def get_features(train_fold: list, test_fold: list):
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files"
+    # npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
 
     root_path = r"D:\Shilong\murmur\01_dataset\05_5fold"
-    npy_path_padded = root_path+r"\npyFile_padded\npy_files"
+    npy_path_padded = root_path+r"\npyFile_padded\npy_files01"
     train_feature_dic = {}
     train_labels_dic = {}
     train_index_dic = {}
@@ -29,11 +29,11 @@ def get_features(train_fold: list, test_fold: list):
             # else:
 
             train_feature_dic[k][folder] = np.load(npy_path_padded +
-                                                   f"\\{folder}_features_norm_fold{k}.npy", allow_pickle=True)
+                                                   f"\\{folder}_features_norm01_fold{k}.npy", allow_pickle=True)
             train_labels_dic[k][folder] = np.load(npy_path_padded +
-                                                  f"\\{folder}_labels_norm_fold{k}.npy", allow_pickle=True)
+                                                  f"\\{folder}_labels_norm01_fold{k}.npy", allow_pickle=True)
             train_index_dic[k][folder] = np.load(npy_path_padded +
-                                                 f"\\{folder}_index_norm_fold{k}.npy", allow_pickle=True)
+                                                 f"\\{folder}_index_norm01_fold{k}.npy", allow_pickle=True)
     test_feature_dic = {}
     test_labels_dic = {}
     test_index_dic = {}
@@ -52,11 +52,11 @@ def get_features(train_fold: list, test_fold: list):
             #                         f"\\{folder}_index_norm_fold{k}.npy", allow_pickle=True)
             # else:
             test_feature_dic[k][folder] = np.load(npy_path_padded +
-                                                  f"\\{folder}_features_norm_fold{k}.npy", allow_pickle=True)
+                                                  f"\\{folder}_features_norm01_fold{k}.npy", allow_pickle=True)
             test_labels_dic[k][folder] = np.load(npy_path_padded +
-                                                 f"\\{folder}_labels_norm_fold{k}.npy", allow_pickle=True)
+                                                 f"\\{folder}_labels_norm01_fold{k}.npy", allow_pickle=True)
             test_index_dic[k][folder] = np.load(npy_path_padded +
-                                                f"\\{folder}_index_norm_fold{k}.npy", allow_pickle=True)
+                                                f"\\{folder}_index_norm01_fold{k}.npy", allow_pickle=True)
     return train_feature_dic, train_labels_dic, train_index_dic, test_feature_dic, test_labels_dic, test_index_dic, os.listdir(src_fold_root_path)
 
 
