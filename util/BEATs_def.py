@@ -250,13 +250,13 @@ class DatasetClass(Dataset):
     #     return iditem
 
 
-def get_segment_target_list():
+def get_segment_target_list(fold_num):
     """ get segment target list
         根据csv文件生成并返回segment_target_list
         列表包含所有present的id和对应的位置
     """
-    absent_test_id_path = r"D:\Shilong\murmur\01_dataset\05_5fold\absent_fold_4.csv"
-    present_test_id_path = r"D:\Shilong\murmur\01_dataset\05_5fold\present_fold_4.csv"
+    absent_test_id_path = rf"D:\Shilong\murmur\01_dataset\05_5fold\absent_fold_{fold_num}.csv"
+    present_test_id_path = fr"D:\Shilong\murmur\01_dataset\05_5fold\present_fold_{fold_num}.csv"
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
     # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
@@ -296,7 +296,7 @@ def get_segment_target_list():
     return segment_present, patient_dic, absent_test_id, present_test_id
 
 
-def segment_classifier(result_list_1=[], test_fold=['4']):
+def segment_classifier(result_list_1=[], test_fold=[]):
     """本fn计算了针对每个location和patient的acc和cm
     Args:
         result_list_1 (list, optional): 此列表用来存储分类结果为1对应的id.从test结果中生成传入.
@@ -362,7 +362,8 @@ def segment_classifier(result_list_1=[], test_fold=['4']):
         # 计算平均值作为每一段的最终分类结果，大于0.5就是1，小于0.5就是0,返回字典
         result_dic[id_pos] = np.mean(value_list)
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
-    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list()
+    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list(
+        test_fold[0])
     # 创建两个列表，分别保存outcome和target列表
     segment_output = []
     segment_target = []
