@@ -136,7 +136,6 @@ def get_wav_data(dir_path, num=0):
                     label.append(0)
                 if file_name[4] == "Present":  # Present
                     label.append(1)  # 说明该听诊区无杂音
-
     return wav, label, file_names, wav_nums, num
 
 
@@ -302,18 +301,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
         _type_: _description_
     """
     npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
-    # absent_test_index = np.load(
-    #     npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
-    # )
-    # present_test_index = np.load(
-    #     npy_path_padded + r"\present_test_index_norm.npy", allow_pickle=True
-    # )
-    # absent_test_names = np.load(
-    #     npy_path_padded + r"\absent_test_names_norm.npy", allow_pickle=True
-    # )
-    # present_test_names = np.load(
-    #     npy_path_padded + r"\present_test_names_norm.npy", allow_pickle=True
-    # )
+
     for k in test_fold:
         absent_test_index = np.load(
             npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)
