@@ -295,7 +295,7 @@ def get_segment_target_list():
     return segment_present, patient_dic, absent_test_id, present_test_id
 
 
-def segment_classifier(result_list_1=[]):
+def segment_classifier(result_list_1=[], test_fold=[]):
     """本fn计算了针对每个location和patient的acc和cm
     Args:
         result_list_1 (list, optional): 此列表用来存储分类结果为1对应的id.从test结果中生成传入.
@@ -303,19 +303,29 @@ def segment_classifier(result_list_1=[]):
     Returns:
         _type_: _description_
     """
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\list_npy_files"
-    absent_test_index = np.load(
-        npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
-    )
-    present_test_index = np.load(
-        npy_path_padded + r"\present_test_index_norm.npy", allow_pickle=True
-    )
-    absent_test_names = np.load(
-        npy_path_padded + r"\absent_test_names_norm.npy", allow_pickle=True
-    )
-    present_test_names = np.load(
-        npy_path_padded + r"\present_test_names_norm.npy", allow_pickle=True
-    )
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
+    # absent_test_index = np.load(
+    #     npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
+    # )
+    # present_test_index = np.load(
+    #     npy_path_padded + r"\present_test_index_norm.npy", allow_pickle=True
+    # )
+    # absent_test_names = np.load(
+    #     npy_path_padded + r"\absent_test_names_norm.npy", allow_pickle=True
+    # )
+    # present_test_names = np.load(
+    #     npy_path_padded + r"\present_test_names_norm.npy", allow_pickle=True
+    # )
+    for k in test_fold:
+        absent_test_index = np.load(
+            npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)
+        present_test_index = np.load(
+            npy_path_padded + f"\\present_index_norm01_fold{k}.npy", allow_pickle=True)
+        absent_test_names = np.load(
+            npy_path_padded + f"\\absent_name_norm01_fold{k}.npy", allow_pickle=True)
+        present_test_names = np.load(
+            npy_path_padded + f"\\present_name_norm01_fold{k}.npy", allow_pickle=True)
+
     absent_test_dic = dict(zip(absent_test_names, absent_test_index))
     present_test_dic = dict(zip(present_test_names, present_test_index))
     # 所有测试数据的字典
