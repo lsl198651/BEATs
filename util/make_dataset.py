@@ -422,10 +422,10 @@ if __name__ == '__main__':
         Diastolic_murmur_timing,
     )
 
-    # absent_train_id_path = root_path+r"\absent_train_id.csv"
-    # absent_test_id_path = root_path+r"\absent_test_id.csv"
-    # present_train_id_path = root_path+r"\present_train_id.csv"
-    # present_test_id_path = root_path+r"\present_test_id.csv"
+    absent_train_id_path = root_path+r"\absent_train_id.csv"
+    absent_test_id_path = root_path+r"\absent_test_id.csv"
+    present_train_id_path = root_path+r"\present_train_id.csv"
+    present_test_id_path = root_path+r"\present_test_id.csv"
 
     # 将absent_id和present_id按照8:2随机选取id划分为训练集和测试集
     # absent_train_id = random.sample(
