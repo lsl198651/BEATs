@@ -361,8 +361,14 @@ if __name__ == '__main__':
     absent_id_path = root_path+r"\absent_id.csv"
     patient_id_path = root_path+r"\patient_id.csv"
     # 对Present和Absent分五折
+    # save patient id as csv
+    pd.DataFrame(data=absent_patient_id, index=None).to_csv(
+        absent_id_path, index=False, header=False)
+    pd.DataFrame(data=present_patient_id, index=None).to_csv(
+        patient_id_path, index=False, header=False)
     fold_absent = fold_devide(absent_patient_id)
     fold_present = fold_devide(present_patient_id)
+    # 对Present和Absent分五折
     # 分别保存每折的id
     for k, v in fold_absent.items():
         pd.DataFrame(data=v, index=None).to_csv(
@@ -370,12 +376,6 @@ if __name__ == '__main__':
     for k, v in fold_present.items():
         pd.DataFrame(data=v, index=None).to_csv(
             root_path+r"\present_fold_"+str(k)+".csv", index=False, header=False)
-    # save patient id as csv
-    pd.DataFrame(data=absent_patient_id, index=None).to_csv(
-        absent_id_path, index=False, header=False)
-    pd.DataFrame(data=present_patient_id, index=None).to_csv(
-        patient_id_path, index=False, header=False)
-
     # digaiation position
     # define path options
     positoin = ["_AV", "_MV", "_PV", "_TV"]

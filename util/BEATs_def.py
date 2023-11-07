@@ -81,8 +81,11 @@ def get_patientid(csv_path):
 def wav_normalize(data):
     """归一化"""
     # data = data.reshape(1, -1)
+    # print("sorce"+data)
+    # data = preprocessing.MinMaxScaler((-1, 1)).fit_transform(data)
+    # print(data)
     range = np.max(data) - np.min(data)
-    data = (data-np.min(data))/range
+    data = 2*(data-np.mean(data))/range
     return data
 
 
@@ -136,6 +139,7 @@ def get_wav_data(dir_path, num=0):
                     label.append(0)
                 if file_name[4] == "Present":  # Present
                     label.append(1)  # 说明该听诊区无杂音
+
     return wav, label, file_names, wav_nums, num
 
 
@@ -246,13 +250,13 @@ class DatasetClass(Dataset):
     #     return iditem
 
 
-def get_segment_target_list(fold_num):
+def get_segment_target_list():
     """ get segment target list
         根据csv文件生成并返回segment_target_list
         列表包含所有present的id和对应的位置
     """
-    absent_test_id_path = rf"D:\Shilong\murmur\01_dataset\05_5fold\absent_fold_{fold_num}.csv"
-    present_test_id_path = fr"D:\Shilong\murmur\01_dataset\05_5fold\present_fold_{fold_num}.csv"
+    absent_test_id_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\absent_test_id.csv"
+    present_test_id_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\present_test_id.csv"
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
     # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
@@ -287,12 +291,11 @@ def get_segment_target_list(fold_num):
     # print(absent_test_id)
     for id in test_id:
         locations = Recording_locations[id_data.index(id)]
-        # 针对有多个听诊区的情况，将杂音位置用+连接
         patient_dic[id] = locations
     return segment_present, patient_dic, absent_test_id, present_test_id
 
 
-def segment_classifier(result_list_1=[], test_fold=[]):
+def segment_classifier(result_list_1=[]):
     """本fn计算了针对每个location和patient的acc和cm
     Args:
         result_list_1 (list, optional): 此列表用来存储分类结果为1对应的id.从test结果中生成传入.
@@ -300,18 +303,19 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     Returns:
         _type_: _description_
     """
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
-
-    for k in test_fold:
-        absent_test_index = np.load(
-            npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)
-        present_test_index = np.load(
-            npy_path_padded + f"\\present_index_norm01_fold{k}.npy", allow_pickle=True)
-        absent_test_names = np.load(
-            npy_path_padded + f"\\absent_name_norm01_fold{k}.npy", allow_pickle=True)
-        present_test_names = np.load(
-            npy_path_padded + f"\\present_name_norm01_fold{k}.npy", allow_pickle=True)
-
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\01_s1s2\npyFile_padded\normalized\list_npy_files"
+    absent_test_index = np.load(
+        npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
+    )
+    present_test_index = np.load(
+        npy_path_padded + r"\present_test_index_norm.npy", allow_pickle=True
+    )
+    absent_test_names = np.load(
+        npy_path_padded + r"\absent_test_names_norm.npy", allow_pickle=True
+    )
+    present_test_names = np.load(
+        npy_path_padded + r"\present_test_names_norm.npy", allow_pickle=True
+    )
     absent_test_dic = dict(zip(absent_test_names, absent_test_index))
     present_test_dic = dict(zip(present_test_names, present_test_index))
     # 所有测试数据的字典
@@ -339,7 +343,6 @@ def segment_classifier(result_list_1=[], test_fold=[]):
         # 遍历这个id_pos对应的所有数据索引
         for idx in data_index:
             # 根据索引读取数据
-            # ---------这里有bug-------------
             if idx in result_list_1:
                 value_list.append(1)
             else:
@@ -347,8 +350,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
         # 计算平均值作为每一段的最终分类结果，大于0.5就是1，小于0.5就是0,返回字典
         result_dic[id_pos] = np.mean(value_list)
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
-    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list(
-        test_fold[0])
+    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list()
     # 创建两个列表，分别保存outcome和target列表
     segment_output = []
     segment_target = []
@@ -386,8 +388,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     patient_result_dic = {}
     # print(patient_dic)
     for patient_id, locations in patient_dic.items():
-        locations = locations.split('+')
-        for location in np.unique(locations):
+        for location in locations.split('+'):
             id_location = patient_id+'_'+location
             if id_location in result_dic.keys():
                 if not patient_id in patient_result_dic.keys():
