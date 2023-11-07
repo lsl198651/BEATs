@@ -85,7 +85,7 @@ def wav_normalize(data):
     # data = preprocessing.MinMaxScaler((-1, 1)).fit_transform(data)
     # print(data)
     range = np.max(data) - np.min(data)
-    data = 2*(data-np.mean(data))/range
+    data = (data-np.min(data))/range
     return data
 
 
