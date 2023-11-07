@@ -61,6 +61,7 @@ def get_features(train_fold: list, test_fold: list):
 
 
 def fold5_dataloader(train_folder, test_folder):
+    """组合特征并且返回features，label，index"""
     train_feature_dic, train_labels_dic, train_index_dic, test_feature_dic, test_labels_dic, test_index_dic, data_class = get_features(
         train_folder, test_folder)
     train_features = np.vstack(

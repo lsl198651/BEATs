@@ -48,7 +48,7 @@ parser.add_argument("--train_fold", type=list, default=['0', '1', '3', '4'])
 parser.add_argument("--test_fold", type=list, default=['2'])
 args = parser.parse_args()
 
-train_features, train_label, test_features, test_label, train_index, test_index = fold5_dataloader(
+train_features, train_label, test_features, test_label, train_index, test_index = get_features(
     args.train_fold, args.test_fold)
 # ========================/ setup loader /========================== #
 if args.samplerWeight == True:
