@@ -250,13 +250,16 @@ class DatasetClass(Dataset):
     #     return iditem
 
 
-def get_segment_target_list():
+def get_segment_target_list(test_fold):
     """ get segment target list
         根据csv文件生成并返回segment_target_list
         列表包含所有present的id和对应的位置
     """
-    absent_test_id_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\absent_test_id.csv"
-    present_test_id_path = r"D:\Shilong\murmur\01_dataset\01_s1s2\present_test_id.csv"
+    for k in test_fold:
+        absent_test_id_path = fr"D:\Shilong\murmur\01_dataset\05_5fold\absent_fold_{k}.csv"
+        present_test_id_path = fr"D:\Shilong\murmur\01_dataset\05_5fold\present_fold_{k}.csv"
+        absent_test_id = csv_reader_cl(absent_test_id_path, 0)
+        present_test_id = csv_reader_cl(present_test_id_path, 0)
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
     # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
@@ -266,8 +269,6 @@ def get_segment_target_list():
     tag_list.append(row_line.index("Murmur"))
     tag_list.append(row_line.index("Murmur locations"))
     tag_list.append(row_line.index("Recording locations:"))
-    absent_test_id = csv_reader_cl(absent_test_id_path, 0)
-    present_test_id = csv_reader_cl(present_test_id_path, 0)
     id_data = csv_reader_cl(csv_path, tag_list[0])
     Murmur = csv_reader_cl(csv_path, tag_list[1])
     Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
@@ -278,20 +279,25 @@ def get_segment_target_list():
     segment_present = []
     # print(absent_test_id)
     for id in present_test_id:
+        # 查此id的murmur状态和听诊位置
         murmurs = Murmur[id_data.index(id)]
         murmur_locations = Murmur_locations[id_data.index(id)]
         if murmurs == 'Present':
             locations = murmur_locations.split('+')
             for loc in locations:
-                segment_present.append(id+'_'+loc)
+                if loc in ['AV', 'PV', 'TV', 'MV']:
+                    # 以id_loc的形式存储present的id和位置
+                    segment_present.append(id+'_'+loc)
+                else:
+                    print(f'[WANGING 1]: '+id+' - [{loc}] not in locations')
         else:
-            print('[waring]: '+id+' murmurs is not present')
-    # 创建一个空字典，用来存储id和对应的听诊区,formate: id:locations
+            print('[WANGING 2]: '+id+' murmurs is not present?')
+
     patient_dic = {}
+    # 创建一个空字典，用来存储id和对应的听诊区,formate: id:听诊区
     # print(absent_test_id)
     for id in test_id:
-        locations = Recording_locations[id_data.index(id)]
-        patient_dic[id] = locations
+        patient_dic[id] = Recording_locations[id_data.index(id)]
     return segment_present, patient_dic, absent_test_id, present_test_id
 
 
@@ -325,25 +331,27 @@ def segment_classifier(result_list_1=[], test_fold=[]):
             npy_path_padded + f"\\absent_name_norm01_fold{k}.npy", allow_pickle=True)
         present_test_names = np.load(
             npy_path_padded + f"\\present_name_norm01_fold{k}.npy", allow_pickle=True)
-
+    # 可以测一下这个字典names,index组合对不对
     absent_test_dic = dict(zip(absent_test_names, absent_test_index))
     present_test_dic = dict(zip(present_test_names, present_test_index))
     # 所有测试数据的字典
     test_dic = {**absent_test_dic, **present_test_dic}
     # 创建id_pos:idx的字典
+    # ------------------------------------------------------------ #
+    # -------------------/ segment classifier /------------------- #
+    # ------------------------------------------------------------ #
     id_idx_dic = {}
     # 遍历test_dic，生成id_pos:idx的字典
     for file_name, data_index in test_dic.items():
         id_pos = file_name.split('_')[0]+'_'+file_name.split('_')[1]
-        if not id_pos in id_idx_dic.keys():  # 如果id_pos不在字典中，就创建一个新的键值对
+        # 如果id_pos不在字典中，就创建一个新的键值对
+        if not id_pos in id_idx_dic.keys():
             id_idx_dic[id_pos] = [data_index]
-        else:  # 如果id_pos在字典中，就把value添加到对应的键值对的值中
+        # 如果id_pos在字典中，就把value添加到对应的键值对的值中
+        else:
             id_idx_dic[id_pos].append(data_index)
-    # 这里result_list_1列表，用来存储分类结果为1对应的id,test输出的结果
-    # result_list_1 = []
-    # ------------------------------------------------------------ #
-    # -------------------/ segment classifier /------------------- #
-    # ------------------------------------------------------------ #
+    # id_idx_dic格式：12345_AV: [001,002,003,004,005]
+
     # 创建一个空字典，用来存储分类结果,formate: id_pos: result
     result_dic = {}
     # 这样就生成了每个听诊区对应的数据索引，然后就可以根据索引读取数据了
@@ -359,8 +367,10 @@ def segment_classifier(result_list_1=[], test_fold=[]):
                 value_list.append(0)
         # 计算平均值作为每一段的最终分类结果，大于0.5就是1，小于0.5就是0,返回字典
         result_dic[id_pos] = np.mean(value_list)
+    # result_dic格式：12345_AV: 0.5, 12345_MV: 0.3
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
-    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list()
+    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list(
+        test_fold)
     # 创建两个列表，分别保存outcome和target列表
     segment_output = []
     segment_target = []
@@ -372,12 +382,13 @@ def segment_classifier(result_list_1=[], test_fold=[]):
         else:
             segment_output.append(0)
             result_dic[id_loc] = 0
+        # 这里计算segment的target
         if id_loc in segment_present:
             segment_target.append(1)
         else:
             segment_target.append(0)
-    # 计算准确率和混淆矩阵
-    # 计算准确率
+    # 这里需要检查一下segment_target_list和segment_output_list的长度是否一致
+    # 计算准确率的代码是这样的吗？？？
     segment_acc = (np.array(segment_output) == np.array(
         segment_target)).sum()/len(segment_target)
     # 计算混淆矩阵
@@ -388,26 +399,29 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     # -------------------------------------------------------- #
     # patient_result_dic用于保存每个患者每个听诊区的分类结果，formate: id: location1_result,location2_result
     # ------------------修复bug----------------
-    # 以下五个列表的听诊区数据有重复
-    patient_dic['50115'] = 'AV+MV'
-    patient_dic['49748'] = 'TV+MV'
-    patient_dic['50802'] = 'PV+MV'
-    patient_dic['50782'] = 'PV+TV'
-    patient_dic['49952'] = 'AV+PV+TV'
+    # # 以下五个列表的听诊区数据有重复
+    # patient_dic['50115'] = 'AV+MV'
+    # patient_dic['49748'] = 'TV+MV'
+    # patient_dic['50802'] = 'PV+MV'
+    # patient_dic['50782'] = 'PV+TV'
+    # patient_dic['49952'] = 'AV+PV+TV'
     # ------------------修复bug---------------
     patient_result_dic = {}
-    # print(patient_dic)
+    # patient_dic，formate: id:听诊区，123：AV+MV， 456：PV+TV
     for patient_id, locations in patient_dic.items():
         locations = locations.split('+')
         for location in np.unique(locations):
-            id_location = patient_id+'_'+location
+            # 这里出去了phc，因为phc不在result_dic中
+            if location in ['AV', 'PV', 'TV', 'MV']:
+                id_location = patient_id+'_'+location
             if id_location in result_dic.keys():
                 if not patient_id in patient_result_dic.keys():
                     patient_result_dic[patient_id] = result_dic[id_location]
                 else:
                     patient_result_dic[patient_id] += result_dic[id_location]
             else:
-                print('[waring]: '+id_location+' not in result_dic')
+                # 正常情况不会报这个错，因为result_dic中的id_loc都是在segment_target_list中的
+                print('[WANGING 3]: '+id_location+' not in result_dic')
     # 遍历patient_result_dic，计算每个患者的最终分类结果
     patient_output_dic = {}
     patient_output = []
@@ -421,14 +435,14 @@ def segment_classifier(result_list_1=[], test_fold=[]):
             patient_output_dic[patient_id] = 1
             patient_output.append(1)
         else:
-            print('[waring]: result value error')  # 有负数
+            print('[WANGING 4]: result value error')  # 有负数
         # 做target
         if patient_id in absent_test_id:
             patient_target.append(0)
         elif patient_id in present_test_id:
             patient_target.append(1)
         else:
-            print('[waring]: '+patient_id+' not in test_id')
+            print('[WANGING 5]: '+patient_id+' not in test_id')
     # 统计patient的错误id
     patient_id_test = list(patient_output_dic.keys())
     patient_label_test = list(patient_output_dic.values())
