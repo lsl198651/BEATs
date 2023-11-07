@@ -64,7 +64,7 @@ def train_test(
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
-    model.train()
+
 # ============ training ================
     for epochs in range(args.num_epochs):
         # train model
@@ -101,7 +101,7 @@ def train_test(
                 # label_t = torch.int64(label_t)
                 pred_t = pred_t.squeeze(1)
                 correct_t += pred_t.eq(label_t).sum().item()
-                train_len += len(label_t)
+                train_len += len(pred_t)
         if args.scheduler_flag is not None:
             scheduler.step()
         # ============ evalue ================
@@ -154,7 +154,7 @@ def train_test(
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
             location_acc, location_cm, patient_acc, patient_cm, patient_error_id = segment_classifier(
-                result_list_present)
+                result_list_present)  # , args.test_fold
             pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
                                                   str(epochs+1)+".csv", index=False, header=False)
             segment_cm = confusion_matrix(label, pred, labels=[0, 1])
