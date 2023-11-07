@@ -378,11 +378,11 @@ def segment_classifier(result_list_1=[]):
     # patient_result_dic用于保存每个患者每个听诊区的分类结果，formate: id: location1_result,location2_result
     # ------------------修复bug----------------
     # 以下五个列表的听诊区数据有重复
-    patient_dic['50115'] = 'AV+MV'
-    patient_dic['49748'] = 'TV+MV'
-    patient_dic['50802'] = 'PV+MV'
-    patient_dic['50782'] = 'PV+TV'
-    patient_dic['49952'] = 'AV+PV+TV'
+    # patient_dic['50115'] = 'AV+MV'
+    # patient_dic['49748'] = 'TV+MV'
+    # patient_dic['50802'] = 'PV+MV'
+    # patient_dic['50782'] = 'PV+TV'
+    # patient_dic['49952'] = 'AV+PV+TV'
     # ------------------修复bug---------------
     patient_result_dic = {}
     # print(patient_dic)
