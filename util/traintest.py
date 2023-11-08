@@ -34,20 +34,16 @@ def train_test(
         r"./tensorboard/" + str(datetime.now().strftime("%Y-%m%d %H%M")))
     confusion_matrix_path = r"./confusion_matrix/" + \
         str(datetime.now().strftime("%Y-%m%d %H%M"))
-
     lr = []
     max_test_acc = []
     max_train_acc = []
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)  # 放到设备中
-
     # for amp
 # ============lr scheduler================
     # scaler = GradScaler()
     warm_up_ratio = 0.1
     total_steps = len(train_loader) * args.num_epochs
-
     if args.scheduler_flag == "cos":
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=10, eta_min=0)
