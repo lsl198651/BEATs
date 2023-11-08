@@ -154,7 +154,7 @@ def train_test(
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
             location_acc, location_cm, patient_acc, patient_cm, patient_error_id = segment_classifier(
-                result_list_present)  # , args.test_fold
+                result_list_present, args.test_fold)  #
             pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
                                                   str(epochs+1)+".csv", index=False, header=False)
             segment_cm = confusion_matrix(label, pred, labels=[0, 1])
