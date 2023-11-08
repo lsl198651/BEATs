@@ -301,6 +301,40 @@ def fold_devide(data, flod_num=5):
     return flod5
 
 
+def data_set(root_path):
+    """数据增强，包括时间拉伸和反转"""
+    # root_path = r"D:\Shilong\murmur\01_dataset\06_new5fold"
+    npy_path_padded = root_path+r"\npyFile_padded\npy_files01"
+    index_path = root_path + r"\npyFile_padded\index_files01"
+    if not os.path.exists(npy_path_padded):
+        os.makedirs(npy_path_padded)
+    if not os.path.exists(index_path):
+        os.makedirs(index_path)
+    for k in range(5):
+        src_fold_root_path = root_path+r"\fold_set_"+str(k)
+        data_Auge(src_fold_root_path)
+        for folder in os.listdir(src_fold_root_path):
+            dataset_path = os.path.join(src_fold_root_path, folder)
+            if k == 0 and folder == "absent":
+                features, label, names, index, data_id = get_wav_data(
+                    dataset_path, num=0)  # absent
+            else:
+                features, label, names, index, data_id = get_wav_data(
+                    dataset_path, data_id)  # absent
+            np.save(npy_path_padded +
+                    f"\\{folder}_features_norm01_fold{k}.npy", features)
+            np.save(npy_path_padded +
+                    f"\\{folder}_labels_norm01_fold{k}.npy", label)
+            np.save(npy_path_padded +
+                    f"\\{folder}_index_norm01_fold{k}.npy", index)
+            np.save(npy_path_padded +
+                    f"\\{folder}_name_norm01_fold{k}.npy", names)
+            absent_train_dic = zip(index, names)
+            pd.DataFrame(absent_train_dic).to_csv(
+                index_path+f"\\fold{k}_{folder}_disc.csv", index=False, header=False)
+    print("data set done!")
+
+
 # ==================================================================== #
 # ========================/ code executive /========================== #
 # ==================================================================== #
@@ -502,25 +536,26 @@ if __name__ == '__main__':
         for murmur in ['absent', 'present']:
             src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
 
-    # # 复制到trainset和testset
-    # # trainset
-    # 将训练集和测试集文件分别copy到train和test文件夹
-    # for root, dir, file in os.walk(file_path_train):
-    #     for subfile in file:
-    #         files = os.path.join(root, subfile)
-    #         print(subfile)
-    #         state = subfile.split("_")[4]
-    #         if state == 'Absent':
-    #             shutil.copy(files, target_dir_train_a + "\\")
-    #         if state == 'Present':
-    #             shutil.copy(files, target_dir_train_p + "\\")
-    # # testset
-    # for root, dir, file in os.walk(file_path_test):
-    #     for subfile in file:
-    #         files = os.path.join(root, subfile)
-    #         print(subfile)
-    #         state = subfile.split("_")[4]
-    #         if state == 'Absent':
-    #             shutil.copy(files, target_dir_test_a + "\\")
-    #         if state == 'Present':
-    #             shutil.copy(files, target_dir_test_p + "\\")
+data_set(root_path)
+# # 复制到trainset和testset
+# # trainset
+# 将训练集和测试集文件分别copy到train和test文件夹
+# for root, dir, file in os.walk(file_path_train):
+#     for subfile in file:
+#         files = os.path.join(root, subfile)
+#         print(subfile)
+#         state = subfile.split("_")[4]
+#         if state == 'Absent':
+#             shutil.copy(files, target_dir_train_a + "\\")
+#         if state == 'Present':
+#             shutil.copy(files, target_dir_train_p + "\\")
+# # testset
+# for root, dir, file in os.walk(file_path_test):
+#     for subfile in file:
+#         files = os.path.join(root, subfile)
+#         print(subfile)
+#         state = subfile.split("_")[4]
+#         if state == 'Absent':
+#             shutil.copy(files, target_dir_test_a + "\\")
+#         if state == 'Present':
+#             shutil.copy(files, target_dir_test_p + "\\")

@@ -9,14 +9,14 @@ import pandas as pd
 
 
 # ========================/ parameteres define /========================== #
-murmur_positoin = ["_AV", "_MV", "_PV", "_TV"]
-murmur_ap = ["Absent\\", "Present\\"]
-period = ["Systolic", "Diastolic"]
+# murmur_positoin = ["_AV", "_MV", "_PV", "_TV"]
+# murmur_ap = ["Absent\\", "Present\\"]
+# period = ["Systolic", "Diastolic"]
 
 
 # ========================/ Data Augementation /========================== #
 """数据增强，包括时间拉伸和反转"""
-root_path = r"D:\Shilong\murmur\01_dataset\05_5fold"
+root_path = r"D:\Shilong\murmur\01_dataset\06_new5fold"
 npy_path_padded = root_path+r"\npyFile_padded\npy_files01"
 index_path = root_path + r"\npyFile_padded\index_files01"
 if not os.path.exists(npy_path_padded):
@@ -25,7 +25,7 @@ if not os.path.exists(index_path):
     os.makedirs(index_path)
 for k in range(5):
     src_fold_root_path = root_path+r"\fold_set_"+str(k)
-#     data_Auge(src_fold_root_path)
+    data_Auge(src_fold_root_path)
     for folder in os.listdir(src_fold_root_path):
         dataset_path = os.path.join(src_fold_root_path, folder)
         if k == 0 and folder == "absent":
