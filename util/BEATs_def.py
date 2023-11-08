@@ -386,14 +386,14 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     # -----------------/ patient classifier /----------------- #
     # -------------------------------------------------------- #
     # patient_result_dic用于保存每个患者每个听诊区的分类结果，formate: id: location1_result,location2_result
-    # ------------------修复bug----------------
+    """# ------------------修复bug----------------
     # # 以下五个列表的听诊区数据有重复
     # patient_dic['50115'] = 'AV+MV'
     # patient_dic['49748'] = 'TV+MV'
     # patient_dic['50802'] = 'PV+MV'
     # patient_dic['50782'] = 'PV+TV'
     # patient_dic['49952'] = 'AV+PV+TV'
-    # ------------------修复bug---------------
+    # ------------------修复bug---------------"""
     patient_result_dic = {}
     # patient_dic，formate: id:听诊区，123：AV+MV， 456：PV+TV
     for patient_id, locations in patient_dic.items():
@@ -444,6 +444,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
 
     # 计算准确率和混淆矩阵
     # 计算准确率
+    #  patient_output.eq(patient_target).sum().item()
     patient_acc = (np.array(patient_output) == np.array(
         patient_target)).sum()/len(patient_target)
     # 计算混淆矩阵

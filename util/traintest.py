@@ -182,15 +182,15 @@ def train_test(
         logging.info(f"==============================")
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
         logging.info(f"learning_rate: {lr_now:.1e}")
-        logging.info(f"Loss t: {train_loss:.4f} v: {test_loss:.4f}")
+        logging.info(f"Loss t: {train_loss:.2e} v: {test_loss:.2e}")
         logging.info(
-            f"max_acc t: {max_train_acc_value:.3%} v: {max_test_acc_value:.3%}")
+            f"max_acc t: {max_train_acc_value:.2%} v: {max_test_acc_value:.2%}")
         logging.info(f"lr max:{max(lr):.1e} min:{min(lr):.1e}")
-        logging.info(f"ACC t: {train_acc:.3%} v: {test_acc:.3%}")
+        logging.info(f"ACC t: {train_acc:.2%} v: {test_acc:.2%}")
         logging.info(f"segment_cm:{segment_cm}")
-        logging.info(f"location_acc:{location_acc:.3%}")
+        logging.info(f"location_acc:{location_acc:.2%}")
         logging.info(f"location_cm:{location_cm}")
-        logging.info(f"patient_acc:{patient_acc:.3%}")
+        logging.info(f"patient_acc:{patient_acc:.2%}")
         logging.info(f"patient_cm:{patient_cm}")
 
         # 画混淆矩阵
