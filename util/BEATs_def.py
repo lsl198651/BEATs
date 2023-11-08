@@ -83,6 +83,8 @@ def wav_normalize(data):
     range = np.max(data) - np.min(data)
     data = (data-np.min(data))/range
     return data
+    # recording -= recording.mean()
+    # recording /= recording.abs().max()
 
 
 def wav_reverse(dir_path, save_path):
