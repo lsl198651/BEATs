@@ -1,17 +1,18 @@
-from torch.cuda.amp import autocast, GradScaler
-import torch
-import torch.nn as nn
-from sklearn.metrics import confusion_matrix
-from util.BEATs_def import draw_confusion_matrix
-from torch import optim
-from transformers import optimization
-from datetime import datetime
-from torch.utils.tensorboard import SummaryWriter
-from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list
-import logging
 
+import logging
 import os
 import pandas as pd
+import torch
+import torch.nn as nn
+from torch import optim
+from datetime import datetime
+from transformers import optimization
+from sklearn.metrics import confusion_matrix
+from torch.cuda.amp import autocast, GradScaler
+from util.BEATs_def import draw_confusion_matrix
+from torch.utils.tensorboard import SummaryWriter
+from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list
+from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
 
 def train_test(
@@ -146,7 +147,16 @@ def train_test(
                         print("TypeError: 'int' object is not iterable")
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
-            # error_index = error_index.squeeze()
+            # ------------------调库计算指标--------------------------
+            test_input, test_target = torch.tensor(pred), torch.tensor(label)
+            test_auprc = binary_auprc(test_input, test_targe)
+            test_auroc = binary_auroc(test_input, test_targe)
+            test_acc = binary_accuracy(test_input, test_targe)
+            test_test_precision = binary_precision(test_input, test_targe)
+            test_recall = binary_recall(test_input, test_targe)
+            test_f1 = binary_f1_score(test_input, test_targe)
+            test_cm = binary_confusion_matrix(test_input, test_targe)
+            # ---------------------------------------------------------
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)
             location_acc, location_cm, patient_acc, patient_cm, patient_error_id = segment_classifier(
