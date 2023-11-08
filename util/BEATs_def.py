@@ -310,18 +310,6 @@ def segment_classifier(result_list_1=[], test_fold=[]):
         _type_: _description_
     """
     npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
-    # absent_test_index = np.load(
-    #     npy_path_padded + r"\absent_test_index_norm.npy", allow_pickle=True
-    # )
-    # present_test_index = np.load(
-    #     npy_path_padded + r"\present_test_index_norm.npy", allow_pickle=True
-    # )
-    # absent_test_names = np.load(
-    #     npy_path_padded + r"\absent_test_names_norm.npy", allow_pickle=True
-    # )
-    # present_test_names = np.load(
-    #     npy_path_padded + r"\present_test_names_norm.npy", allow_pickle=True
-    # )
     for k in test_fold:
         absent_test_index = np.load(
             npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)
@@ -331,7 +319,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
             npy_path_padded + f"\\absent_name_norm01_fold{k}.npy", allow_pickle=True)
         present_test_names = np.load(
             npy_path_padded + f"\\present_name_norm01_fold{k}.npy", allow_pickle=True)
-    # 可以测一下这个字典names,index组合对不对
+    """可以测一下这个字典names,index组合对不对"""
     absent_test_dic = dict(zip(absent_test_names, absent_test_index))
     present_test_dic = dict(zip(present_test_names, present_test_index))
     # 所有测试数据的字典
@@ -411,9 +399,10 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     for patient_id, locations in patient_dic.items():
         locations = locations.split('+')
         for location in np.unique(locations):
-            # 这里出去了phc，因为phc不在result_dic中
+            # 这里除去了phc，因为phc不在result_dic中
             if location in ['AV', 'PV', 'TV', 'MV']:
                 id_location = patient_id+'_'+location
+
             if id_location in result_dic.keys():
                 if not patient_id in patient_result_dic.keys():
                     patient_result_dic[patient_id] = result_dic[id_location]
@@ -421,7 +410,8 @@ def segment_classifier(result_list_1=[], test_fold=[]):
                     patient_result_dic[patient_id] += result_dic[id_location]
             else:
                 # 正常情况不会报这个错，因为result_dic中的id_loc都是在segment_target_list中的
-                print('[WANGING 3]: '+id_location+' not in result_dic')
+                print('[WANGING 3]: '+patient_id +
+                      id_location+' not in result_dic')
     # 遍历patient_result_dic，计算每个患者的最终分类结果
     patient_output_dic = {}
     patient_output = []
@@ -435,7 +425,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
             patient_output_dic[patient_id] = 1
             patient_output.append(1)
         else:
-            print('[WANGING 4]: result value error')  # 有负数
+            print('[WANGING 4]: result value is negtive?')  # 有负数
         # 做target
         if patient_id in absent_test_id:
             patient_target.append(0)
@@ -445,10 +435,10 @@ def segment_classifier(result_list_1=[], test_fold=[]):
             print('[WANGING 5]: '+patient_id+' not in test_id')
     # 统计patient的错误id
     patient_id_test = list(patient_output_dic.keys())
-    patient_label_test = list(patient_output_dic.values())
+    # 保存错误的id
     patient_error_id = []
-    for patient_index in range(len(patient_label_test)):
-        if patient_label_test[patient_index] != patient_target[patient_index]:
+    for patient_index in range(len(patient_output)):
+        if patient_output[patient_index] != patient_target[patient_index]:
             patient_error_id.append(patient_id_test[patient_index])
     print(patient_error_id)
 
