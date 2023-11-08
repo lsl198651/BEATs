@@ -10,7 +10,7 @@
 
 import torch
 import torch.nn as nn
-from torch.nn import LayerNorm
+from torch.nn import LayerNorm, BatchNorm2d
 import torchaudio.compliance.kaldi as ta_kaldi
 import torchaudio.transforms as TT
 
@@ -120,6 +120,7 @@ class BEATs(nn.Module):
         assert not cfg.deep_norm or not cfg.layer_norm_first
         self.encoder = TransformerEncoder(cfg)
         self.layer_norm = LayerNorm(self.embed)
+        # self.batch_norm = BatchNorm2d(self.embed)
 
         if cfg.finetuned_model:
             self.predictor_dropout = nn.Dropout(cfg.predictor_dropout)
@@ -154,10 +155,13 @@ class BEATs(nn.Module):
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
-            waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
-            # waveform = waveform.unsqueeze(0)
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
+            # spec = transforms.MelSpectrogram(sr=16000, n_fft=512, win_length=50,
+            #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
+            # spec = transforms.AmplitudeToDB(top_db=top_db)(spec)
             fbank = ta_kaldi.fbank(
-                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10, window_type='hamming')
             if args.mask is True:
                 # freqm_value = 30  # 横向
                 # timem_value = 1  # 纵向
