@@ -108,7 +108,7 @@ def train_test(
         train_input, train_target = torch.tensor(
             input_train), torch.tensor(target_train)
         train_acc = binary_accuracy(train_input, train_target)
-        print(f"train_acc:{train_acc:.2%}")
+        # print(f"train_acc:{train_acc:.2%}")
         # ============ evalue ================
         model.eval()
         label = []
@@ -211,7 +211,7 @@ def train_test(
             f"max_acc t: {max_train_acc_value:.2%} v: {max_test_acc_value:.2%}")
         logging.info(f"lr max:{max(lr):.1e} min:{min(lr):.1e}")
         logging.info(f"ACC t: {train_acc:.2%} v: {test_acc:.2%}")
-        logging.info(f"segment_cm:{test_cm}")
+        logging.info(f"segment_cm:{test_cm.numpy()}")
         logging.info(f"segments_auprc:{test_auprc:.3f}")
         logging.info(f"segments_auroc:{test_auroc:.3f}")
         logging.info(f"segments_f1_:{test_f1:.3f}")
@@ -220,14 +220,14 @@ def train_test(
         logging.info(f"location_cm:{location_cm}")
         logging.info(f"----------------------------")
         logging.info(f"patient_acc:{test_patient_acc:.2%}")
-        logging.info(f"patient_cm:{test_patient_cm}")
+        logging.info(f"patient_cm:{test_patient_cm.numpy()}")
         logging.info(f"patient_auprc:{test_patient_auprc:.3f}")
         logging.info(f"patient_auroc:{test_patient_auroc:.3f}")
         logging.info(f"patient_f1_:{test_patient_f1:.3f}")
 
         # 画混淆矩阵
         draw_confusion_matrix(
-            test_cm,
+            test_cm.numpy(),
             ["Absent", "Present"],
             "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
             pdf_save_path=confusion_matrix_path,
