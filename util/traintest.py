@@ -39,6 +39,7 @@ def train_test(
     max_test_acc = []
     max_train_acc = []
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    torch.backends.cudnn.deterministic = True
     model = model.to(device)  # 放到设备中
     # for amp
 # ============lr scheduler================
