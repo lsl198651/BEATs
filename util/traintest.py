@@ -69,7 +69,8 @@ def train_test(
         train_loss = 0
         correct_t = 0
         train_len = 0
-
+        input_train = []
+        target_train = []
         for data_t, label_t, index_t in train_loader:
             data_t, label_t, padding, index_t = data_t.to(
                 device), label_t.to(device), padding.to(device), index_t.to(device)
@@ -97,10 +98,17 @@ def train_test(
                 pred_t = predict_t.max(1, keepdim=True)[1]
                 # label_t = torch.int64(label_t)
                 pred_t = pred_t.squeeze(1)
+                input_train.extend(pred_t.cpu().tolist())
+                target_train.extend(label_t.cpu().tolist())
                 correct_t += pred_t.eq(label_t).sum().item()
                 train_len += len(pred_t)
         if args.scheduler_flag is not None:
             scheduler.step()
+        # ------------------调库计算指标--------------------------
+        train_input, train_target = torch.tensor(
+            input_train), torch.tensor(target_train)
+        train_acc = binary_accuracy(train_input, train_target)
+        print(f"train_acc:{train_acc}")
         # ============ evalue ================
         model.eval()
         label = []
@@ -148,15 +156,21 @@ def train_test(
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
             # ------------------调库计算指标--------------------------
-            test_input = torch.tensor(pred)
-            test_target = torch.tensor(label)
-            test_auprc = binary_auprc(test_input, test_targe)
-            test_auroc = binary_auroc(test_input, test_targe)
-            test_acc = binary_accuracy(test_input, test_targe)
-            test_test_precision = binary_precision(test_input, test_targe)
-            test_recall = binary_recall(test_input, test_targe)
-            test_f1 = binary_f1_score(test_input, test_targe)
-            test_cm = binary_confusion_matrix(test_input, test_targe)
+            test_input, test_target = torch.tensor(pred), torch.tensor(label)
+            test_auprc = binary_auprc(test_input, test_target)
+            test_auroc = binary_auroc(test_input, test_target)
+            test_acc = binary_accuracy(test_input, test_target)
+            test_test_precision = binary_precision(test_input, test_target)
+            test_recall = binary_recall(test_input, test_target)
+            test_f1 = binary_f1_score(test_input, test_target)
+            test_cm = binary_confusion_matrix(test_input, test_target)
+            print(f"test_auprc:{test_auprc:.2f}")
+            print(f"test_auroc:{test_auroc:.2f}")
+            print(f"test_acc:{test_acc:.2%}")
+            print(f"test_test_precision:{test_test_precision:.2%}")
+            print(f"test_recall:{test_recall:.2f}")
+            print(f"test_f1:{test_f1:.2f}")
+            print(f"test_cm:{test_cm}")
             # ---------------------------------------------------------
             pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                              str(epochs+1)+".csv", index=False, header=False)

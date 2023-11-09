@@ -254,8 +254,8 @@ def get_segment_target_list(test_fold):
         列表包含所有present的id和对应的位置
     """
     for k in test_fold:
-        absent_test_id_path = fr"D:\Shilong\murmur\01_dataset\05_5fold\absent_fold_{k}.csv"
-        present_test_id_path = fr"D:\Shilong\murmur\01_dataset\05_5fold\present_fold_{k}.csv"
+        absent_test_id_path = fr"D:\Shilong\murmur\01_dataset\06_new5fold\absent_fold_{k}.csv"
+        present_test_id_path = fr"D:\Shilong\murmur\01_dataset\06_new5fold\present_fold_{k}.csv"
         absent_test_id = csv_reader_cl(absent_test_id_path, 0)
         present_test_id = csv_reader_cl(present_test_id_path, 0)
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
@@ -307,7 +307,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     Returns:
         _type_: _description_
     """
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset\06_new5fold\npyFile_padded\npy_files01"
     for k in test_fold:
         absent_test_index = np.load(
             npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)

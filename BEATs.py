@@ -270,6 +270,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         self.fc_layer = nn.Sequential(
             nn.Linear(768*16, 768),
             nn.ReLU(),
+            # nn.Tanh(),
             # nn.Linear(768, 768),
             # nn.ReLU(),
             nn.Linear(768, 32),
@@ -294,5 +295,5 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # mean
         # output = output.mean(dim=1)
         # sigmoid
-        output = torch.sigmoid(output)
+        # output = torch.sigmoid(output)
         return output
