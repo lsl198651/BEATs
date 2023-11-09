@@ -148,7 +148,8 @@ def train_test(
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
             # ------------------调库计算指标--------------------------
-            test_input, test_target = torch.tensor(pred), torch.tensor(label)
+            test_input = torch.tensor(pred)
+            test_target = torch.tensor(label)
             test_auprc = binary_auprc(test_input, test_targe)
             test_auroc = binary_auroc(test_input, test_targe)
             test_acc = binary_accuracy(test_input, test_targe)
