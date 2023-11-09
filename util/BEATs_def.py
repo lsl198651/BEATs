@@ -2,8 +2,8 @@
 import torch
 import sys
 import torch.nn as nn
-import torch.optim as optim
-import torchvision
+# import torch.optim as optim
+# import torchvision
 import torch
 import torch.nn.functional as F
 # from utils import _log_api_usage_once
@@ -21,11 +21,12 @@ from IPython.display import display
 from sklearn.metrics import confusion_matrix
 from torch.utils.data import DataLoader, Dataset
 from datetime import datetime
-from torch.utils.data import DataLoader, Dataset
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.data import DataLoader, Dataset
+# from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from pydub import AudioSegment
-from sklearn import preprocessing
+# from sklearn import preprocessing
+# from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
 
 def mkdir(path):
@@ -287,9 +288,9 @@ def get_segment_target_list(test_fold):
                     # 以id_loc的形式存储present的id和位置
                     segment_present.append(id+'_'+loc)
                 else:
-                    print(f'[WANGING 1]: '+id+' - [{loc}] not in locations')
+                    print(f'[WANGING 1]: {id} - [{loc}] not in locations')
         else:
-            print('[WANGING 2]: '+id+' murmurs is not present?')
+            print(f'[WANGING 2]: {id} murmurs is not present?')
 
     patient_dic = {}
     # 创建一个空字典，用来存储id和对应的听诊区,formate: id:听诊区
@@ -440,15 +441,16 @@ def segment_classifier(result_list_1=[], test_fold=[]):
             patient_error_id.append(patient_id_test[patient_index])
     print(patient_error_id)
 
-    # 计算准确率和混淆矩阵
-    # 计算准确率
-    #  patient_output.eq(patient_target).sum().item()
-    patient_acc = (np.array(patient_output) == np.array(
-        patient_target)).sum()/len(patient_target)
-    # 计算混淆矩阵
-    patient_cm = confusion_matrix(
-        patient_target, patient_output)
-    return segment_acc, segment_cm, patient_acc, patient_cm, patient_error_id
+    # # 计算准确率和混淆矩阵
+    # test_input, test_target)
+    # # 计算准确率
+    # #  patient_output.eq(patient_target).sum().item()
+    # patient_acc = (np.array(patient_output) == np.array(
+    #     patient_target)).sum()/len(patient_target)
+    # # 计算混淆矩阵
+    # patient_cm = confusion_matrix(
+    #     patient_target, patient_output)
+    return segment_acc, segment_cm, patient_output, patient_target, patient_error_id
 
 
 class BCEFocalLoss(nn.Module):

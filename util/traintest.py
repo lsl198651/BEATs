@@ -108,7 +108,7 @@ def train_test(
         train_input, train_target = torch.tensor(
             input_train), torch.tensor(target_train)
         train_acc = binary_accuracy(train_input, train_target)
-        print(f"train_acc:{train_acc}")
+        print(f"train_acc:{train_acc:.2%}")
         # ============ evalue ================
         model.eval()
         label = []
@@ -155,51 +155,54 @@ def train_test(
                         print("TypeError: 'int' object is not iterable")
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
-            # ------------------调库计算指标--------------------------
-            test_input, test_target = torch.tensor(pred), torch.tensor(label)
-            test_auprc = binary_auprc(test_input, test_target)
-            test_auroc = binary_auroc(test_input, test_target)
-            test_acc = binary_accuracy(test_input, test_target)
-            test_test_precision = binary_precision(test_input, test_target)
-            test_recall = binary_recall(test_input, test_target)
-            test_f1 = binary_f1_score(test_input, test_target)
-            test_cm = binary_confusion_matrix(test_input, test_target)
-            print(f"test_auprc:{test_auprc:.2f}")
-            print(f"test_auroc:{test_auroc:.2f}")
-            print(f"test_acc:{test_acc:.2%}")
-            print(f"test_test_precision:{test_test_precision:.2%}")
-            print(f"test_recall:{test_recall:.2f}")
-            print(f"test_f1:{test_f1:.2f}")
-            print(f"test_cm:{test_cm}")
-            # ---------------------------------------------------------
-            pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
-                                             str(epochs+1)+".csv", index=False, header=False)
-            location_acc, location_cm, patient_acc, patient_cm, patient_error_id = segment_classifier(
-                result_list_present, args.test_fold)  #
-            pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
-                                                  str(epochs+1)+".csv", index=False, header=False)
-            segment_cm = confusion_matrix(label, pred, labels=[0, 1])
+        # ------------------调库计算指标--------------------------
+        test_input, test_target = torch.tensor(pred), torch.tensor(label)
+        test_auprc = binary_auprc(test_input, test_target)
+        test_auroc = binary_auroc(test_input, test_target)
+        test_acc = binary_accuracy(test_input, test_target)
+        test_f1 = binary_f1_score(test_input, test_target)
+        test_cm = binary_confusion_matrix(test_input, test_target)
+        # ---------------------------------------------------------
+        pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
+                                         str(epochs+1)+".csv", index=False, header=False)
+        location_acc, location_cm, patient_output, patient_target, patient_error_id = segment_classifier(
+            result_list_present, args.test_fold)  #
+        test_patient_input, test_patient_target = torch.tensor(
+            patient_output), torch.tensor(patient_target)
+        test_patient_auprc = binary_auprc(
+            test_patient_input, test_patient_target)
+        test_patient_auroc = binary_auroc(
+            test_patient_input, test_patient_target)
+        test_patient_acc = binary_accuracy(
+            test_patient_input, test_patient_target)
+        test_patient_f1 = binary_f1_score(
+            test_patient_input, test_patient_target)
+        test_patient_cm = binary_confusion_matrix(
+            test_patient_input, test_patient_target)
+
+        pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
+                                              str(epochs+1)+".csv", index=False, header=False)
+
         for group in optimizer.param_groups:
             lr_now = group["lr"]
         lr.append(lr_now)
         # 更新权值
         test_loss /= len(pred)
         train_loss /= train_len
-        train_acc = correct_t / train_len
-        test_acc = correct_v / len(pred)
-        # acc = accuracy_score(pred , target)
+
         max_train_acc.append(train_acc)
         max_test_acc.append(test_acc)
         max_train_acc_value = max(max_train_acc)
         max_test_acc_value = max_test_acc[max_train_acc.index(
             max_train_acc_value)]
+        # tensorboard
         tb_writer.add_scalar("train_acc", train_acc, epochs)
         tb_writer.add_scalar("test_acc", test_acc, epochs)
         tb_writer.add_scalar("train_loss", train_loss, epochs)
         tb_writer.add_scalar("test_loss", test_loss, epochs)
         tb_writer.add_scalar("learning_rate", lr_now, epochs)
-        tb_writer.add_scalar("patient_acc", patient_acc, epochs)
-        # a=save_info(num_epochs, epoch, loss, test_acc, test_loss)
+        tb_writer.add_scalar("patient_acc", test_patient_acc, epochs)
+        # logging
         logging.info(f"============================")
         logging.info(f"epoch: {epochs + 1}/{args.num_epochs}")
         logging.info(f"learning_rate: {lr_now:.1e}")
@@ -208,15 +211,23 @@ def train_test(
             f"max_acc t: {max_train_acc_value:.2%} v: {max_test_acc_value:.2%}")
         logging.info(f"lr max:{max(lr):.1e} min:{min(lr):.1e}")
         logging.info(f"ACC t: {train_acc:.2%} v: {test_acc:.2%}")
-        logging.info(f"segment_cm:{segment_cm}")
+        logging.info(f"segment_cm:{test_cm}")
+        logging.info(f"segments_auprc:{test_auprc:.3f}")
+        logging.info(f"segments_auroc:{test_auroc:.3f}")
+        logging.info(f"segments_f1_:{test_f1:.3f}")
+        logging.info(f"----------------------------")
         logging.info(f"location_acc:{location_acc:.2%}")
         logging.info(f"location_cm:{location_cm}")
-        logging.info(f"patient_acc:{patient_acc:.2%}")
-        logging.info(f"patient_cm:{patient_cm}")
+        logging.info(f"----------------------------")
+        logging.info(f"patient_acc:{test_patient_acc:.2%}")
+        logging.info(f"patient_cm:{test_patient_cm}")
+        logging.info(f"patient_auprc:{test_patient_auprc:.3f}")
+        logging.info(f"patient_auroc:{test_patient_auroc:.3f}")
+        logging.info(f"patient_f1_:{test_patient_f1:.3f}")
 
         # 画混淆矩阵
         draw_confusion_matrix(
-            segment_cm,
+            test_cm,
             ["Absent", "Present"],
             "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
             pdf_save_path=confusion_matrix_path,
