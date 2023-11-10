@@ -19,7 +19,7 @@ parser.add_argument("--learning_rate", type=float,
                     default=0.0000001, help="learning_rate for training")
 parser.add_argument("--num_epochs", type=int, default=70, help="num_epochs")
 parser.add_argument("--layers", type=int, default=3, help="layers number")
-parser.add_argument("--loss_type", type=str, default="CE",
+parser.add_argument("--loss_type", type=str, default="FocalLoss",
                     help="loss function", choices=["BCE", "CE", "FocalLoss"])
 parser.add_argument("--scheduler_flag", type=str, default=None,
                     help="the dataset used", choices=["cos", "cos_warmup"],)
@@ -31,7 +31,7 @@ parser.add_argument("--mask", type=bool, default=False,
                     help="number of classes", choices=[True, False])
 parser.add_argument("--trainset_balence", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
-parser.add_argument("--Data_Augmentation", type=bool, default=True,
+parser.add_argument("--Data_Augmentation", type=bool, default=False,
                     help="Add data augmentation", choices=[True, False],)
 parser.add_argument("--train_total", type=bool, default=True,
                     help="use grad_no_requiredn", choices=[True, False],)
@@ -45,8 +45,8 @@ parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
 parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
 parser.add_argument("--cross_evalue", type=bool, default=False)
-parser.add_argument("--train_fold", type=list, default=['0', '1', '2', '3'])
-parser.add_argument("--test_fold", type=list, default=['4'])
+parser.add_argument("--train_fold", type=list, default=[ '1', '2', '3','4'])
+parser.add_argument("--test_fold", type=list, default=['0'])
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label, train_index, test_index = fold5_dataloader(
