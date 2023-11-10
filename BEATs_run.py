@@ -45,8 +45,8 @@ parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
 parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
 parser.add_argument("--cross_evalue", type=bool, default=False)
-parser.add_argument("--train_fold", type=list, default=['0', '1', '3', '4'])
-parser.add_argument("--test_fold", type=list, default=['2'])
+parser.add_argument("--train_fold", type=list, default=['0', '1', '2', '3'])
+parser.add_argument("--test_fold", type=list, default=['4'])
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label, train_index, test_index = fold5_dataloader(
