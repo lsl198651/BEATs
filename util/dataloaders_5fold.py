@@ -17,9 +17,9 @@ def get_features(train_fold: list, test_fold: list):
         train_labels_dic[k] = {}
         train_index_dic[k] = {}
     # data_Auge(src_fold_root_path)
-        folders = ['absent', 'present', 'reverse0.8', 'reverse0.9', 'reverse1.0', 'reverse1.1',
-                   'reverse1.2', 'time stretch0.8', 'time stretch0.9', 'time stretch1.1', 'time stretch1.2']
-        for folder in folders:
+        train_folders = ['absent', 'present', 'reverse0.8', 'reverse0.9', 'reverse1.0', 'reverse1.1',
+                         'reverse1.2', 'time stretch0.8', 'time stretch0.9', 'time stretch1.1', 'time stretch1.2']
+        for folder in train_folders:
             train_feature_dic[k][folder] = np.load(npy_path_padded +
                                                    f"\\{folder}_features_norm01_fold{k}.npy", allow_pickle=True)
             train_labels_dic[k][folder] = np.load(npy_path_padded +
@@ -35,7 +35,8 @@ def get_features(train_fold: list, test_fold: list):
         test_labels_dic[v] = {}
         test_index_dic[v] = {}
         src_fold_root_path = root_path+r"\fold_set_"+k
-        for folder in os.listdir(src_fold_root_path):
+        test_folders = ['absent', 'present']
+        for folder in test_folders:
             test_feature_dic[v][folder] = np.load(npy_path_padded +
                                                   f"\\{folder}_features_norm01_fold{v}.npy", allow_pickle=True)
             test_labels_dic[v][folder] = np.load(npy_path_padded +
