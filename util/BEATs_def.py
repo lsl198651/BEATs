@@ -36,7 +36,7 @@ def butter_bandpass(lowcut, highcut,fs,order=5):
     b,a = butter(order,[low, high],btype='band')
     return b,a
 
-def butter_bandpass_filter(data, lowcut=20,highcut=800,fs=16000, order=5):
+def butter_bandpass_filter(data, lowcut=10,highcut=1000,fs=16000, order=5):
     b,a = butter_bandpass(lowcut,highcut,fs,order=order)
     y = filtfilt(b,a,data.cpu())
     return torch.tensor(y.copy(),dtype=torch.float32)
