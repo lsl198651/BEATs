@@ -19,7 +19,7 @@ parser.add_argument("--learning_rate", type=float,
                     default=0.0000001, help="learning_rate for training")
 parser.add_argument("--num_epochs", type=int, default=100, help="num_epochs")
 parser.add_argument("--layers", type=int, default=3, help="layers number")
-parser.add_argument("--loss_type", type=str, default="CE",
+parser.add_argument("--loss_type", type=str, default="FocalLoss",
                     help="loss function", choices=["BCE", "CE", "FocalLoss"])
 parser.add_argument("--scheduler_flag", type=str, default=None,
                     help="the dataset used", choices=["cos", "cos_warmup"],)
@@ -31,7 +31,7 @@ parser.add_argument("--mask", type=bool, default=False,
                     help="number of classes", choices=[True, False])
 parser.add_argument("--trainset_balence", type=bool, default=False,
                     help="balance absent and present in testset", choices=[True, False],)
-parser.add_argument("--Data_Augmentation", type=bool, default=True,
+parser.add_argument("--Data_Augmentation", type=bool, default=False,
                     help="Add data augmentation", choices=[True, False],)
 parser.add_argument("--train_total", type=bool, default=True,
                     help="use grad_no_requiredn", choices=[True, False],)

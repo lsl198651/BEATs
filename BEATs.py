@@ -144,6 +144,7 @@ class BEATs(nn.Module):
             padding_mask.size(0), features.size(1), -1)
         padding_mask = padding_mask.all(-1)
         return padding_mask
+    
 
     # calculate fbank value
     def preprocess(
@@ -155,7 +156,7 @@ class BEATs(nn.Module):
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
-            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15            
             waveform = waveform.unsqueeze(0)
             # spec = transforms.MelSpectrogram(sr=16000, n_fft=512, win_length=50,
             #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)

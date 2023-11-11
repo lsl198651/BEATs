@@ -25,17 +25,27 @@ from datetime import datetime
 # from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from pydub import AudioSegment
+from scipy.signal import butter, filtfilt
 # from sklearn import preprocessing
 # from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
+def butter_bandpass(lowcut, highcut,fs,order=5):
+    nyquist = 0.5*fs
+    low = lowcut / nyquist
+    high = highcut / nyquist
+    b,a = butter(order,[low, high],btype='band')
+    return b,a
+
+def butter_bandpass_filter(data, lowcut=20,highcut=800,fs=16000, order=5):
+    b,a = butter_bandpass(lowcut,highcut,fs,order=order)
+    y = filtfilt(b,a,data.cpu())
+    return torch.tensor(y.copy(),dtype=torch.float32)
 
 def mkdir(path):
     folder = os.path.exists(path)
     # judge wether make dir or not
     if not folder:
         os.makedirs(path)
-
-#
 
 
 def csv_reader_cl(file_name, clo_num):
