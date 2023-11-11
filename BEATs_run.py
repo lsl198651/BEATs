@@ -17,7 +17,7 @@ parser.add_argument("--batch_size", type=int, default=512,
                     help="args.batch_size for training")
 parser.add_argument("--learning_rate", type=float,
                     default=0.0000001, help="learning_rate for training")
-parser.add_argument("--num_epochs", type=int, default=2, help="num_epochs")
+parser.add_argument("--num_epochs", type=int, default=70, help="num_epochs")
 parser.add_argument("--layers", type=int, default=3, help="layers number")
 parser.add_argument("--loss_type", type=str, default="FocalLoss",
                     help="loss function", choices=["BCE", "CE", "FocalLoss"])
@@ -117,6 +117,7 @@ for k in range(5):
 
     # ========================/ setup scaler /========================== #
     logger_init()
+    logging.info("***************************")
     logging.info(f"{args.model} + {args.layers} fc layer")
     logging.info(f"# Batch_size = {args.batch_size}")
     logging.info(f"# Num_epochs = {args.num_epochs}")
