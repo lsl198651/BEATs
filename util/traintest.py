@@ -121,7 +121,7 @@ def train_test(
         correct_v = 0
         with torch.no_grad():
             for data_v, label_v, index_v in test_loader:
-                data_t = butter_bandpass_filter(data=data_t,lowcut=20,highcut=800,fs=16000,order=5)
+                data_v = butter_bandpass_filter(data=data_v,lowcut=20,highcut=800,fs=16000,order=5)
                 data_v, label_v, padding, index_v = (
                     data_v.to(device),
                     label_v.to(device),

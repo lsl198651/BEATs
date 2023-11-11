@@ -116,7 +116,7 @@ logging.info(f"# Testset_size = {testset_size}")
 logging.info(f"# Train_fold = {args.train_fold}")
 logging.info(f"# Test_fold = {args.test_fold}")
 logging.info("# Optimizer = " + str(optimizer))
-logging.info("# Notes :5.1, 5 fold cross validation")
+logging.info("# Notes :5.1, 5 fold cross validation，添加20-800Hz滤波")
 
 
 train_test(
