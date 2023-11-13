@@ -76,7 +76,6 @@ def train_test(
             # data_t = butter_bandpass_filter(data=data_t)
             data_t, label_t, padding, index_t = data_t.to(
                 device), label_t.to(device), padding.to(device), index_t.to(device)
-            # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
             predict_t = model(data_t, padding)
             if args.loss_type == "BCE":
                 predict_t2 = torch.argmax(predict_t, dim=1)
