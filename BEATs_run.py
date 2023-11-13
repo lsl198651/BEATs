@@ -117,7 +117,7 @@ logging.info(f"# Testset_size = {testset_size}")
 logging.info(f"# Train_fold = {args.train_fold}")
 logging.info(f"# Test_fold = {args.test_fold}")
 logging.info("# Optimizer = " + str(optimizer))
-logging.info("# Notes :5.1, 5 fold cross validation,add 10-1000Hz bandfilter,and 5fold recycle automatatly")
+logging.info("# Notes :5.1, 5 fold cross validation")
 
 
 train_test(
