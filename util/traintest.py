@@ -180,6 +180,9 @@ def train_test(
             test_patient_input, test_patient_target)
         test_patient_cm = binary_confusion_matrix(
             test_patient_input, test_patient_target)
+        # 这两个算出来的都是present的
+        test_PPV = binary_precision(test_patient_input, test_patient_target)
+        test_TPR = binary_recall(test_patient_input, test_patient_target)
 
         pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
                                               str(epochs+1)+".csv", index=False, header=False)
@@ -213,8 +216,8 @@ def train_test(
         logging.info(f"lr max:{max(lr):.1e} min:{min(lr):.1e}")
         logging.info(f"ACC t: {train_acc:.2%} v: {test_acc:.2%}")
         logging.info(f"segment_cm:{test_cm.numpy()}")
-        logging.info(f"segments_auprc:{test_auprc:.3f}")
         logging.info(f"segments_auroc:{test_auroc:.3f}")
+        logging.info(f"segments_auprc:{test_auprc:.3f}")
         logging.info(f"segments_f1_:{test_f1:.3f}")
         logging.info(f"----------------------------")
         logging.info(f"location_acc:{location_acc:.2%}")
@@ -222,9 +225,11 @@ def train_test(
         logging.info(f"----------------------------")
         logging.info(f"patient_acc:{test_patient_acc:.2%}")
         logging.info(f"patient_cm:{test_patient_cm.numpy()}")
-        logging.info(f"patient_auprc:{test_patient_auprc:.3f}")
         logging.info(f"patient_auroc:{test_patient_auroc:.3f}")
+        logging.info(f"patient_auprc:{test_patient_auprc:.3f}")
         logging.info(f"patient_f1_:{test_patient_f1:.3f}")
+        logging.info(f"patient_PPV:{test_PPV:.3f}")
+        logging.info(f"patient_TPR:{test_TPR:.3f}")
 
         # 画混淆矩阵
         draw_confusion_matrix(
