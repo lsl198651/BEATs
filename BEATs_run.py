@@ -45,8 +45,8 @@ parser.add_argument("--confusion_matrix_path", type=float,
                     default=1.0, help="ratio of absent and present",)
 parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
 parser.add_argument("--cross_evalue", type=bool, default=False)
-parser.add_argument("--train_fold", type=list, default=['0', '1', '3', '4'])
-parser.add_argument("--test_fold", type=list, default=['2'])
+parser.add_argument("--train_fold", type=list, default=['1', '2', '3', '4'])
+parser.add_argument("--test_fold", type=list, default=['0'])
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label, train_index, test_index = fold5_dataloader(
@@ -116,7 +116,8 @@ logging.info(f"# Testset_size = {testset_size}")
 logging.info(f"# Train_fold = {args.train_fold}")
 logging.info(f"# Test_fold = {args.test_fold}")
 logging.info("# Optimizer = " + str(optimizer))
-logging.info("# Notes :5.1, 5 fold cross validation")
+logging.info(
+    "# Notes :5.1, 5 fold cross validation,4 layers 3072 encoder_ffn_embed_dim")
 
 
 train_test(
