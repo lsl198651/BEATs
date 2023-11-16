@@ -361,7 +361,7 @@ if __name__ == '__main__':
     Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
-    root_path = r"D:\Shilong\murmur\01_dataset\06_new5fold"
+    root_path = r"D:\Shilong\murmur\01_dataset\07_newnorm"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file

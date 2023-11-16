@@ -13,7 +13,7 @@ import torch.nn as nn
 from torch.nn import LayerNorm, BatchNorm2d
 import torchaudio.compliance.kaldi as ta_kaldi
 import torchaudio.transforms as TT
-
+import spafe
 from backbone import (
     TransformerEncoder,
 )
