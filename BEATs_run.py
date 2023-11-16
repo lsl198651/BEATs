@@ -117,7 +117,7 @@ logging.info(f"# Train_fold = {args.train_fold}")
 logging.info(f"# Test_fold = {args.test_fold}")
 logging.info("# Optimizer = " + str(optimizer))
 logging.info(
-    "# Notes :5.1, 5 fold cross validation,4 layers 3072 encoder_ffn_embed_dim")
+    "# Notes :5.1, 5 fold cross validation,2 layers 1536 encoder_ffn_embed_dim")
 
 
 train_test(
