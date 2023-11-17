@@ -269,7 +269,7 @@ def get_segment_target_list(test_fold):
         present_test_id_path = fr"D:\Shilong\murmur\01_dataset\07_newnorm\present_fold_{k}.csv"
         absent_test_id = csv_reader_cl(absent_test_id_path, 0)
         present_test_id = csv_reader_cl(present_test_id_path, 0)
-    csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
+    csv_path = r"D:\Shilong\murmur\01_dataset\all_data\training_data.csv"
     # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
     tag_list = []
