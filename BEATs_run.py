@@ -117,7 +117,7 @@ logging.info(f"# Train_fold = {args.train_fold}")
 logging.info(f"# Test_fold = {args.test_fold}")
 logging.info("# Optimizer = " + str(optimizer))
 logging.info(
-    "# fold 5 config 6 heads and 2 layers encoders to try the impact about the number of heads and layers")
+    "# ")
 
 
 train_test(
