@@ -33,7 +33,7 @@ class BEATsConfig:
         self.encoder_layers: int = 2  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
-        self.encoder_attention_heads: int = 12  # num encoder attention heads
+        self.encoder_attention_heads: int = 6  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
 
         self.layer_wise_gradient_decay_ratio: float = (
