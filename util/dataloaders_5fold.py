@@ -6,7 +6,7 @@ import os
 
 def get_features(train_fold: list, test_fold: list):
     # npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
-    root_path = r"D:\Shilong\murmur\01_dataset\07_newnorm"
+    root_path = r"D:\Shilong\murmur\01_dataset\06_new5fold"
     npy_path_padded = root_path+r"\npyFile_padded\npy_files01"
     train_feature_dic = {}
     train_labels_dic = {}
