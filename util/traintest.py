@@ -120,7 +120,7 @@ def train_test(
         result_list_present = []
         test_loss = 0
         correct_v = 0
-        with torch.no_grad(set_to_none=True):
+        with torch.no_grad():
             for data_v, label_v, index_v in test_loader:
                 data_v, label_v, padding, index_v = (
                     data_v.to(device),
