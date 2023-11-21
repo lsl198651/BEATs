@@ -67,7 +67,7 @@ else:
 val_loader = DataLoader(
     DatasetClass(wavlabel=test_label,
                  wavdata=test_features, wavidx=test_index),
-    batch_size=args.batch_size, shuffle=True, drop_last=True, pin_memory=True,
+    batch_size=1, shuffle=True, drop_last=True, pin_memory=True,
 )
 
 # ========================/ dataset size /========================== #
