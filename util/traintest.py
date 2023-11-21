@@ -214,7 +214,7 @@ def train_test(
         logging.info(
             f"max_acc t: {max_train_acc_value:.2%} v: {max_test_acc_value:.2%}")
         logging.info(f"lr max:{max(lr):.1e} min:{min(lr):.1e}")
-        logging.info(f"ACC t: {train_acc:.2%} v: {test_acc:.2%}")
+        logging.info(f"train Acc: {train_acc:.2%} \nvalid Acc: {test_acc:.2%}")
         logging.info(f"segment_cm:{test_cm.numpy()}")
         logging.info(f"segments_auroc:{test_auroc:.3f}")
         logging.info(f"segments_auprc:{test_auprc:.3f}")
