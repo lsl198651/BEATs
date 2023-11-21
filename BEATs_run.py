@@ -47,10 +47,11 @@ parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
 parser.add_argument("--cross_evalue", type=bool, default=False)
 parser.add_argument("--train_fold", type=list, default=['0', '1', '2', '4'])
 parser.add_argument("--test_fold", type=list, default=['4'])
+parser.add_argument("--setType", type=str, default=r"\06_new5fold")
 args = parser.parse_args()
 
 train_features, train_label, test_features, test_label, train_index, test_index = fold5_dataloader(
-    args.train_fold, args.test_fold, args.Data_Augmentation)
+    args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
 # ========================/ setup loader /========================== #
 if args.samplerWeight == True:
     weights = [3 if label == 1 else 1 for label in train_label]
@@ -109,6 +110,7 @@ logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
 logging.info(f"# Trainset_balance = {args.trainset_balence}")
 logging.info(f"# train_total = {args.train_total}")
 logging.info(f"# Masking = {args.mask}")
+logging.info(f"# SetType = {args.setType}")
 logging.info(f"# Train_a/p = {train_absent_size}/{train_present_size}")
 logging.info(f"# Test_a/p = {test_absent_size}/{test_present_size}")
 logging.info(f"# Trainset_size = {trainset_size}")

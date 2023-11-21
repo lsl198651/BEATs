@@ -38,6 +38,7 @@ def train_test(
     lr = []
     max_test_acc = []
     max_train_acc = []
+    best_acc = 0.0
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.backends.cudnn.deterministic = True
     model = model.to(device)  # 放到设备中
@@ -167,7 +168,7 @@ def train_test(
         pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                          str(epochs+1)+".csv", index=False, header=False)
         location_acc, location_cm, patient_output, patient_target, patient_error_id = segment_classifier(
-            result_list_present, args.test_fold)  #
+            result_list_present, args.test_fold, args.setType)  #
         test_patient_input, test_patient_target = torch.tensor(
             patient_output), torch.tensor(patient_target)
         test_patient_auprc = binary_auprc(
@@ -183,17 +184,16 @@ def train_test(
         # 这两个算出来的都是present的
         test_PPV = binary_precision(test_patient_input, test_patient_target)
         test_TPR = binary_recall(test_patient_input, test_patient_target)
-
+        if test_patient_acc > best_acc:
+            best_acc = test_patient_acc
         pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
                                               str(epochs+1)+".csv", index=False, header=False)
-
         for group in optimizer.param_groups:
             lr_now = group["lr"]
         lr.append(lr_now)
         # 更新权值
         test_loss /= len(pred)
         train_loss /= train_len
-
         max_train_acc.append(train_acc)
         max_test_acc.append(test_acc)
         max_train_acc_value = max(max_train_acc)
@@ -219,9 +219,9 @@ def train_test(
         logging.info(f"segments_auroc:{test_auroc:.3f}")
         logging.info(f"segments_auprc:{test_auprc:.3f}")
         logging.info(f"segments_f1_:{test_f1:.3f}")
-        logging.info(f"----------------------------")
-        logging.info(f"location_acc:{location_acc:.2%}")
-        logging.info(f"location_cm:{location_cm}")
+        # logging.info(f"----------------------------")
+        # logging.info(f"location_acc:{location_acc:.2%}")
+        # logging.info(f"location_cm:{location_cm}")
         logging.info(f"----------------------------")
         logging.info(f"patient_acc:{test_patient_acc:.2%}")
         logging.info(f"patient_cm:{test_patient_cm.numpy()}")
@@ -230,7 +230,7 @@ def train_test(
         logging.info(f"patient_f1_:{test_patient_f1:.3f}")
         logging.info(f"patient_PPV:{test_PPV:.3f}")
         logging.info(f"patient_TPR:{test_TPR:.3f}")
-
+        logging.info(f"best_acc:{best_acc:.2%}")
         # 画混淆矩阵
         draw_confusion_matrix(
             test_cm.numpy(),

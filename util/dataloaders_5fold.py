@@ -4,9 +4,9 @@ import os
 # args,
 
 
-def get_features(train_fold: list, test_fold: list):
+def get_features(train_fold: list, test_fold: list, set_type: str):
     # npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
-    root_path = r"D:\Shilong\murmur\01_dataset\06_new5fold"
+    root_path = r"D:\Shilong\murmur\01_dataset"+set_type
     npy_path_padded = root_path+r"\npyFile_padded\npy_files01"
     train_feature_dic = {}
     train_labels_dic = {}
@@ -46,10 +46,10 @@ def get_features(train_fold: list, test_fold: list):
     return train_feature_dic, train_labels_dic, train_index_dic, test_feature_dic, test_labels_dic, test_index_dic, train_folders
 
 
-def fold5_dataloader(train_folder, test_folder, Data_Augmentation):
+def fold5_dataloader(train_folder, test_folder, Data_Augmentation, set_type):
     """组合特征并且返回features，label，index"""
     train_feature_dic, train_labels_dic, train_index_dic, test_feature_dic, test_labels_dic, test_index_dic, data_class = get_features(
-        train_folder, test_folder)
+        train_folder, test_folder, set_type)
     if Data_Augmentation is True:
         train_features = np.vstack(
             (

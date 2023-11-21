@@ -249,14 +249,16 @@ class DatasetClass(Dataset):
     #     return iditem
 
 
-def get_segment_target_list(test_fold):
+def get_segment_target_list(test_fold, set_type):
     """ get segment target list
         根据csv文件生成并返回segment_target_list
         列表包含所有present的id和对应的位置
     """
     for k in test_fold:
-        absent_test_id_path = fr"D:\Shilong\murmur\01_dataset\06_new5fold\absent_fold_{k}.csv"
-        present_test_id_path = fr"D:\Shilong\murmur\01_dataset\06_new5fold\present_fold_{k}.csv"
+        absent_test_id_path = fr"D:\Shilong\murmur\01_dataset" + \
+            set_type+fr"\absent_fold_{k}.csv"
+        present_test_id_path = fr"D:\Shilong\murmur\01_dataset" + \
+            set_type+fr"\present_fold_{k}.csv"
         absent_test_id = csv_reader_cl(absent_test_id_path, 0)
         present_test_id = csv_reader_cl(present_test_id_path, 0)
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
@@ -300,7 +302,7 @@ def get_segment_target_list(test_fold):
     return segment_present, patient_dic, absent_test_id, present_test_id
 
 
-def segment_classifier(result_list_1=[], test_fold=[]):
+def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
     """本fn计算了针对每个location和patient的acc和cm
     Args:
         result_list_1 (list, optional): 此列表用来存储分类结果为1对应的id.从test结果中生成传入.
@@ -308,7 +310,8 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     Returns:
         _type_: _description_
     """
-    npy_path_padded = r"D:\Shilong\murmur\01_dataset\06_new5fold\npyFile_padded\npy_files01"
+    npy_path_padded = r"D:\Shilong\murmur\01_dataset" + \
+        set_type+r"\npyFile_padded\npy_files01"
     for k in test_fold:
         absent_test_index = np.load(
             npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)
@@ -357,7 +360,7 @@ def segment_classifier(result_list_1=[], test_fold=[]):
     # result_dic格式：12345_AV: 0.5, 12345_MV: 0.3
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
     segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list(
-        test_fold)
+        test_fold, set_type)
     # 创建两个列表，分别保存outcome和target列表
     segment_output = []
     segment_target = []
