@@ -269,12 +269,12 @@ class BEATs_Pre_Train_itere3(nn.Module):
         self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
             nn.Linear(768*16, 768),
-            nn.ReLU(),
+            nn.GELU(),
             # nn.Tanh(),
             # nn.Linear(768, 768),
             # nn.ReLU(),
             nn.Linear(768, 32),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Linear(32, 2),
         )
 

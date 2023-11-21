@@ -41,6 +41,7 @@ def train_test(
     best_acc = 0.0
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
     model = model.to(device)  # 放到设备中
     # for amp
 # ============lr scheduler================
@@ -107,8 +108,8 @@ def train_test(
         if args.scheduler_flag is not None:
             scheduler.step()
         # ------------------调库计算指标--------------------------
-        train_input, train_target = torch.tensor(
-            input_train), torch.tensor(target_train)
+        train_input, train_target = torch.as_tensor(
+            input_train), torch.as_tensor(target_train)
         train_acc = binary_accuracy(train_input, train_target)
         # print(f"train_acc:{train_acc:.2%}")
         # ============ evalue ================
@@ -119,7 +120,7 @@ def train_test(
         result_list_present = []
         test_loss = 0
         correct_v = 0
-        with torch.no_grad():
+        with torch.no_grad(set_to_none=True):
             for data_v, label_v, index_v in test_loader:
                 data_v, label_v, padding, index_v = (
                     data_v.to(device),
@@ -158,7 +159,7 @@ def train_test(
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
         # ------------------调库计算指标--------------------------
-        test_input, test_target = torch.tensor(pred), torch.tensor(label)
+        test_input, test_target = torch.as_tensor(pred), torch.as_tensor(label)
         test_auprc = binary_auprc(test_input, test_target)
         test_auroc = binary_auroc(test_input, test_target)
         test_acc = binary_accuracy(test_input, test_target)
@@ -169,8 +170,8 @@ def train_test(
                                          str(epochs+1)+".csv", index=False, header=False)
         location_acc, location_cm, patient_output, patient_target, patient_error_id = segment_classifier(
             result_list_present, args.test_fold, args.setType)  #
-        test_patient_input, test_patient_target = torch.tensor(
-            patient_output), torch.tensor(patient_target)
+        test_patient_input, test_patient_target = torch.as_tensor(
+            patient_output), torch.as_tensor(patient_target)
         test_patient_auprc = binary_auprc(
             test_patient_input, test_patient_target)
         test_patient_auroc = binary_auroc(

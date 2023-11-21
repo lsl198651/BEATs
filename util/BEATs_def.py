@@ -229,9 +229,9 @@ class DatasetClass(Dataset):
     def __init__(self, wavlabel, wavdata, wavidx):
         # 直接传递data和label
         # self.len = wavlen
-        self.data = torch.tensor(wavdata)
-        self.label = torch.tensor(wavlabel)
-        self.id = torch.tensor(wavidx)
+        self.data = torch.from_numpy(wavdata)
+        self.label = torch.from_numpy(wavlabel)
+        self.id = torch.from_numpy(wavidx)
 
     def __getitem__(self, index):
         # 根据索引返回数据和对应的标签

@@ -59,16 +59,15 @@ if args.samplerWeight == True:
         weights, num_samples=len(weights), replacement=True
     )
     train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
-                              sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True,)
+                              sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True, num_workers=4)
 else:
     train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
-                              batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True,)
+                              batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=4)
 
 val_loader = DataLoader(
     DatasetClass(wavlabel=test_label,
                  wavdata=test_features, wavidx=test_index),
-    batch_size=1, shuffle=True, drop_last=False, pin_memory=True,
-)
+    batch_size=1, shuffle=True, drop_last=False, pin_memory=True, num_workers=4)
 
 # ========================/ dataset size /========================== #
 train_present_size = np.sum(train_label == 1)

@@ -12,6 +12,8 @@
     "{split_before_expression_after_opening_paren:true}",	//在左括号后是否换行
     
 ],
-"editor.fontFamily": "‘Fira Code’,Consolas, 'Courier New', monospace"
+"editor.fontFamily": "‘Fira Code’,Consolas, 'Courier New', monospace",
+"python.analysis.typeCheckingMode": "off",
+"python.analysis.autoImportCompletions": true
 
 }
