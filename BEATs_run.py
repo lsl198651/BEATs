@@ -1,5 +1,6 @@
 import argparse
 from os import name
+from sympy import true
 import torch
 import torch.profiler
 import logging
@@ -71,7 +72,7 @@ if __name__ == '__main__':
     val_loader = DataLoader(
         DatasetClass(wavlabel=test_label,
                      wavdata=test_features, wavidx=test_index),
-        batch_size=1, shuffle=True, drop_last=False, pin_memory=True, num_workers=4)
+        batch_size=args.batch_size, shuffle=True, drop_last=True, pin_memory=True, num_workers=4)
 
     # ========================/ dataset size /========================== #
     train_present_size = np.sum(train_label == 1)
