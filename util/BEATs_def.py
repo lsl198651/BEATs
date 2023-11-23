@@ -578,7 +578,7 @@ def logger_init(
     logging.basicConfig(
         level=log_level,
         format=formatter,
-        datefmt="%Y-%m%d %H%M",
+        datefmt="%m%d %H%M",
         handlers=[logging.FileHandler(
             log_path), logging.StreamHandler(sys.stdout)],
     )
