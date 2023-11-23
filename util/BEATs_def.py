@@ -30,14 +30,16 @@ from scipy import signal
 # from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
 
-def butterworth_low_pass_filter(original_signal, order, cutoff, sampling_frequency, figures=False):
+def butterworth_low_pass_filter(original_signal, order, lowcut, highcut, sampling_frequency):
 
     # Get the butterworth filter coefficients
-    B_low, A_low = signal.butter(order, 2*cutoff/sampling_frequency, 'low')
+    low = 2*lowcut / sampling_frequency
+    high = highcut / sampling_frequency
+    B, A = signal.butter(order, [low, high],  btype='bandpass')
     # Forward-backward filter the original signal using the butterworth
     # coefficients, ensuring zero phase distortion
-    low_pass_filtered_signal = signal.filtfilt(B_low, A_low, original_signal)
-    return low_pass_filtered_signal
+    band_pass_filtered_signal = signal.filtfilt(B, A, original_signal)
+    return band_pass_filtered_signal
 
 
 def mkdir(path):
