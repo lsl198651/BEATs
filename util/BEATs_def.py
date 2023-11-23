@@ -25,8 +25,19 @@ from datetime import datetime
 # from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from pydub import AudioSegment
+from scipy import signal
 # from sklearn import preprocessing
 # from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
+
+
+def butterworth_low_pass_filter(original_signal, order, cutoff, sampling_frequency, figures=False):
+
+    # Get the butterworth filter coefficients
+    B_low, A_low = signal.butter(order, 2*cutoff/sampling_frequency, 'low')
+    # Forward-backward filter the original signal using the butterworth
+    # coefficients, ensuring zero phase distortion
+    low_pass_filtered_signal = signal.filtfilt(B_low, A_low, original_signal)
+    return low_pass_filtered_signal
 
 
 def mkdir(path):
@@ -34,8 +45,6 @@ def mkdir(path):
     # judge wether make dir or not
     if not folder:
         os.makedirs(path)
-
-#
 
 
 def csv_reader_cl(file_name, clo_num):
