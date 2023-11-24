@@ -30,7 +30,7 @@ from scipy import signal
 # from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
 
-def butterworth_low_pass_filter(original_signal, order, lowcut, highcut, sampling_frequency):
+def butterworth_low_pass_filter(original_signal, order=2, lowcut=25, highcut=800, sampling_frequency=16000):
 
     # Get the butterworth filter coefficients
     low = 2*lowcut / sampling_frequency
@@ -38,8 +38,14 @@ def butterworth_low_pass_filter(original_signal, order, lowcut, highcut, samplin
     B, A = signal.butter(order, [low, high],  btype='bandpass')
     # Forward-backward filter the original signal using the butterworth
     # coefficients, ensuring zero phase distortion
-    band_pass_filtered_signal = signal.filtfilt(B, A, original_signal)
-    return band_pass_filtered_signal
+    filtered_signal = np.zeros(original_signal.shape)
+    original_signal = original_signal.numpy()
+    for i in range(original_signal.shape[0]):
+        filtered_signal[i] = signal.filtfilt(B, A, original_signal[i])
+    return torch.Tensor(original_signal)
+
+    # band_pass_filtered_signal = signal.filtfilt(B, A, original_signal)
+    # return band_pass_filtered_signal
 
 
 def mkdir(path):

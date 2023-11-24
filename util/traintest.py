@@ -9,7 +9,7 @@ from datetime import datetime
 from transformers import optimization
 from sklearn.metrics import confusion_matrix
 from torch.cuda.amp import autocast, GradScaler
-from util.BEATs_def import draw_confusion_matrix
+from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
 from torch.utils.tensorboard import SummaryWriter
 from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list
 from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
@@ -75,6 +75,7 @@ def train_test(
         input_train = []
         target_train = []
         for data_t, label_t, index_t in train_loader:
+            data_t = butterworth_low_pass_filter(data_t)
             data_t, label_t, padding, index_t = data_t.to(
                 device), label_t.to(device), padding.to(device), index_t.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
@@ -122,6 +123,7 @@ def train_test(
         correct_v = 0
         with torch.no_grad():
             for data_v, label_v, index_v in test_loader:
+                data_v = butterworth_low_pass_filter(data_v)
                 data_v, label_v, padding, index_v = (
                     data_v.to(device),
                     label_v.to(device),
