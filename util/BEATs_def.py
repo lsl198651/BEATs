@@ -28,6 +28,35 @@ from pydub import AudioSegment
 from scipy import signal
 # from sklearn import preprocessing
 # from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
+import warnings
+from scipy import signal
+# from python_speech_features import logfbank
+from spafe.features.gfcc import erb_spectrogram
+from spafe.utils.preprocessing import SlidingWindow
+warnings.filterwarnings('ignore')
+
+
+def Log_GF(wavform):
+    # x, fs = librosa.load(filename, sr=16000)
+    # energy = Energy(x,fs,100,50)
+    fbank_feat_all = []
+    for i in range(wavform.shape[0]):
+        gSpec, gfreqs = erb_spectrogram(wavform[i, :].numpy(), fs=16000, pre_emph=0, pre_emph_coeff=0.97, window=SlidingWindow(
+            0.025, 0.0125, "hamming"), nfilts=64, nfft=512, low_freq=25, high_freq=2000)
+        fbank_feat = gSpec.T
+        # fbank_feat = fbank_feat*energy
+        fbank_feat = np.log(fbank_feat)
+        # if i == 0:
+        fbank_feat_all.append(fbank_feat)
+    fbank_feat_all = np.stack(fbank_feat_all, axis=0)
+    # else:
+    #     fbank_feat_all = np.vstack((fbank_feat_all, fbank_feat))
+    # gSpec, gfreqs = erb_spectrogram(wavform[1, :].numpy(), fs=16000, pre_emph=0, pre_emph_coeff=0.97, window=SlidingWindow(
+    #     0.025, 0.0125, "hamming"), nfilts=64, nfft=512, low_freq=25, high_freq=2000)
+    # fbank_feat = gSpec.T
+    # # fbank_feat = fbank_feat*energy
+    # fbank_feat = np.log(fbank_feat)
+    return torch.FloatTensor(fbank_feat_all)
 
 
 def butterworth_low_pass_filter(original_signal, order=2, lowcut=25, highcut=800, sampling_frequency=16000):

@@ -8,19 +8,15 @@
 # --------------------------------------------------------
 
 
+from typing import Optional
+import logging
 import torch
 import torch.nn as nn
 from torch.nn import LayerNorm, BatchNorm2d
 import torchaudio.compliance.kaldi as ta_kaldi
 import torchaudio.transforms as TT
-import spafe
-from backbone import (
-    TransformerEncoder,
-)
-
-import logging
-from typing import Optional
-
+from backbone import TransformerEncoder
+from util.BEATs_def import Log_GF
 logger = logging.getLogger(__name__)
 
 
@@ -162,6 +158,7 @@ class BEATs(nn.Module):
             # spec = transforms.AmplitudeToDB(top_db=top_db)(spec)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+
             if args.mask is True:
                 # freqm_value = 30  # 横向
                 # timem_value = 1  # 纵向
@@ -176,30 +173,35 @@ class BEATs(nn.Module):
                 # squeeze it back, it is just a trick to satisfy new torchaudio version
                 fbank = fbank.squeeze(0)
                 fbank = torch.transpose(fbank, 0, 1)
-            fbank_mean = fbank.mean()
-            fbank_std = fbank.std()
-            fbank = (fbank - fbank_mean) / (2 * fbank_std)
-            fbanks.append(fbank)
+            # fbank_mean = fbank.mean()
+            # fbank_std = fbank.std()
+            # fbank = (fbank - fbank_mean) / (2 * fbank_std)
+            # fbanks.append(fbank)
+            fbank_mean = gfcc.mean()
+            fbank_std = gfcc.std()
+            gfcc = (gfcc - fbank_mean) / (2 * fbank_std)
+            fbanks.append(gfcc)
         fbank = torch.stack(fbanks, dim=0)
         return fbank
 
     def extract_features(
         self,
-        source: torch.Tensor,
+        fbank: torch.Tensor,
         padding_mask: Optional[torch.Tensor] = None,
         args=None,
     ):
         # wav提取fbank系数
-        fbank = self.preprocess(
-            source,
-            args=args,
-        )
+        # fbank = self.preprocess(
+        #     source,
+        #     args=args,
+        # )
         # 如果有padding-mask的话进行forward-padding-mask
         # 返回一个值？？？
         if padding_mask is not None:
             padding_mask = self.forward_padding_mask(fbank, padding_mask)
 
         fbank = fbank.unsqueeze(1)
+        # fbank = torch.FloatTensor(fbank)
         # fbank送入卷积层patch_embedding
         features = self.patch_embedding(fbank)
         features = features.reshape(features.shape[0], features.shape[1], -1)
@@ -268,7 +270,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
-            nn.Linear(768*16, 768),
+            nn.Linear(3072, 768),
             nn.GELU(),
             # nn.Tanh(),
             # nn.Linear(768, 768),
