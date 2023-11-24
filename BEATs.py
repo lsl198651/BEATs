@@ -173,28 +173,24 @@ class BEATs(nn.Module):
                 # squeeze it back, it is just a trick to satisfy new torchaudio version
                 fbank = fbank.squeeze(0)
                 fbank = torch.transpose(fbank, 0, 1)
-            # fbank_mean = fbank.mean()
-            # fbank_std = fbank.std()
-            # fbank = (fbank - fbank_mean) / (2 * fbank_std)
-            # fbanks.append(fbank)
-            fbank_mean = gfcc.mean()
-            fbank_std = gfcc.std()
-            gfcc = (gfcc - fbank_mean) / (2 * fbank_std)
-            fbanks.append(gfcc)
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / (2 * fbank_std)
+            fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         return fbank
 
     def extract_features(
         self,
-        fbank: torch.Tensor,
+        source: torch.Tensor,
         padding_mask: Optional[torch.Tensor] = None,
         args=None,
     ):
         # wav提取fbank系数
-        # fbank = self.preprocess(
-        #     source,
-        #     args=args,
-        # )
+        fbank = self.preprocess(
+            source,
+            args=args,
+        )
         # 如果有padding-mask的话进行forward-padding-mask
         # 返回一个值？？？
         if padding_mask is not None:
@@ -270,7 +266,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
-            nn.Linear(3072, 768),
+            nn.Linear(768*16, 768),
             nn.GELU(),
             # nn.Tanh(),
             # nn.Linear(768, 768),
