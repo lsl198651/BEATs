@@ -11,6 +11,7 @@ from sklearn.metrics import confusion_matrix
 from torch.cuda.amp import autocast, GradScaler
 from util.BEATs_def import draw_confusion_matrix
 from torch.utils.tensorboard import SummaryWriter
+from util.BEATs_def import Log_GF
 from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list
 from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
@@ -75,10 +76,11 @@ def train_test(
         input_train = []
         target_train = []
         for data_t, label_t, index_t in train_loader:
-            data_t, label_t, padding, index_t = data_t.to(
+            gfcc = Log_GF(data_t)
+            gfcc, label_t, padding, index_t = gfcc.to(
                 device), label_t.to(device), padding.to(device), index_t.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t, padding)
+            predict_t = model(gfcc, padding)
             if args.loss_type == "BCE":
                 predict_t2 = torch.argmax(predict_t, dim=1)
                 loss = loss_fn(predict_t2.float(), label_t)
@@ -122,14 +124,15 @@ def train_test(
         correct_v = 0
         with torch.no_grad():
             for data_v, label_v, index_v in test_loader:
-                data_v, label_v, padding, index_v = (
-                    data_v.to(device),
+                gfcc_v = Log_GF(data_v)
+                gfcc_v, label_v, padding, index_v = (
+                    gfcc_v.to(device),
                     label_v.to(device),
                     padding.to(device),
                     index_v.to(device),
                 )
                 optimizer.zero_grad()
-                predict_v = model(data_v, padding)
+                predict_v = model(gfcc_v, padding)
                 # recall = recall_score(y_hat, y)
                 if args.loss_type == "BCE":
                     predict_v2 = torch.argmax(predict_v, dim=1)
