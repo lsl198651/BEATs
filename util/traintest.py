@@ -76,7 +76,7 @@ def train_test(
         input_train = []
         target_train = []
         for data_t, label_t, index_t in train_loader:
-            data_t = butterworth_low_pass_filter(data_t)
+            # data_t = butterworth_low_pass_filter(data_t)
             data_t, label_t, padding, index_t = data_t.to(
                 device), label_t.to(device), padding.to(device), index_t.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
@@ -124,7 +124,7 @@ def train_test(
         correct_v = 0
         with torch.no_grad():
             for data_v, label_v, index_v in test_loader:
-                data_v = butterworth_low_pass_filter(data_v)
+                # data_v = butterworth_low_pass_filter(data_v)
                 data_v, label_v, padding, index_v = (
                     data_v.to(device),
                     label_v.to(device),
