@@ -52,7 +52,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_fold", type=list,
                         default=['0', '1', '2', '3'])
     parser.add_argument("--test_fold", type=list, default=['4'])
-    parser.add_argument("--setType", type=str, default=r"\07_newnorm")
+    parser.add_argument("--setType", type=str, default=r"\06_new5fold")
     args = parser.parse_args()
     # 检测分折重复
     for val in args.test_fold:
