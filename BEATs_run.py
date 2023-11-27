@@ -50,8 +50,8 @@ if __name__ == '__main__':
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['0', '1', '2', '3'])
-    parser.add_argument("--test_fold", type=list, default=['4'])
+                        default=['0', '1', '2', '4'])
+    parser.add_argument("--test_fold", type=list, default=['3'])
     parser.add_argument("--setType", type=str, default=r"\06_new5fold")
     args = parser.parse_args()
     # 检测分折重复
