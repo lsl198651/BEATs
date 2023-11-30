@@ -8,3 +8,4 @@ error_index
 .vscode
 __pycache__
 *.csv
+patient_error_index
