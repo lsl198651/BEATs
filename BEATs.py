@@ -276,7 +276,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
 
         self.conv3 = nn.Conv2d(1, 64, kernel_size=(
-            3, 3), stride=(1, 1), padding=(1, 1))
+            3, 3), stride=(2, 2), padding=(1, 1))
         self.relu3 = nn.ReLU()
         self.bn3 = nn.BatchNorm2d(64)
         self.dp3 = nn.Dropout(p=0.1)
@@ -285,32 +285,34 @@ class BEATs_Pre_Train_itere3(nn.Module):
         conv_layers2 += [self.conv3, self.bn3, self.relu3, self.dp3]
 
         self.conv4 = nn.Conv2d(64, 32, kernel_size=(
-            3, 3), stride=(1, 1), padding=(1, 1))
+            3, 3), stride=(2, 2), padding=(1, 1))
         self.relu4 = nn.ReLU()
         self.bn4 = nn.BatchNorm2d(32)
         init.kaiming_normal_(self.conv4.weight, a=0.1)
         self.conv4.bias.data.zero_()
         conv_layers2 += [self.conv4, self.bn4, self.relu4]
+        self.ap = nn.AdaptiveAvgPool2d(output_size=1)
         self.conv = nn.Sequential(*conv_layers)
         self.conv2 = nn.Sequential(*conv_layers2)
         # -------------------------------------------------------
         # self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
-            nn.Linear(32*38, 16*38),
-            nn.ReLU(),
+            # nn.Linear(32*10, 16*38),
+            # nn.ReLU(),
             # nn.Tanh(),
             # nn.Linear(768, 768),
             # nn.ReLU(),
-            nn.Linear(16*38, 38),
+            nn.Linear(32, 16),
             nn.ReLU(),
-            nn.Linear(38, 2),
+            nn.Linear(16, 2),
         )
 
     def forward(self, x,  padding_mask: torch.Tensor = None, gfcc=None):
         # with torch.no_grad():
         x, _ = self.BEATs.extract_features(x, padding_mask, args=self.args)
         # dropout
+        # power = ta_kaldi.spectrogram(x, frame_length=25, frame_shift=10)
         # with torch.enable_grad():
         # x = x.mean(dim=1)
         # x = x.squeeze(1)
@@ -321,17 +323,14 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # x = x.transpose(1, 2)
         x = x.unsqueeze(1)
         x = self.conv2(x)
+        x = self.ap(x)
         x = x.mean(dim=2)
         x = x.reshape(x.shape[0], -1)
         output = self.fc_layer(x)
         # output = torch.softmax(output, dim=1)
-        # FC 修改层数记得修改logging
-        # if self.layers == 2:
-        #     y = self.fc_layer(y)
-        # add fc layer
         # output = self.last_layer(y)
         # mean
         # output = output.mean(dim=1)
         # sigmoid
-        # output = torch.sigmoid(output)
+        output = torch.sigmoid(output)
         return output
