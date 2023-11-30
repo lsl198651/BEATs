@@ -17,6 +17,7 @@ import torchaudio.compliance.kaldi as ta_kaldi
 import torchaudio.transforms as TT
 from backbone import TransformerEncoder
 from util.BEATs_def import Log_GF
+from torch.nn import init
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +30,7 @@ class BEATsConfig:
         self.encoder_layers: int = 2  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
-        self.encoder_attention_heads: int = 6  # num encoder attention heads
+        self.encoder_attention_heads: int = 4  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
 
         self.layer_wise_gradient_decay_ratio: float = (
@@ -260,9 +261,28 @@ class BEATs_Pre_Train_itere3(nn.Module):
         BEATs_model.load_state_dict(checkpoint["model"])
         # BEATs
         self.BEATs = BEATs_model
+        conv_layers = []
         # Dropout
         self.last_Dropout = nn.Dropout(0.1)
         # fc
+        # ---------------------------------
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=(
+            3, 3), stride=(1, 1), padding=(2, 2))
+        self.relu1 = nn.ReLU()
+        self.bn1 = nn.BatchNorm2d(32)
+        self.mp1 = nn.MaxPool2d(2)
+        self.dp1 = nn.Dropout(p=0.15)
+        conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
+
+        self.conv4 = nn.Conv2d(32, 64, kernel_size=(
+            3, 3), stride=(1, 1), padding=(1, 1))
+        self.relu4 = nn.ReLU()
+        self.bn4 = nn.BatchNorm2d(64)
+        init.kaiming_normal_(self.conv4.weight, a=0.1)
+        self.conv4.bias.data.zero_()
+        conv_layers += [self.conv4, self.bn4, self.relu4]
+        self.conv = nn.Sequential(*conv_layers)
+
         # self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
@@ -281,7 +301,9 @@ class BEATs_Pre_Train_itere3(nn.Module):
         x, _ = self.BEATs.extract_features(x, padding_mask, args=self.args)
         # dropout
         # with torch.enable_grad():
-        x = self.last_Dropout(x)
+        x = x.unsqueeze(0)
+        x = self.conv(x)
+
         x = x.reshape(x.shape[0], -1)
         output = self.fc_layer(x)
         # output = torch.softmax(output, dim=1)
