@@ -83,10 +83,10 @@ def train_test(
             # data_t = butterworth_low_pass_filter(data_t)
             # gfcc = Log_GF(data_t)
             # gfcc = gfcc.to(device)
-            data_t, label_t,  index_t = data_t.to(
-                device), label_t.to(device), index_t.to(device)
+            data_t, label_t,  index_t, padding = data_t.to(
+                device), label_t.to(device), index_t.to(device), padding.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t)
+            predict_t = model(data_t, padding)
             if args.loss_type == "BCE":
                 predict_t2 = torch.argmax(predict_t, dim=1)
                 loss = loss_fn(predict_t2.float(), label_t)
@@ -134,14 +134,14 @@ def train_test(
                 # gfcc = Log_GF(data_v)
                 # gfcc = gfcc.to(device)
 
-                data_v, label_v,  index_v = (
+                data_v, label_v,  index_v, padding = (
                     data_v.to(device),
                     label_v.to(device),
-                    # feat_v.to(device),
+                    padding.to(device),
                     index_v.to(device),
                 )
                 optimizer.zero_grad()
-                predict_v = model(data_v)
+                predict_v = model(data_v, padding)
                 # recall = recall_score(y_hat, y)
                 if args.loss_type == "BCE":
                     predict_v2 = torch.argmax(predict_v, dim=1)
