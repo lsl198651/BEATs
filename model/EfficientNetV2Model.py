@@ -5,6 +5,7 @@ from typing import Callable, Optional
 import torch.nn as nn
 import torch
 from torch import Tensor
+import torchaudio.compliance.kaldi as ta_kaldi
 
 
 def drop_path(x, drop_prob: float = 0., training: bool = False):
@@ -19,8 +20,10 @@ def drop_path(x, drop_prob: float = 0., training: bool = False):
     if drop_prob == 0. or not training:
         return x
     keep_prob = 1 - drop_prob
-    shape = (x.shape[0],) + (1,) * (x.ndim - 1)  # work with diff dim tensors, not just 2D ConvNets
-    random_tensor = keep_prob + torch.rand(shape, dtype=x.dtype, device=x.device)
+    # work with diff dim tensors, not just 2D ConvNets
+    shape = (x.shape[0],) + (1,) * (x.ndim - 1)
+    random_tensor = keep_prob + \
+        torch.rand(shape, dtype=x.dtype, device=x.device)
     random_tensor.floor_()  # binarize
     output = x.div(keep_prob) * random_tensor
     return output
@@ -31,6 +34,7 @@ class DropPath(nn.Module):
     Drop paths (Stochastic Depth) per sample  (when applied in main path of residual blocks).
     "Deep Networks with Stochastic Depth", https://arxiv.org/pdf/1603.09382.pdf
     """
+
     def __init__(self, drop_prob=None):
         super(DropPath, self).__init__()
         self.drop_prob = drop_prob
@@ -134,7 +138,8 @@ class MBConv(nn.Module):
                                 norm_layer=norm_layer,
                                 activation_layer=activation_layer)
 
-        self.se = SqueezeExcite(input_c, expanded_c, se_ratio) if se_ratio > 0 else nn.Identity()
+        self.se = SqueezeExcite(input_c, expanded_c,
+                                se_ratio) if se_ratio > 0 else nn.Identity()
 
         # Point-wise linear projection
         self.project_conv = ConvBNAct(expanded_c,
@@ -304,8 +309,33 @@ class EfficientNetV2(nn.Module):
                 nn.init.normal_(m.weight, 0, 0.01)
                 nn.init.zeros_(m.bias)
 
+    def preprocess(
+            self,
+            source: torch.Tensor,
+            args=None,
+    ) -> torch.Tensor:
+        fbanks = []
+        # waveform, sample_rate = torchaudio.load("test.wav", normalize=True)
+
+        for waveform in source:
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
+            # spec = TT.MelSpectrogram(sr=16000, n_fft=512, win_length=25,
+            #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
+            # spec = TT.AmplitudeToDB(top_db=20)(spec)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / fbank_std
+            fbanks.append(fbank)
+        fbank = torch.stack(fbanks, dim=0)
+        return fbank
+    # ---------------
+
     def forward(self, x: Tensor) -> Tensor:
-        x = self.stem(x)
+        fbank = self.preprocess(x, args=None)
+        x = self.stem(fbank)
         x = self.blocks(x)
         x = self.head(x)
 

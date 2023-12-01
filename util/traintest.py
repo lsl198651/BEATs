@@ -12,7 +12,7 @@ from torch.cuda.amp import autocast, GradScaler
 from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
 from torch.utils.tensorboard import SummaryWriter
 from util.BEATs_def import Log_GF
-from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list
+from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list, FocalLoss_VGG
 from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
 

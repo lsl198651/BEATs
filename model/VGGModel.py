@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 from abc import abstractmethod
 import torch.nn as nn
+import torchaudio.compliance.kaldi as ta_kaldi
 
 
 class BaseModel(nn.Module):
@@ -188,9 +189,35 @@ class VGG_11(BaseModel):
         init_layer(self.fc_final1)
         init_layer(self.fc_final2)
 
+        # calculate fbank value
+    def preprocess(
+            self,
+            source: torch.Tensor,
+            args=None,
+    ) -> torch.Tensor:
+        fbanks = []
+        # waveform, sample_rate = torchaudio.load("test.wav", normalize=True)
+
+        for waveform in source:
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
+            # spec = TT.MelSpectrogram(sr=16000, n_fft=512, win_length=25,
+            #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
+            # spec = TT.AmplitudeToDB(top_db=20)(spec)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / fbank_std
+            fbanks.append(fbank)
+        fbank = torch.stack(fbanks, dim=0)
+        return fbank
+
     def forward(self, input, input_demo):
+        fbank = self.preprocess(x, args=None)
         # (batch_size, 3, mel_bins, time_stamps)
-        B, mel_bins, num_frames = input.size()
+        B, mel_bins, num_frames = fbank.size()
+
         x = input.view(B, self.in_channel, -1, num_frames)
         x = x.transpose(1, 2)
         x = self.bn0(x)
@@ -208,7 +235,7 @@ class VGG_11(BaseModel):
 
         output = F.max_pool2d(x, kernel_size=x.shape[2:])
         output = output.view(output.shape[0:2])
-        output = torch.cat([output, input_demo], dim=1)
+        # output = torch.cat([output, input_demo], dim=1)
         output = F.relu_(self.fc_final1(output))
         output = F.log_softmax(self.fc_final2(output), dim=-1)
 

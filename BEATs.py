@@ -337,5 +337,5 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # mean
         # output = output.mean(dim=1)
         # sigmoid
-        output = torch.softmax(output, dim=1)
+        # output = torch.softmax(output, dim=1)
         return output

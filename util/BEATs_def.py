@@ -1,5 +1,6 @@
 
 from pickle import TRUE
+from sympy import true
 import torch
 import sys
 import torch.nn as nn
@@ -84,7 +85,7 @@ def Log_GF(wavform):
     return torch.FloatTensor(fbank_feat_all)
 
 
-def butterworth_low_pass_filter(original_signal, order=2, lowcut=25, highcut=800, sampling_frequency=16000):
+def butterworth_low_pass_filter(original_signal, order=2, lowcut=25, highcut=400, sampling_frequency=16000):
 
     # Get the butterworth filter coefficients
     low = 2*lowcut / sampling_frequency
@@ -551,7 +552,7 @@ class BCEFocalLoss(nn.Module):
 
 
 class FocalLoss_VGG(nn.Module):
-    def __init__(self, alpha=0.25, gamma=2, logits=False, reduce=True, weight=None):
+    def __init__(self, alpha=0.25, gamma=2, logits=True, reduce=True, weight=None):
         super(FocalLoss_VGG, self).__init__()
         self.alpha = alpha
         self.gamma = gamma
@@ -568,13 +569,14 @@ class FocalLoss_VGG(nn.Module):
         #     self.alpha[1:] += (1 - alpha)
 
     def forward(self, inputs, targets):
-        # if self.logits:
-        #     BCE_loss = F.binary_cross_entropy_with_logits(
-        #         inputs, targets, weight=self.weight, reduce=False)
-        # else:
-        CE_loss = nn.CrossEntropyLoss(inputs, targets, reduce=True)
-        pt = torch.exp(-CE_loss)
-        F_loss = self.alpha * (1-pt)**self.gamma * CE_loss
+        if self.logits:
+            BCE_loss = F.binary_cross_entropy_with_logits(
+                torch.argmax(inputs, dim=1).float(), targets, weight=self.weight, reduce=False)
+        else:
+            CE_loss = nn.CrossEntropyLoss(
+                inputs, targets, reduce=True)
+        pt = torch.exp(-BCE_loss)
+        F_loss = self.alpha * (1-pt)**self.gamma * BCE_loss
 
         if self.reduce:
             return torch.mean(F_loss)
@@ -585,7 +587,7 @@ class FocalLoss_VGG(nn.Module):
 class FocalLoss(nn.Module):
     """Focal Loss"""
 
-    def __init__(self, gamma=2, alpha=0.1, size_average=True):
+    def __init__(self, gamma=2, alpha=0.2, size_average=True):
         super(FocalLoss, self).__init__()
         self.gamma = gamma
         self.alpha = alpha

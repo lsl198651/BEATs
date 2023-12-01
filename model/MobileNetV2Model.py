@@ -1,5 +1,7 @@
 from torch import nn
 import torch
+import torchaudio.compliance.kaldi as ta_kaldi
+import torchaudio.compliance.kaldi as ta_kaldi
 
 
 def _make_divisible(ch, divisor=8, min_ch=None):
@@ -22,7 +24,8 @@ class ConvBNReLU(nn.Sequential):
     def __init__(self, in_channel, out_channel, kernel_size=3, stride=1, groups=1):
         padding = (kernel_size - 1) // 2
         super(ConvBNReLU, self).__init__(
-            nn.Conv2d(in_channel, out_channel, kernel_size, stride, padding, groups=groups, bias=False),
+            nn.Conv2d(in_channel, out_channel, kernel_size,
+                      stride, padding, groups=groups, bias=False),
             nn.BatchNorm2d(out_channel),
             nn.ReLU6(inplace=True)
         )
@@ -37,10 +40,12 @@ class InvertedResidual(nn.Module):
         layers = []
         if expand_ratio != 1:
             # 1x1 pointwise conv
-            layers.append(ConvBNReLU(in_channel, hidden_channel, kernel_size=1))
+            layers.append(ConvBNReLU(
+                in_channel, hidden_channel, kernel_size=1))
         layers.extend([
             # 3x3 depthwise conv
-            ConvBNReLU(hidden_channel, hidden_channel, stride=stride, groups=hidden_channel),
+            ConvBNReLU(hidden_channel, hidden_channel,
+                       stride=stride, groups=hidden_channel),
             # 1x1 pointwise conv(linear)
             nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False),
             nn.BatchNorm2d(out_channel),
@@ -81,7 +86,8 @@ class MobileNetV2(nn.Module):
             output_channel = _make_divisible(c * alpha, round_nearest)
             for i in range(n):
                 stride = s if i == 0 else 1
-                features.append(block(input_channel, output_channel, stride, expand_ratio=t))
+                features.append(
+                    block(input_channel, output_channel, stride, expand_ratio=t))
                 input_channel = output_channel
         # building last several layers
         features.append(ConvBNReLU(input_channel, last_channel, 1))
@@ -108,8 +114,33 @@ class MobileNetV2(nn.Module):
                 nn.init.normal_(m.weight, 0, 0.01)
                 nn.init.zeros_(m.bias)
 
+    # calculate fbank value
+    def preprocess(
+            self,
+            source: torch.Tensor,
+            args=None,
+    ) -> torch.Tensor:
+        fbanks = []
+        # waveform, sample_rate = torchaudio.load("test.wav", normalize=True)
+
+        for waveform in source:
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
+            # spec = TT.MelSpectrogram(sr=16000, n_fft=512, win_length=25,
+            #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
+            # spec = TT.AmplitudeToDB(top_db=20)(spec)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / fbank_std
+            fbanks.append(fbank)
+        fbank = torch.stack(fbanks, dim=0)
+        return fbank
+
     def forward(self, x):
-        x = self.features(x)
+        fbank = self.preprocess(x, args=None)
+        x = self.features(fbank)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.classifier(x)

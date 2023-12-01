@@ -87,21 +87,6 @@ class AudioClassifier(nn.Module):
             # spec = TT.AmplitudeToDB(top_db=20)(spec)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
-            # S1 = librosa.feature.delta(s)
-            # if args.mask is True:
-            #     # freqm_value = 30  # 横向
-            #     # timem_value = 1  # 纵向
-            #     # SpecAug, not do for eval set
-            #     freqm = TT.FrequencyMasking(freq_mask_param=args.freqm_value)
-            #     timem = TT.TimeMasking(time_mask_param=args.timem_value)
-            #     fbank = torch.transpose(fbank, 0, 1)
-            #     # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
-            #     fbank = fbank.unsqueeze(0)
-            #     fbank = freqm(fbank)
-            #     fbank = timem(fbank)
-            #     # squeeze it back, it is just a trick to satisfy new torchaudio version
-            #     fbank = fbank.squeeze(0)
-            #     fbank = torch.transpose(fbank, 0, 1)
             fbank_mean = fbank.mean()
             fbank_std = fbank.std()
             fbank = (fbank - fbank_mean) / fbank_std
