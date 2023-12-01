@@ -8,6 +8,7 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 from BEATs import BEATs_Pre_Train_itere3
+from model.CNNModel import AudioClassifier
 from util.dataloaders import get_features
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
@@ -93,7 +94,7 @@ if __name__ == '__main__':
     ).bool()  # we randomly mask 75% of the input patches,
     padding_mask = torch.Tensor(padding)
 
-    MyModel = BEATs_Pre_Train_itere3(args=args)
+    MyModel = AudioClassifier()
 
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！

@@ -64,7 +64,7 @@ class AudioClassifier(nn.Module):
 
         # wide features
         self.wide = nn.Linear(in_features=15, out_features=20)
-        self.lin = nn.Linear(in_features=84, out_features=2)
+        self.lin = nn.Linear(in_features=64, out_features=2)
         self.lin1 = nn.Linear(in_features=80, out_features=128)
         # Wrap the Convolutional Blocks
         self.conv = nn.Sequential(*conv_layers)
@@ -82,9 +82,9 @@ class AudioClassifier(nn.Module):
         for waveform in source:
             # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
             waveform = waveform.unsqueeze(0)
-            # spec = TT.MelSpectrogram(sr=16000, n_fft=512, win_length=25,
-            #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
-            # spec = TT.AmplitudeToDB(top_db=20)(spec)
+            # spec = TT.MelSpectrogram(sample_rate=16000, n_fft=512, win_length=25,
+            #                          hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
+            # fbank = TT.AmplitudeToDB(top_db=20)(spec)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
             fbank_mean = fbank.mean()
@@ -100,6 +100,7 @@ class AudioClassifier(nn.Module):
     def forward(self, x):
         # Run the convolutional blocks
         fbank = self.preprocess(x, args=None)
+        fbank = fbank.unsqueeze(1)
         x = self.conv(fbank)
 
         # Adaptive pool and flatten for input to linear layer
