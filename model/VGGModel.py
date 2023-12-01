@@ -398,9 +398,9 @@ class crnn(BaseModel):
 
 # Focal Loss Function
 # alpha类别均衡 1时是不起作用  gamma难分易分样本0时不起作用
-class FocalLoss(nn.Module):
+class FocalLoss_VGG(nn.Module):
     def __init__(self, alpha=1, gamma=2, logits=False, reduce=True, weight=None):
-        super(FocalLoss, self).__init__()
+        super(FocalLoss_VGG, self).__init__()
         self.alpha = alpha
         self.gamma = gamma
         self.logits = logits
@@ -416,13 +416,13 @@ class FocalLoss(nn.Module):
         #     self.alpha[1:] += (1 - alpha)
 
     def forward(self, inputs, targets):
-        if self.logits:
-            BCE_loss = F.binary_cross_entropy_with_logits(
-                inputs, targets, weight=self.weight, reduce=False)
-        else:
-            BCE_loss = F.binary_cross_entropy(inputs, targets, reduce=False)
-        pt = torch.exp(-BCE_loss)
-        F_loss = self.alpha * (1-pt)**self.gamma * BCE_loss
+        # if self.logits:
+        #     BCE_loss = F.binary_cross_entropy_with_logits(
+        #         inputs, targets, weight=self.weight, reduce=False)
+        # else:
+        CE_loss = nn.CrossEntropyLoss(inputs, targets, reduce=False)
+        pt = torch.exp(-CE_loss)
+        F_loss = self.alpha * (1-pt)**self.gamma * CE_loss
 
         if self.reduce:
             return torch.mean(F_loss)
