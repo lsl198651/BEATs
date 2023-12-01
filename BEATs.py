@@ -303,7 +303,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
             # nn.Tanh(),
             # nn.Linear(768, 768),
             # nn.ReLU(),
-            nn.Linear(32, 16),
+            nn.Linear(64, 16),
             nn.ReLU(),
             nn.Linear(16, 2),
         )
@@ -318,13 +318,12 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # x = x.squeeze(1)
         x = x.unsqueeze(1)
         x = self.conv(x)
-        x = x.mean(dim=3)  # 64*9 cat 64*29
-        x = torch.cat((x, gfcc), dim=2)
+        # x = x.mean(dim=3)  # 64*9 cat 64*29
+        # x = torch.cat((x, gfcc), dim=2)
         # x = x.transpose(1, 2)
-        x = x.unsqueeze(1)
-        x = self.conv2(x)
+        # x = self.conv2(x)
         x = self.ap(x)
-        x = x.mean(dim=2)
+        # x = x.mean(dim=2)
         x = x.reshape(x.shape[0], -1)
         output = self.fc_layer(x)
         # output = torch.softmax(output, dim=1)
@@ -332,5 +331,5 @@ class BEATs_Pre_Train_itere3(nn.Module):
         # mean
         # output = output.mean(dim=1)
         # sigmoid
-        output = torch.sigmoid(output)
+        # output = torch.softmax(output, dim=1)
         return output

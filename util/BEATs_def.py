@@ -546,7 +546,7 @@ class FocalLoss(nn.Module):
             input = input.contiguous().view(-1, input.size(2))   # N,H*W,C => N*H*W,C
         target = target.view(-1, 1)
 
-        logpt = torch.log(input)  # torch.softmax(, dim=1)
+        logpt = torch.log(torch.softmax(input, dim=1))  #
         logpt = logpt.gather(1, target)
         logpt = logpt.view(-1)
         pt = Variable(logpt.data.exp())
