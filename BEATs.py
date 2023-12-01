@@ -151,14 +151,17 @@ class BEATs(nn.Module):
             args=None,
     ) -> torch.Tensor:
         fbanks = []
+        # waveform, sample_rate = torchaudio.load("test.wav", normalize=True)
+
         for waveform in source:
             # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
             waveform = waveform.unsqueeze(0)
-            # spec = transforms.MelSpectrogram(sr=16000, n_fft=512, win_length=50,
+            # spec = TT.MelSpectrogram(sr=16000, n_fft=512, win_length=25,
             #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
-            # spec = transforms.AmplitudeToDB(top_db=top_db)(spec)
+            # spec = TT.AmplitudeToDB(top_db=20)(spec)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            # S1 = librosa.feature.delta(s)
 
             if args.mask is True:
                 # freqm_value = 30  # 横向
@@ -176,7 +179,7 @@ class BEATs(nn.Module):
                 fbank = torch.transpose(fbank, 0, 1)
             fbank_mean = fbank.mean()
             fbank_std = fbank.std()
-            fbank = (fbank - fbank_mean) / (2 * fbank_std)
+            fbank = (fbank - fbank_mean) / fbank_std
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         return fbank
