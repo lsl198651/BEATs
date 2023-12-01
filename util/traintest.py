@@ -80,8 +80,8 @@ def train_test(
             # data_t = butterworth_low_pass_filter(data_t)
             # gfcc = Log_GF(data_t)
             # gfcc = gfcc.to(device)
-            data_t, label_t, padding, index_t = data_t.to(
-                device), label_t.to(device), padding.to(device), index_t.to(device)
+            data_t, label_t,  index_t = data_t.to(
+                device), label_t.to(device),  index_t.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
             predict_t = model(data_t)
             if args.loss_type == "BCE":
@@ -131,10 +131,10 @@ def train_test(
                 # gfcc = Log_GF(data_v)
                 # gfcc = gfcc.to(device)
 
-                data_v, label_v, padding, index_v = (
+                data_v, label_v,  index_v = (
                     data_v.to(device),
                     label_v.to(device),
-                    padding.to(device),
+                    # padding.to(device),
                     index_v.to(device),
                 )
                 optimizer.zero_grad()
