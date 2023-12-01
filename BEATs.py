@@ -267,30 +267,30 @@ class BEATs_Pre_Train_itere3(nn.Module):
         self.last_Dropout = nn.Dropout(0.1)
         # conv block
         # ---------------------------------
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=(
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=(
             3, 3), stride=(1, 1), padding=(2, 2))
         self.relu1 = nn.ReLU()
-        self.bn1 = nn.BatchNorm2d(64)
+        self.bn1 = nn.BatchNorm2d(32)
         self.mp1 = nn.MaxPool2d(2)
         self.dp1 = nn.Dropout(p=0.2)
         conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
 
-        self.conv3 = nn.Conv2d(1, 64, kernel_size=(
+        self.conv3 = nn.Conv2d(32, 32, kernel_size=(
             3, 3), stride=(2, 2), padding=(1, 1))
         self.relu3 = nn.ReLU()
-        self.bn3 = nn.BatchNorm2d(64)
+        self.bn3 = nn.BatchNorm2d(32)
         self.dp3 = nn.Dropout(p=0.1)
         init.kaiming_normal_(self.conv3.weight, a=0.1)
         self.conv3.bias.data.zero_()
-        conv_layers2 += [self.conv3, self.bn3, self.relu3, self.dp3]
+        conv_layers += [self.conv3, self.bn3, self.relu3, self.dp3]
 
-        self.conv4 = nn.Conv2d(64, 32, kernel_size=(
+        self.conv4 = nn.Conv2d(32, 64, kernel_size=(
             3, 3), stride=(2, 2), padding=(1, 1))
         self.relu4 = nn.ReLU()
-        self.bn4 = nn.BatchNorm2d(32)
+        self.bn4 = nn.BatchNorm2d(64)
         init.kaiming_normal_(self.conv4.weight, a=0.1)
         self.conv4.bias.data.zero_()
-        conv_layers2 += [self.conv4, self.bn4, self.relu4]
+        conv_layers += [self.conv4, self.bn4, self.relu4]
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
         self.conv = nn.Sequential(*conv_layers)
         self.conv2 = nn.Sequential(*conv_layers2)
@@ -308,7 +308,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
             nn.Linear(16, 2),
         )
 
-    def forward(self, x,  padding_mask: torch.Tensor = None, gfcc=None):
+    def forward(self, x,  padding_mask: torch.Tensor = None):
         # with torch.no_grad():
         x, _ = self.BEATs.extract_features(x, padding_mask, args=self.args)
         # dropout
