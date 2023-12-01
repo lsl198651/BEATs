@@ -2,10 +2,35 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from base_model import BaseModel
+import numpy as np
+from abc import abstractmethod
+import torch.nn as nn
 
+
+class BaseModel(nn.Module):
+    """
+    Base class for all models
+    """
+    @abstractmethod
+    def forward(self, *inputs):
+        """
+        Forward pass logic
+
+        :return: Model output
+        """
+        raise NotImplementedError
+
+    def __str__(self):
+        """
+        Model prints with number of trainable parameters
+        """
+        model_parameters = filter(lambda p: p.requires_grad, self.parameters())
+        params = sum([np.prod(p.size()) for p in model_parameters])
+        return super().__str__() + '\nTrainable parameters: {}'.format(params)
 
 # functions of initializing layers
+
+
 def init_layer(layer):
     """Initialize a Linear or Convolutional layer."""
     nn.init.xavier_uniform_(layer.weight)
@@ -46,7 +71,7 @@ def reset_parameters(model):
 
 
 #############################################################################
-#################below is the implementation of a simple cnn network#########
+################# below is the implementation of a simple cnn network#########
 
 class simple_cnn(BaseModel):
     def __init__(self, num_classes=2, in_channel=1):
@@ -307,14 +332,15 @@ class BiLSTM(BaseModel):
 #################### below is the implementation of crnn network ############
 
 class CNN_Encoder(nn.Module):
-    def __init__(self, in_channels,dropoutp=0.2):
+    def __init__(self, in_channels, dropoutp=0.2):
         super(CNN_Encoder, self).__init__()
 
         self.conv1 = ConvBlock(in_channels=in_channels, out_channels=32)
         self.conv2 = ConvBlock(in_channels=32, out_channels=64)
         self.conv3 = ConvBlock(in_channels=64, out_channels=128)
         self.conv4 = ConvBlock(in_channels=128, out_channels=256)
-        self.dropoutp=dropoutp
+        self.dropoutp = dropoutp
+
     def forward(self, input):
         x = input
         x = self.conv1(x, pool_size=(2, 2))
@@ -333,7 +359,7 @@ class crnn(BaseModel):
     def __init__(self, in_channel,
                  hidden_dim=128,
                  num_layers=2,
-                 dropout=0.2,#lstm的Dropout
+                 dropout=0.2,  # lstm的Dropout
                  pooling='first',
                  model='lstm',
                  BN=True,
@@ -356,24 +382,24 @@ class crnn(BaseModel):
     def forward(self, input):
         # (batch_size, 3, mel_bins, time_stamps)
         B, mel_bins, num_frames = input.size()
-        x = input.view(B, self.in_channel, -1, num_frames)#N C H W 变为b*1*自适应*1667？
-        x = x.transpose(1, 2) #转置第
+        # N C H W 变为b*1*自适应*1667？
+        x = input.view(B, self.in_channel, -1, num_frames)
+        x = x.transpose(1, 2)  # 转置第
         x = self.bn0(x)
         x = x.transpose(1, 2)
 
-        x = self.cnn(x) #CNN
-        x = F.max_pool2d(x, kernel_size=(x.size(-2), 1))  # pool mel dimension #池化 宽度*1
+        x = self.cnn(x)  # CNN
+        # pool mel dimension #池化 宽度*1
+        x = F.max_pool2d(x, kernel_size=(x.size(-2), 1))
         x = x.squeeze(-2)  # [B x C x Time_frames]
         output = self.bilstm(x)
         return output
 
 
-
-
 # Focal Loss Function
-#alpha类别均衡 1时是不起作用  gamma难分易分样本0时不起作用
+# alpha类别均衡 1时是不起作用  gamma难分易分样本0时不起作用
 class FocalLoss(nn.Module):
-    def __init__(self, alpha=1, gamma=2,logits=False, reduce=True,weight=None):
+    def __init__(self, alpha=1, gamma=2, logits=False, reduce=True, weight=None):
         super(FocalLoss, self).__init__()
         self.alpha = alpha
         self.gamma = gamma
@@ -391,7 +417,8 @@ class FocalLoss(nn.Module):
 
     def forward(self, inputs, targets):
         if self.logits:
-            BCE_loss = F.binary_cross_entropy_with_logits(inputs, targets,weight=self.weight, reduce=False)
+            BCE_loss = F.binary_cross_entropy_with_logits(
+                inputs, targets, weight=self.weight, reduce=False)
         else:
             BCE_loss = F.binary_cross_entropy(inputs, targets, reduce=False)
         pt = torch.exp(-BCE_loss)
@@ -401,4 +428,3 @@ class FocalLoss(nn.Module):
             return torch.mean(F_loss)
         else:
             return F_loss
-

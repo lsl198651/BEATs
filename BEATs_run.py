@@ -21,7 +21,7 @@ if __name__ == '__main__':
     parser.add_argument("--learning_rate", type=float,
                         default=0.00001, help="learning_rate for training")
     parser.add_argument("--num_epochs", type=int,
-                        default=300, help="num_epochs")
+                        default=30, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
     parser.add_argument("--loss_type", type=str, default="FocalLoss",
                         help="loss function", choices=["BCE", "CE", "FocalLoss"])

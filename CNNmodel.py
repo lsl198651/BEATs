@@ -127,7 +127,7 @@ class AudioClassifier(nn.Module):
         # x = self.dp(x)
         # Linear layer
         x_all = self.lin(x_all)
-        x_all = torch.softmax(x_all, dim=1)
+        # x_all = torch.softmax(x_all, dim=1)
         # Final output
         return x_all
 
