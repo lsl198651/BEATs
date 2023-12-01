@@ -37,7 +37,7 @@ if __name__ == '__main__':
                         help="balance absent and present in testset", choices=[True, False],)
     parser.add_argument("--Data_Augmentation", type=bool, default=False,
                         help="Add data augmentation", choices=[True, False],)
-    parser.add_argument("--train_total", type=bool, default=False,
+    parser.add_argument("--train_total", type=bool, default=True,
                         help="use grad_no_requiredn", choices=[True, False],)
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)

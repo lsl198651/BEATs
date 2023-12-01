@@ -40,9 +40,10 @@ def train_test(
     max_test_acc = []
     max_train_acc = []
     best_acc = 0.0
+    gfcc = None
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    # torch.backends.cudnn.deterministic = True
+    # torch.backends.cudnn.benchmark = False
     model = model.to(device)  # 放到设备中
     # for amp
 # ============lr scheduler================
@@ -76,13 +77,13 @@ def train_test(
         input_train = []
         target_train = []
         for data_t, label_t, index_t in train_loader:
-            # data_t = butterworth_low_pass_filter(data_t)
-            gfcc = Log_GF(data_t)
-            gfcc = gfcc.to(device)
+            data_t = butterworth_low_pass_filter(data_t)
+            # gfcc = Log_GF(data_t)
+            # gfcc = gfcc.to(device)
             data_t, label_t, padding, index_t = data_t.to(
                 device), label_t.to(device), padding.to(device), index_t.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t, padding, gfcc)
+            predict_t = model(data_t, padding)
             if args.loss_type == "BCE":
                 predict_t2 = torch.argmax(predict_t, dim=1)
                 loss = loss_fn(predict_t2.float(), label_t)
@@ -126,9 +127,10 @@ def train_test(
         correct_v = 0
         with torch.no_grad():
             for data_v, label_v, index_v in test_loader:
-                gfcc = Log_GF(data_v)
-                gfcc = gfcc.to(device)
-                # data_v = butterworth_low_pass_filter(data_v)
+                data_v = butterworth_low_pass_filter(data_v)
+                # gfcc = Log_GF(data_v)
+                # gfcc = gfcc.to(device)
+
                 data_v, label_v, padding, index_v = (
                     data_v.to(device),
                     label_v.to(device),
@@ -136,7 +138,7 @@ def train_test(
                     index_v.to(device),
                 )
                 optimizer.zero_grad()
-                predict_v = model(data_v, padding, gfcc)
+                predict_v = model(data_v, padding)
                 # recall = recall_score(y_hat, y)
                 if args.loss_type == "BCE":
                     predict_v2 = torch.argmax(predict_v, dim=1)
