@@ -2,11 +2,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
-
+import torchaudio.compliance.kaldi as ta_kaldi
+import torchaudio.transforms as TT
 
 # ----------------------------
 # Audio Classification Model
 # ----------------------------
+
+
 class AudioClassifier(nn.Module):
     # ----------------------------
     # Build the model architecture
@@ -66,13 +69,53 @@ class AudioClassifier(nn.Module):
         # Wrap the Convolutional Blocks
         self.conv = nn.Sequential(*conv_layers)
         self.dp = nn.Dropout(p=0.3)
+
+    # calculate fbank value
+    def preprocess(
+            self,
+            source: torch.Tensor,
+            args=None,
+    ) -> torch.Tensor:
+        fbanks = []
+        # waveform, sample_rate = torchaudio.load("test.wav", normalize=True)
+
+        for waveform in source:
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
+            # spec = TT.MelSpectrogram(sr=16000, n_fft=512, win_length=25,
+            #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
+            # spec = TT.AmplitudeToDB(top_db=20)(spec)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            # S1 = librosa.feature.delta(s)
+            # if args.mask is True:
+            #     # freqm_value = 30  # 横向
+            #     # timem_value = 1  # 纵向
+            #     # SpecAug, not do for eval set
+            #     freqm = TT.FrequencyMasking(freq_mask_param=args.freqm_value)
+            #     timem = TT.TimeMasking(time_mask_param=args.timem_value)
+            #     fbank = torch.transpose(fbank, 0, 1)
+            #     # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
+            #     fbank = fbank.unsqueeze(0)
+            #     fbank = freqm(fbank)
+            #     fbank = timem(fbank)
+            #     # squeeze it back, it is just a trick to satisfy new torchaudio version
+            #     fbank = fbank.squeeze(0)
+            #     fbank = torch.transpose(fbank, 0, 1)
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / fbank_std
+            fbanks.append(fbank)
+        fbank = torch.stack(fbanks, dim=0)
+        return fbank
     # ----------------------------
     # Forward pass computations
     # ----------------------------
 
     def forward(self, x):
         # Run the convolutional blocks
-        x = self.conv(x)
+        fbank = self.preprocess(x, args=None)
+        x = self.conv(fbank)
 
         # Adaptive pool and flatten for input to linear layer
         x = self.ap(x)

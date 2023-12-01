@@ -12,6 +12,7 @@ import csv
 import os
 import librosa
 import torch
+import pywt
 import shutil
 import pandas as pd
 import numpy as np
@@ -34,6 +35,29 @@ from scipy import signal
 from spafe.features.gfcc import erb_spectrogram
 from spafe.utils.preprocessing import SlidingWindow
 warnings.filterwarnings('ignore')
+
+
+def myDownSample_2d(data, sample_Fs, targetFreq):
+    step = sample_Fs // targetFreq
+    newData = np.array([data[:, i] for i in range(
+        data.shape[1]) if i % step == 0]).transpose([1, 0])
+    return newData
+
+
+def Mel_Time_Frequency_Spectrum_2(signal, Fs):
+    EPS = 1E-6
+    coef, freqs = pywt.cwt(signal, np.arange(1, 17), 'cgau3')
+    coef = np.abs(coef)
+    coef = myDownSample_2d(coef, Fs, Fs/8)
+    lms = np.log(coef + EPS)
+
+    # plt.imshow(coef[:,500:800], origin='lower')
+    # plt.ylabel("Wavelet D=16")
+    # plt.xlabel("Time")
+    # # plt.axis('off')
+    # plt.show()
+
+    return lms
 
 
 def Log_GF(wavform):
@@ -546,7 +570,7 @@ class FocalLoss(nn.Module):
             input = input.contiguous().view(-1, input.size(2))   # N,H*W,C => N*H*W,C
         target = target.view(-1, 1)
 
-        logpt = torch.log(input)  # torch.softmax(, dim=1)
+        logpt = torch.log(torch.softmax(input, dim=1))  #
         logpt = logpt.gather(1, target)
         logpt = logpt.view(-1)
         pt = Variable(logpt.data.exp())

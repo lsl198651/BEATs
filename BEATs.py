@@ -16,8 +16,9 @@ from torch.nn import LayerNorm, BatchNorm2d
 import torchaudio.compliance.kaldi as ta_kaldi
 import torchaudio.transforms as TT
 from backbone import TransformerEncoder
-from util.BEATs_def import Log_GF
+from util.BEATs_def import Log_GF, Mel_Time_Frequency_Spectrum_2
 from torch.nn import init
+
 logger = logging.getLogger(__name__)
 
 
