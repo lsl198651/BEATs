@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import torch
 import torch.nn as nn
-from torch import optim
+from torch import optim, tensor
 from datetime import datetime
 from transformers import optimization
 from sklearn.metrics import confusion_matrix
@@ -12,7 +12,9 @@ from torch.cuda.amp import autocast, GradScaler
 from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
 from torch.utils.tensorboard import SummaryWriter
 from util.BEATs_def import Log_GF
-from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list, FocalLoss_VGG
+from torch_ecg.models.loss import FocalLoss as FocalLoss_ecg
+#
+from util.BEATs_def import segment_classifier, get_segment_target_list, FocalLoss, FocalLoss_VGG
 from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
 
@@ -66,6 +68,7 @@ def train_test(
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
+        # loss_fn = FocalLoss_ecg(class_weight=tensor(0.2))
 
 # ============ training ================
     for epochs in range(args.num_epochs):
@@ -80,8 +83,8 @@ def train_test(
             # data_t = butterworth_low_pass_filter(data_t)
             # gfcc = Log_GF(data_t)
             # gfcc = gfcc.to(device)
-            data_t, label_t, padding, index_t = data_t.to(
-                device), label_t.to(device), padding.to(device), index_t.to(device)
+            data_t, label_t,  index_t = data_t.to(
+                device), label_t.to(device), index_t.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
             predict_t = model(data_t)
             if args.loss_type == "BCE":
@@ -131,10 +134,10 @@ def train_test(
                 # gfcc = Log_GF(data_v)
                 # gfcc = gfcc.to(device)
 
-                data_v, label_v, padding, index_v = (
+                data_v, label_v,  index_v = (
                     data_v.to(device),
                     label_v.to(device),
-                    padding.to(device),
+                    # feat_v.to(device),
                     index_v.to(device),
                 )
                 optimizer.zero_grad()

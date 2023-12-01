@@ -20,9 +20,9 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=512,
                         help="args.batch_size for training")
     parser.add_argument("--learning_rate", type=float,
-                        default=0.00001, help="learning_rate for training")
+                        default=0.0001, help="learning_rate for training")
     parser.add_argument("--num_epochs", type=int,
-                        default=30, help="num_epochs")
+                        default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
     parser.add_argument("--loss_type", type=str, default="FocalLoss",
                         help="loss function", choices=["BCE", "CE", "FocalLoss"])
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     parser.add_argument("--model", type=str,
-                        default="BEATs_iter3_plus_AS2M", help="the model used")
+                        default="CNN", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,

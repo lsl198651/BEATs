@@ -5,6 +5,7 @@ from torch.nn import init
 import torchaudio.compliance.kaldi as ta_kaldi
 import torchaudio.transforms as TT
 
+
 # ----------------------------
 # Audio Classification Model
 # ----------------------------
@@ -77,6 +78,7 @@ class AudioClassifier(nn.Module):
             args=None,
     ) -> torch.Tensor:
         fbanks = []
+
         # waveform, sample_rate = torchaudio.load("test.wav", normalize=True)
 
         for waveform in source:
@@ -91,7 +93,9 @@ class AudioClassifier(nn.Module):
             fbank_std = fbank.std()
             fbank = (fbank - fbank_mean) / fbank_std
             fbanks.append(fbank)
+
         fbank = torch.stack(fbanks, dim=0)
+
         return fbank
     # ----------------------------
     # Forward pass computations
@@ -108,7 +112,7 @@ class AudioClassifier(nn.Module):
         x_all = x.view(x.shape[0], -1)
         # add wide features and concat two layers
         # print(x1.size())
-        # x1 = self.wide(x1)
+        # x1 = self.wide(wavfeat)
         # x_all = torch.cat((x_all, x1), dim=1)
         # x = self.dp(x)
         # Linear layer
@@ -183,7 +187,7 @@ class CRNN(nn.Module):
     # Forward pass computations
     # ----------------------------
 
-    def forward(self, x):
+    def forward(self, x, x1):
         # Run the convolutional blocks
         x = self.conv(x)
 
@@ -194,6 +198,8 @@ class CRNN(nn.Module):
         # Adaptive pool and flatten for input to linear layer
         x = self.ap(x)
         x = x.view(x.shape[0], -1)
+        x1 = self.wide(x1)
+        x_all = torch.cat((x_all, x1), dim=1)
 
         # x = self.dp(x)
         # Linear layer
