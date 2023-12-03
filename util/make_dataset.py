@@ -182,22 +182,41 @@ def state_div(
             buff2 = recording[int(start_index2): int(end_index2)]  # 字符串索引切割
             print("buff1 len: " + str(len(buff1)),
                   "buff2 len: " + str(len(buff2)))
-            soundfile.write(
-                state_path
-                + "{}_{}_{}_{}_{}.wav".format(
-                    index, "s1+Systolic", num, Systolic_murmur, Systolic_state
-                ),
-                buff1,
-                fs,
-            )
-            soundfile.write(
-                state_path
-                + "{}_{}_{}_{}_{}.wav".format(
-                    index, "s2+Diastolic", num, Diastolic_murmur, Diastolic_state
-                ),
-                buff2,
-                fs,
-            )
+            if (Systolic_murmur == "Present" and Diastolic_murmur == "Present"):
+                soundfile.write(
+                    state_path
+                    + "{}_{}_{}_{}_{}.wav".format(
+                        index, "s1", num, Systolic_murmur, Systolic_state
+                    ),
+                    buff1,
+                    fs,
+                )
+                soundfile.write(
+                    state_path
+                    + "{}_{}_{}_{}_{}.wav".format(
+                        index, "s2", num, Diastolic_murmur, Diastolic_state
+                    ),
+                    buff2,
+                    fs,
+                )
+            elif (Systolic_murmur == "Absent" and Diastolic_murmur == "Absent") or (Systolic_murmur == "Present" and Diastolic_murmur == "Absent"):
+                soundfile.write(
+                    state_path
+                    + "{}_{}_{}_{}_{}.wav".format(
+                        index, "s1+Systolic", num, Systolic_murmur, Systolic_state
+                    ),
+                    buff1,
+                    fs,
+                )
+            elif Systolic_murmur == "Absent" and Diastolic_murmur == "Present":
+                soundfile.write(
+                    state_path
+                    + "{}_{}_{}_{}_{}.wav".format(
+                        index, "s2+Diastolic", num, Diastolic_murmur, Diastolic_state
+                    ),
+                    buff2,
+                    fs,
+                )
 
 
 def state_div2(
@@ -361,7 +380,7 @@ if __name__ == '__main__':
     Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
-    root_path = r"D:\Shilong\murmur\01_dataset\07_newnorm"
+    root_path = r"D:\Shilong\murmur\01_dataset\09_dropabsentmore"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file

@@ -76,14 +76,14 @@ def train_test(
         train_len = 0
         input_train = []
         target_train = []
-        for data_t, label_t, index_t in train_loader:
+        for data_t, label_t, index_t, feat in train_loader:
             # data_t = butterworth_low_pass_filter(data_t)
             # gfcc = Log_GF(data_t)
             # gfcc = gfcc.to(device)
-            data_t, label_t,  index_t = data_t.to(
-                device), label_t.to(device),  index_t.to(device)
+            data_t, label_t,  index_t, feat = data_t.to(
+                device), label_t.to(device),  index_t.to(device), feat.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t)
+            predict_t = model(data_t, feat)
             if args.loss_type == "BCE":
                 predict_t2 = torch.argmax(predict_t, dim=1)
                 loss = loss_fn(predict_t2.float(), label_t)
@@ -126,19 +126,16 @@ def train_test(
         test_loss = 0
         correct_v = 0
         with torch.no_grad():
-            for data_v, label_v, index_v in test_loader:
+            for data_v, label_v, index_v, feat_v in test_loader:
                 # data_v = butterworth_low_pass_filter(data_v)
                 # gfcc = Log_GF(data_v)
                 # gfcc = gfcc.to(device)
 
-                data_v, label_v,  index_v = (
-                    data_v.to(device),
-                    label_v.to(device),
-                    # padding.to(device),
-                    index_v.to(device),
-                )
+                data_v, label_v, feat_v,  index_v = \
+                    (data_v.to(device), label_v.to(device),
+                     feat_v.to(device), index_v.to(device))
                 optimizer.zero_grad()
-                predict_v = model(data_v)
+                predict_v = model(data_v, feat_v)
                 # recall = recall_score(y_hat, y)
                 if args.loss_type == "BCE":
                     predict_v2 = torch.argmax(predict_v, dim=1)
