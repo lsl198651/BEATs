@@ -30,7 +30,7 @@ class BEATsConfig:
         self.encoder_layers: int = 2  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
-        self.encoder_attention_heads: int = 4  # num encoder attention heads
+        self.encoder_attention_heads: int = 2  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
 
         self.layer_wise_gradient_decay_ratio: float = (
@@ -64,9 +64,9 @@ class BEATsConfig:
         self.relative_position_embedding: bool = (
             False  # apply relative position embedding
         )
-        self.num_buckets: int = 320  # number of buckets for relative position embedding
+        self.num_buckets: int = 100  # number of buckets for relative position embedding
         self.max_distance: int = (
-            1280  # maximum distance for relative position embedding
+            128  # maximum distance for relative position embedding
         )
         self.gru_rel_pos: bool = False  # apply gated relative position embedding
 
