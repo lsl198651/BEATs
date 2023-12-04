@@ -67,7 +67,7 @@ class MobileNetV2(nn.Module):
         conv_layers = []
         self.bn0 = nn.BatchNorm2d(1)
         # First Convolution Block with Relu and Batch Norm. Use Kaiming Initialization
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=(
+        self.conv1 = nn.Conv2d(1280, 32, kernel_size=(
             3, 3), stride=(1, 1), padding=(2, 2))
         self.relu1 = nn.ReLU()
         self.bn1 = nn.BatchNorm2d(32)
@@ -114,18 +114,15 @@ class MobileNetV2(nn.Module):
 
         inverted_residual_setting = [
             # t, c, n, s
-            [1, 16, 1, 1],
-            [6, 24, 2, 2],
-            [6, 32, 3, 2],
-            [6, 64, 4, 2],
-            [6, 96, 3, 1],
-            [6, 160, 3, 2],
-            [6, 320, 1, 1],
+            [1, 8, 1, 1],
+            [6, 12, 2, 2],
+            [6, 16, 3, 2],
+            [6, 32, 4, 2],
         ]
 
         features = []
         # conv1 layer
-        features.append(ConvBNReLU(3, input_channel, stride=2))
+        features.append(ConvBNReLU(1, input_channel, stride=2))
         # building inverted residual residual blockes
         for t, c, n, s in inverted_residual_setting:
             output_channel = _make_divisible(c * alpha, round_nearest)
@@ -146,7 +143,7 @@ class MobileNetV2(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.classifier = nn.Sequential(
             nn.Dropout(0.2),
-            nn.Linear(last_channel, num_classes)
+            nn.Linear(64, num_classes)
         )
 
         # weight initialization
@@ -188,9 +185,11 @@ class MobileNetV2(nn.Module):
 
     def forward(self, x):
         fbank = self.preprocess(x, args=None)
+        fbank = fbank.unsqueeze(1)
         x = self.features(fbank)
         x=self.conv(x)
         x = self.ap(x)
-        x = torch.flatten(x, 1)
+        # x = torch.flatten(x, 1)
+        x=x.squeeze()
         x = self.classifier(x)
         return x

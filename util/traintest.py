@@ -86,33 +86,21 @@ def train_test(
             data_t, label_t,  index_t  = data_t.to(
                 device), label_t.to(device), index_t.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t, padding)
-            if args.loss_type == "BCE":
-                predict_t2 = torch.argmax(predict_t, dim=1)
-                loss = loss_fn(predict_t2.float(), label_t)
-                optimizer.zero_grad()
-                loss.requires_grad_(True)
-                loss.backward()
-                optimizer.step()
-                train_loss += loss.item()
-                # predict_t2 = predict_t2.squeeze(1)
-                correct_t += predict_t2.eq(label_t).sum().item()
-                train_len += len(label_t)
-            elif args.loss_type == "FocalLoss" or "CE":
-                loss = loss_fn(
-                    predict_t, label_t.long())
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-                train_loss += loss.item()
-                # get the index of the max log-probability
-                pred_t = predict_t.max(1, keepdim=True)[1]
-                # label_t = torch.int64(label_t)
-                pred_t = pred_t.squeeze(1)
-                input_train.extend(pred_t.cpu().tolist())
-                target_train.extend(label_t.cpu().tolist())
-                correct_t += pred_t.eq(label_t).sum().item()
-                train_len += len(pred_t)
+            predict_t = model(data_t)
+            loss = loss_fn(
+                predict_t, label_t.long())
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item()
+            # get the index of the max log-probability
+            pred_t = predict_t.max(1, keepdim=True)[1]
+            # label_t = torch.int64(label_t)
+            pred_t = pred_t.squeeze(1)
+            input_train.extend(pred_t.cpu().tolist())
+            target_train.extend(label_t.cpu().tolist())
+            correct_t += pred_t.eq(label_t).sum().item()
+            train_len += len(pred_t)
         if args.scheduler_flag is not None:
             scheduler.step()
         # ------------------调库计算指标--------------------------
@@ -141,35 +129,26 @@ def train_test(
                     padding.to(device),
                 )
                 optimizer.zero_grad()
-                predict_v = model(data_v, padding)
+                predict_v = model(data_v)
                 # recall = recall_score(y_hat, y)
-                if args.loss_type == "BCE":
-                    predict_v2 = torch.argmax(predict_v, dim=1)
-                    loss_v = loss_fn(predict_v2.float(), label_t)
-                    test_loss += loss_v.item()
-                    # predict_v2 = predict_v2.squeeze(1)
-                    correct_v += predict_v2.eq(label_v).sum().item()
-                    pred.extend(predict_v2.cpu().tolist())
-                    label.extend(label_v.cpu().tolist())
-                elif args.loss_type == "FocalLoss" or "CE":
-                    loss_v = loss_fn(predict_v, label_v.long())
-                    # get the index of the max log-probability
-                    pred_v = predict_v.max(1, keepdim=True)[1]
-                    test_loss += loss_v.item()
-                    pred_v = pred_v.squeeze(1)
-                    correct_v += pred_v.eq(label_v).sum().item()
-                    idx_v = index_v[torch.nonzero(
-                        torch.eq(pred_v.ne(label_v), True))]
-                    # idx_v = idx_v.squeeze()
-                    result_list_present.extend(index_v[torch.nonzero(
-                        torch.eq(pred_v.eq(1), True))].cpu().tolist())
-                    # result_list_present = result_list_present.squeeze()
-                    try:
-                        error_index.extend(idx_v.cpu().tolist())
-                    except TypeError:
-                        print("TypeError: 'int' object is not iterable")
-                    pred.extend(pred_v.cpu().tolist())
-                    label.extend(label_v.cpu().tolist())
+                loss_v = loss_fn(predict_v, label_v.long())
+                # get the index of the max log-probability
+                pred_v = predict_v.max(1, keepdim=True)[1]
+                test_loss += loss_v.item()
+                pred_v = pred_v.squeeze(1)
+                correct_v += pred_v.eq(label_v).sum().item()
+                idx_v = index_v[torch.nonzero(
+                    torch.eq(pred_v.ne(label_v), True))]
+                # idx_v = idx_v.squeeze()
+                result_list_present.extend(index_v[torch.nonzero(
+                    torch.eq(pred_v.eq(1), True))].cpu().tolist())
+                # result_list_present = result_list_present.squeeze()
+                try:
+                    error_index.extend(idx_v.cpu().tolist())
+                except TypeError:
+                    print("TypeError: 'int' object is not iterable")
+                pred.extend(pred_v.cpu().tolist())
+                label.extend(label_v.cpu().tolist())
         # ------------------调库计算指标--------------------------
         test_input, test_target = torch.as_tensor(pred), torch.as_tensor(label)
         test_auprc = binary_auprc(test_input, test_target)
