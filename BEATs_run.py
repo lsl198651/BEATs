@@ -8,7 +8,7 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 from BEATs import BEATs_Pre_Train_itere3
-from model.CNNModel import AudioClassifier
+from model.MobileNetV2Model import MobileNetV2
 from util.dataloaders import get_features
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_fold", type=list,
                         default=['0', '1', '2', '3'])
     parser.add_argument("--test_fold", type=list, default=['4'])
-    parser.add_argument("--setType", type=str, default=r"\06_new5fold")
+    parser.add_argument("--setType", type=str, default=r"\08_dropabsent")
     args = parser.parse_args()
     # 检测分折重复
     for val in args.test_fold:
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     ).bool()  # we randomly mask 75% of the input patches,
     padding_mask = torch.Tensor(padding)
 
-    MyModel = BEATs_Pre_Train_itere3(args=args)
+    MyModel = MobileNetV2()
 
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！

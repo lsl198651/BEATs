@@ -2,7 +2,7 @@ from torch import nn
 import torch
 import torchaudio.compliance.kaldi as ta_kaldi
 import torchaudio.compliance.kaldi as ta_kaldi
-
+from torch.nn import init
 
 def _make_divisible(ch, divisor=8, min_ch=None):
     """
@@ -61,8 +61,53 @@ class InvertedResidual(nn.Module):
 
 
 class MobileNetV2(nn.Module):
-    def __init__(self, num_classes=1000, alpha=1.0, round_nearest=8):
+    def __init__(self, num_classes=2, alpha=1.0, round_nearest=8):
         super(MobileNetV2, self).__init__()
+        # ---------------------------------------------------
+        conv_layers = []
+        self.bn0 = nn.BatchNorm2d(1)
+        # First Convolution Block with Relu and Batch Norm. Use Kaiming Initialization
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=(
+            3, 3), stride=(1, 1), padding=(2, 2))
+        self.relu1 = nn.ReLU()
+        self.bn1 = nn.BatchNorm2d(32)
+        self.mp1 = nn.MaxPool2d(2)
+        self.dp1 = nn.Dropout(p=0.15)
+        init.kaiming_normal_(self.conv1.weight, a=0.1)
+        self.conv1.bias.data.zero_()
+        conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
+
+        # Second Convolution Block
+        self.conv2 = nn.Conv2d(32, 32, kernel_size=(
+            3, 3), stride=(1, 1), padding=(1, 1))
+        self.relu2 = nn.ReLU()
+        self.bn2 = nn.BatchNorm2d(32)
+        self.mp2 = nn.MaxPool2d(2)
+        self.dp2 = nn.Dropout(p=0.1)
+        init.kaiming_normal_(self.conv2.weight, a=0.1)
+        self.conv2.bias.data.zero_()
+        conv_layers += [self.conv2, self.bn2, self.relu2, self.mp2, self.dp2]
+
+        # Third Convolution Block
+        self.conv3 = nn.Conv2d(32, 32, kernel_size=(
+            3, 3), stride=(1, 1), padding=(1, 1))
+        self.relu3 = nn.ReLU()
+        self.bn3 = nn.BatchNorm2d(32)
+        self.dp3 = nn.Dropout(p=0.1)
+        init.kaiming_normal_(self.conv3.weight, a=0.1)
+        self.conv3.bias.data.zero_()
+        conv_layers += [self.conv3, self.bn3, self.relu3, self.dp3]
+
+        # Fourth Convolution Block
+        self.conv4 = nn.Conv2d(32, 64, kernel_size=(
+            3, 3), stride=(1, 1), padding=(1, 1))
+        self.relu4 = nn.ReLU()
+        self.bn4 = nn.BatchNorm2d(64)
+        init.kaiming_normal_(self.conv4.weight, a=0.1)
+        self.conv4.bias.data.zero_()
+        conv_layers += [self.conv4, self.bn4, self.relu4]
+        self.conv = nn.Sequential(*conv_layers)
+        # --------------------------------------------------
         block = InvertedResidual
         input_channel = _make_divisible(32 * alpha, round_nearest)
         last_channel = _make_divisible(1280 * alpha, round_nearest)
@@ -92,7 +137,10 @@ class MobileNetV2(nn.Module):
         # building last several layers
         features.append(ConvBNReLU(input_channel, last_channel, 1))
         # combine feature layers
+        # ------------------------------
         self.features = nn.Sequential(*features)
+        # ==================================
+        self.ap = nn.AdaptiveAvgPool2d(output_size=1)
 
         # building classifier
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
@@ -141,7 +189,8 @@ class MobileNetV2(nn.Module):
     def forward(self, x):
         fbank = self.preprocess(x, args=None)
         x = self.features(fbank)
-        x = self.avgpool(x)
+        x=self.conv(x)
+        x = self.ap(x)
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x

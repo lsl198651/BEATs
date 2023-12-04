@@ -16,9 +16,8 @@ from torch.nn import LayerNorm, BatchNorm2d
 import torchaudio.compliance.kaldi as ta_kaldi
 import torchaudio.transforms as TT
 from backbone import TransformerEncoder
-from util.BEATs_def import Log_GF, Mel_Time_Frequency_Spectrum_2
+from util.BEATs_def import Log_GF
 from torch.nn import init
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +30,7 @@ class BEATsConfig:
         self.encoder_layers: int = 2  # num encoder layers in the transformer
         self.encoder_embed_dim: int = 768  # encoder embedding dimension
         self.encoder_ffn_embed_dim: int = 1536  # encoder embedding dimension for FFN
-        self.encoder_attention_heads: int = 4  # num encoder attention heads
+        self.encoder_attention_heads: int = 2  # num encoder attention heads
         self.activation_fn: str = "gelu"  # activation function to use
 
         self.layer_wise_gradient_decay_ratio: float = (
@@ -65,9 +64,9 @@ class BEATsConfig:
         self.relative_position_embedding: bool = (
             False  # apply relative position embedding
         )
-        self.num_buckets: int = 320  # number of buckets for relative position embedding
+        self.num_buckets: int = 100  # number of buckets for relative position embedding
         self.max_distance: int = (
-            1280  # maximum distance for relative position embedding
+            128  # maximum distance for relative position embedding
         )
         self.gru_rel_pos: bool = False  # apply gated relative position embedding
 
@@ -152,17 +151,14 @@ class BEATs(nn.Module):
             args=None,
     ) -> torch.Tensor:
         fbanks = []
-        # waveform, sample_rate = torchaudio.load("test.wav", normalize=True)
-
         for waveform in source:
             # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
             waveform = waveform.unsqueeze(0)
-            # spec = TT.MelSpectrogram(sr=16000, n_fft=512, win_length=25,
+            # spec = transforms.MelSpectrogram(sr=16000, n_fft=512, win_length=50,
             #                                  hop_length=25, n_mels=128, f_min=25, f_max=2000)(waveform)
-            # spec = TT.AmplitudeToDB(top_db=20)(spec)
+            # spec = transforms.AmplitudeToDB(top_db=top_db)(spec)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
-            # S1 = librosa.feature.delta(s)
 
             if args.mask is True:
                 # freqm_value = 30  # 横向
@@ -180,7 +176,7 @@ class BEATs(nn.Module):
                 fbank = torch.transpose(fbank, 0, 1)
             fbank_mean = fbank.mean()
             fbank_std = fbank.std()
-            fbank = (fbank - fbank_mean) / fbank_std
+            fbank = (fbank - fbank_mean) / (2 * fbank_std)
             fbanks.append(fbank)
         fbank = torch.stack(fbanks, dim=0)
         return fbank
@@ -271,16 +267,12 @@ class BEATs_Pre_Train_itere3(nn.Module):
         self.last_Dropout = nn.Dropout(0.1)
         # conv block
         # ---------------------------------
-        self.bn0 = nn.BatchNorm2d(1)
-        # First Convolution Block with Relu and Batch Norm. Use Kaiming Initialization
         self.conv1 = nn.Conv2d(1, 32, kernel_size=(
             3, 3), stride=(1, 1), padding=(2, 2))
         self.relu1 = nn.ReLU()
         self.bn1 = nn.BatchNorm2d(32)
         self.mp1 = nn.MaxPool2d(2)
-        self.dp1 = nn.Dropout(p=0.15)
-        init.kaiming_normal_(self.conv1.weight, a=0.1)
-        self.conv1.bias.data.zero_()
+        self.dp1 = nn.Dropout(p=0.2)
         conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
 
         self.conv3 = nn.Conv2d(32, 32, kernel_size=(
@@ -301,8 +293,10 @@ class BEATs_Pre_Train_itere3(nn.Module):
         conv_layers += [self.conv4, self.bn4, self.relu4]
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
         self.conv = nn.Sequential(*conv_layers)
-        self.conv2 = nn.Sequential(*conv_layers2)
+
         # -------------------------------------------------------
+        # self.fc_layer = nn.Linear(768, 768)
+        self.last_layer = nn.Linear(768, 2)
         self.fc_layer = nn.Sequential(
             # nn.Linear(32*10, 16*38),
             # nn.ReLU(),
@@ -314,7 +308,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
             nn.Linear(16, 2),
         )
 
-    def forward(self, x,  padding_mask: torch.Tensor = None, gfcc=None):
+    def forward(self, x,  padding_mask: torch.Tensor = None):
         # with torch.no_grad():
         x, _ = self.BEATs.extract_features(x, padding_mask, args=self.args)
         # dropout
