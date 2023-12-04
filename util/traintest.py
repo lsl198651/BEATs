@@ -3,6 +3,7 @@ import logging
 import os
 import pandas as pd
 import torch
+import utils
 import torch.nn as nn
 from torch import optim
 from datetime import datetime
@@ -172,6 +173,11 @@ def train_test(
         test_f1 = binary_f1_score(test_input, test_target)
         test_cm = binary_confusion_matrix(test_input, test_target)
         # ---------------------------------------------------------
+        if best_acc < test_acc:
+            utils.save_checkpoint({"epoch": epochs + 1,
+                                   "model": model.state_dict(),
+                                   "optimizer": optimizer.state_dict()}, args.test_fold[0], "{}".format(args.model_folder))
+        # --------------------------------------------------------
         pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                          str(epochs+1)+".csv", index=False, header=False)
         location_acc, location_cm, patient_output, patient_target, patient_error_id = segment_classifier(

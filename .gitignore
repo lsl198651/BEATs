@@ -9,3 +9,4 @@ error_index
 __pycache__
 *.csv
 patient_error_index
+MyModels
