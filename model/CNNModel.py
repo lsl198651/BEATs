@@ -24,8 +24,8 @@ class AudioClassifier(nn.Module):
         self.relu1 = nn.ReLU()
         self.bn1 = nn.BatchNorm2d(32)
         self.mp1 = nn.MaxPool2d(2)
-        self.dp1 = nn.Dropout(p=0.15)
-        init.kaiming_normal_(self.conv1.weight, a=0.1)
+        self.dp1 = nn.Dropout(p=0.1)
+        # init.kaiming_normal_(self.conv1.weight, a=0.1)
         self.conv1.bias.data.zero_()
         conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
 
@@ -36,7 +36,7 @@ class AudioClassifier(nn.Module):
         self.bn2 = nn.BatchNorm2d(32)
         self.mp2 = nn.MaxPool2d(2)
         self.dp2 = nn.Dropout(p=0.1)
-        init.kaiming_normal_(self.conv2.weight, a=0.1)
+        # init.kaiming_normal_(self.conv2.weight, a=0.1)
         self.conv2.bias.data.zero_()
         conv_layers += [self.conv2, self.bn2, self.relu2, self.mp2, self.dp2]
 
@@ -46,7 +46,7 @@ class AudioClassifier(nn.Module):
         self.relu3 = nn.ReLU()
         self.bn3 = nn.BatchNorm2d(32)
         self.dp3 = nn.Dropout(p=0.1)
-        init.kaiming_normal_(self.conv3.weight, a=0.1)
+        # init.kaiming_normal_(self.conv3.weight, a=0.1)
         self.conv3.bias.data.zero_()
         conv_layers += [self.conv3, self.bn3, self.relu3, self.dp3]
 
@@ -55,7 +55,7 @@ class AudioClassifier(nn.Module):
             3, 3), stride=(1, 1), padding=(1, 1))
         self.relu4 = nn.ReLU()
         self.bn4 = nn.BatchNorm2d(64)
-        init.kaiming_normal_(self.conv4.weight, a=0.1)
+        # init.kaiming_normal_(self.conv4.weight, a=0.1)
         self.conv4.bias.data.zero_()
         conv_layers += [self.conv4, self.bn4, self.relu4]
 
