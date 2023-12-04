@@ -293,7 +293,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
         conv_layers += [self.conv4, self.bn4, self.relu4]
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
         self.conv = nn.Sequential(*conv_layers)
-        self.conv2 = nn.Sequential(*conv_layers2)
+
         # -------------------------------------------------------
         # self.fc_layer = nn.Linear(768, 768)
         self.last_layer = nn.Linear(768, 2)
