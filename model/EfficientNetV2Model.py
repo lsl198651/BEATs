@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from functools import partial
 from typing import Callable, Optional
-
+from torch.nn import init
 import torch.nn as nn
 import torch
 from torch import Tensor
@@ -243,7 +243,7 @@ class EfficientNetV2(nn.Module):
     def __init__(self,
                  model_cnf: list,
                  num_classes: int = 1000,
-                 num_features: int = 1280,
+                 num_features: int = 640,
                  dropout_rate: float = 0.2,
                  drop_connect_rate: float = 0.2):
         super(EfficientNetV2, self).__init__()
@@ -255,7 +255,7 @@ class EfficientNetV2(nn.Module):
 
         stem_filter_num = model_cnf[0][4]
 
-        self.stem = ConvBNAct(3,
+        self.stem = ConvBNAct(1,
                               stem_filter_num,
                               kernel_size=3,
                               stride=2,
@@ -288,11 +288,11 @@ class EfficientNetV2(nn.Module):
                                                norm_layer=norm_layer)})  # 激活函数默认是SiLU
 
         head.update({"avgpool": nn.AdaptiveAvgPool2d(1)})
-        head.update({"flatten": nn.Flatten()})
+        # head.update({"flatten": nn.Flatten()})
 
-        if dropout_rate > 0:
-            head.update({"dropout": nn.Dropout(p=dropout_rate, inplace=True)})
-        head.update({"classifier": nn.Linear(num_features, num_classes)})
+        # if dropout_rate > 0:
+        #     head.update({"dropout": nn.Dropout(p=dropout_rate, inplace=True)})
+        # head.update({"classifier": nn.Linear(num_features, num_classes)})
 
         self.head = nn.Sequential(head)
 
@@ -308,6 +308,56 @@ class EfficientNetV2(nn.Module):
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
                 nn.init.zeros_(m.bias)
+        # ---------------------------------------------------
+        conv_layers = []
+        self.bn0 = nn.BatchNorm2d(1)
+        # First Convolution Block with Relu and Batch Norm. Use Kaiming Initialization
+        self.conv1 = nn.Conv2d(640, 160, kernel_size=(
+            3, 3), stride=(1, 1), padding=(2, 2))
+        self.relu1 = nn.ReLU()
+        self.bn1 = nn.BatchNorm2d(160)
+        self.mp1 = nn.MaxPool2d(2)
+        self.dp1 = nn.Dropout(p=0.15)
+        # init.kaiming_normal_(self.conv1.weight, a=0.1)
+        self.conv1.bias.data.zero_()
+        conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
+
+        # Second Convolution Block
+        self.conv2 = nn.Conv2d(640, 160, kernel_size=(
+            3, 3), stride=(1, 1), padding=(1, 1))
+        self.relu2 = nn.ReLU()
+        self.bn2 = nn.BatchNorm2d(160)
+        self.mp2 = nn.MaxPool2d(2)
+        self.dp2 = nn.Dropout(p=0.1)
+        # init.kaiming_normal_(self.conv2.weight, a=0.1)
+        self.conv2.bias.data.zero_()
+        # conv_layers += [self.conv2, self.bn2, self.relu2, self.mp2, self.dp2]
+
+        # Third Convolution Block
+        self.conv3 = nn.Conv2d(160, 160, kernel_size=(
+            3, 3), stride=(1, 1), padding=(1, 1))
+        self.relu3 = nn.ReLU()
+        self.bn3 = nn.BatchNorm2d(160)
+        self.dp3 = nn.Dropout(p=0.1)
+        # init.kaiming_normal_(self.conv3.weight, a=0.1)
+        self.conv3.bias.data.zero_()
+        conv_layers += [self.conv3, self.bn3, self.relu3, self.dp3]
+
+        # Fourth Convolution Block
+        self.conv4 = nn.Conv2d(160, 64, kernel_size=(
+            3, 3), stride=(1, 1), padding=(1, 1))
+        self.relu4 = nn.ReLU()
+        self.bn4 = nn.BatchNorm2d(64)
+        # init.kaiming_normal_(self.conv4.weight, a=0.1)
+        self.conv4.bias.data.zero_()
+        conv_layers += [self.conv4, self.bn4, self.relu4]
+        self.conv = nn.Sequential(*conv_layers)
+        # --------------------------------------------------
+        self.ap = nn.AdaptiveAvgPool2d(output_size=1)
+        self.classifier = nn.Sequential(
+            nn.Dropout(0.2),
+            nn.Linear(64, 2)
+        )
 
     def preprocess(
             self,
@@ -335,9 +385,13 @@ class EfficientNetV2(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         fbank = self.preprocess(x, args=None)
+        fbank = fbank.unsqueeze(1)
         x = self.stem(fbank)
         x = self.blocks(x)
         x = self.head(x)
+        x=self.conv(x)
+        x=x.squeeze()
+        x=self.classifier(x)
 
         return x
 

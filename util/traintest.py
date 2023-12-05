@@ -122,11 +122,10 @@ def train_test(
                 # gfcc = Log_GF(data_v)
                 # gfcc = gfcc.to(device)
 
-                data_v, label_v,  index_v, padding = (
+                data_v, label_v,  index_v  = (
                     data_v.to(device),
                     label_v.to(device),                    
                     index_v.to(device),
-                    padding.to(device),
                 )
                 optimizer.zero_grad()
                 predict_v = model(data_v)
@@ -224,10 +223,10 @@ def train_test(
         logging.info(f"patient_TPR:{test_TPR:.3f}")
         logging.info(f"best_acc:{best_acc:.2%}")
         # 画混淆矩阵
-        draw_confusion_matrix(
-            test_cm.numpy(),
-            ["Absent", "Present"],
-            "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
-            pdf_save_path=confusion_matrix_path,
-            epoch=epochs + 1,
-        )
+        # draw_confusion_matrix(
+        #     test_cm.numpy(),
+        #     ["Absent", "Present"],
+        #     "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
+        #     pdf_save_path=confusion_matrix_path,
+        #     epoch=epochs + 1,
+        # )

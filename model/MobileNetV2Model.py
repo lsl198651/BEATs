@@ -67,10 +67,10 @@ class MobileNetV2(nn.Module):
         conv_layers = []
         self.bn0 = nn.BatchNorm2d(1)
         # First Convolution Block with Relu and Batch Norm. Use Kaiming Initialization
-        self.conv1 = nn.Conv2d(1280, 32, kernel_size=(
+        self.conv1 = nn.Conv2d(1280, 640, kernel_size=(
             3, 3), stride=(1, 1), padding=(2, 2))
         self.relu1 = nn.ReLU()
-        self.bn1 = nn.BatchNorm2d(32)
+        self.bn1 = nn.BatchNorm2d(640)
         self.mp1 = nn.MaxPool2d(2)
         self.dp1 = nn.Dropout(p=0.15)
         init.kaiming_normal_(self.conv1.weight, a=0.1)
@@ -78,10 +78,10 @@ class MobileNetV2(nn.Module):
         conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
 
         # Second Convolution Block
-        self.conv2 = nn.Conv2d(32, 32, kernel_size=(
+        self.conv2 = nn.Conv2d(640, 160, kernel_size=(
             3, 3), stride=(1, 1), padding=(1, 1))
         self.relu2 = nn.ReLU()
-        self.bn2 = nn.BatchNorm2d(32)
+        self.bn2 = nn.BatchNorm2d(160)
         self.mp2 = nn.MaxPool2d(2)
         self.dp2 = nn.Dropout(p=0.1)
         init.kaiming_normal_(self.conv2.weight, a=0.1)
@@ -89,17 +89,17 @@ class MobileNetV2(nn.Module):
         conv_layers += [self.conv2, self.bn2, self.relu2, self.mp2, self.dp2]
 
         # Third Convolution Block
-        self.conv3 = nn.Conv2d(32, 32, kernel_size=(
+        self.conv3 = nn.Conv2d(160, 80, kernel_size=(
             3, 3), stride=(1, 1), padding=(1, 1))
         self.relu3 = nn.ReLU()
-        self.bn3 = nn.BatchNorm2d(32)
+        self.bn3 = nn.BatchNorm2d(80)
         self.dp3 = nn.Dropout(p=0.1)
         init.kaiming_normal_(self.conv3.weight, a=0.1)
         self.conv3.bias.data.zero_()
         conv_layers += [self.conv3, self.bn3, self.relu3, self.dp3]
 
         # Fourth Convolution Block
-        self.conv4 = nn.Conv2d(32, 64, kernel_size=(
+        self.conv4 = nn.Conv2d(80, 64, kernel_size=(
             3, 3), stride=(1, 1), padding=(1, 1))
         self.relu4 = nn.ReLU()
         self.bn4 = nn.BatchNorm2d(64)
@@ -116,8 +116,6 @@ class MobileNetV2(nn.Module):
             # t, c, n, s
             [1, 8, 1, 1],
             [6, 12, 2, 2],
-            [6, 16, 3, 2],
-            [6, 32, 4, 2],
         ]
 
         features = []
