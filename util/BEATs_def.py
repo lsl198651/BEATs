@@ -590,7 +590,7 @@ class FocalLoss_VGG(nn.Module):
 class FocalLoss(nn.Module):
     """Focal Loss"""
 
-    def __init__(self, gamma=2, alpha=0.2, size_average=True):
+    def __init__(self, gamma=2, alpha=0.25, size_average=True):
         super(FocalLoss, self).__init__()
         self.gamma = gamma
         self.alpha = alpha

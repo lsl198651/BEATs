@@ -7,12 +7,15 @@ import logging
 import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
-from BEATs import BEATs_Pre_Train_itere3
-from model.EfficientNetV2Model import efficientnetv2_s as create_model
-from util.dataloaders import get_features
+# from BEATs import BEATs_Pre_Train_itere3
+from model.CNN_GRU import AudioClassifier_CNNGRU
+# from model.senet.se_resnet import se_resnet18
+# from util.dataloaders import get_features
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
-from util.BEATs_def import (MyDataset, logger_init, DatasetClass)
+from util.BEATs_def import ( logger_init, DatasetClass)
+from model.mobilenet import *
+from model.resnet import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -43,7 +46,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     parser.add_argument("--model", type=str,
-                        default="MobileNetV2", help="the model used")
+                        default="CNN+GRU", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -93,8 +96,10 @@ if __name__ == '__main__':
         args.batch_size, padding_size
     ).bool()  # we randomly mask 75% of the input patches,
     padding_mask = torch.Tensor(padding)
-
-    MyModel =  create_model(num_classes=2)
+    MyModel =  AudioClassifier_CNNGRU()
+    # model = se_resnet18(num_classes=2)
+    # model = ResidualNet(None, 18, 2, "TripletAttention")
+    # model = triplet_attention_mobilenet_v2()
 
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
