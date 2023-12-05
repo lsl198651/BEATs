@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
-
+import torchaudio.compliance.kaldi as ta_kaldi
 from .triplet_attention import *
 
 
@@ -136,7 +136,7 @@ class ResNet(nn.Module):
             block, 512, layers[3], stride=2, att_type=att_type
         )
 
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
+        self.fc = nn.Linear(512 * 4, num_classes)
 
         init.kaiming_normal_(self.fc.weight)
         for key in self.state_dict():
@@ -186,8 +186,28 @@ class ResNet(nn.Module):
             )
 
         return nn.Sequential(*layers)
+    
+    def preprocess(
+            self,
+            source: torch.Tensor,
+    ) -> torch.Tensor:
+        fbanks = []
+        for waveform in source:
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / fbank_std
+            fbanks.append(fbank)
+        fbank = torch.stack(fbanks, dim=0)
+        return fbank
+
 
     def forward(self, x):
+        fbank = self.preprocess(x)
+        x = fbank.unsqueeze(1)
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)

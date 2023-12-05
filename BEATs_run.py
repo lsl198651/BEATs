@@ -8,9 +8,10 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
-from model.CNN_GRU import AudioClassifier_CNNGRU
-# from model.senet.se_resnet import se_resnet18
+# from model.CNN_GRU import AudioClassifier_CNNGRU
+from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
+# from model.resnet import ResidualNet
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
 from util.BEATs_def import ( logger_init, DatasetClass)
@@ -46,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     parser.add_argument("--model", type=str,
-                        default="CNN+GRU", help="the model used")
+                        default="ResidualNet with new attention", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -96,9 +97,9 @@ if __name__ == '__main__':
         args.batch_size, padding_size
     ).bool()  # we randomly mask 75% of the input patches,
     padding_mask = torch.Tensor(padding)
-    MyModel =  AudioClassifier_CNNGRU()
-    # model = se_resnet18(num_classes=2)
-    # model = ResidualNet(None, 18, 2, "TripletAttention")
+    # MyModel =  AudioClassifier_CNNGRU()
+    MyModel = se_resnet18(num_classes=2)
+    # MyModel = ResidualNet(None, 18, 2, "TripletAttention")
     # model = triplet_attention_mobilenet_v2()
 
     # ========================/ setup optimizer /========================== #
@@ -113,7 +114,7 @@ if __name__ == '__main__':
 
     # ========================/ setup scaler /========================== #
     logger_init()
-    logging.info(f"{args.model} + {args.layers} fc layer")
+    logging.info(f"{args.model} ")
     logging.info(f"# Batch_size = {args.batch_size}")
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
