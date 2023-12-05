@@ -24,7 +24,7 @@ if __name__ == '__main__':
     parser.add_argument("--num_epochs", type=int,
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
-    parser.add_argument("--loss_type", type=str, default="FocalLoss",
+    parser.add_argument("--loss_type", type=str, default="CE",
                         help="loss function", choices=["BCE", "CE", "FocalLoss"])
     parser.add_argument("--scheduler_flag", type=str, default=None,
                         help="the dataset used", choices=["cos", "cos_warmup"],)

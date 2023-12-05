@@ -443,7 +443,8 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
     segment_target = []
     # 最后，根据target_list，将分类结果转换为0和1并产生outcome_list
     for id_loc, result_value in result_dic.items():
-        if result_value >= 0.5:
+        # TODO: 这里的阈值是0.4,会提升性能吗？
+        if result_value >= 0.4:
             segment_output.append(1)
             result_dic[id_loc] = 1
         else:

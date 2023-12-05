@@ -64,7 +64,10 @@ def train_test(
     if args.loss_type == "BCE":
         loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
     elif args.loss_type == "CE":
-        loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
+        normedWeights = [1, 5]
+        normedWeights = torch.FloatTensor(normedWeights).to(device)
+        loss_fn = nn.CrossEntropyLoss(
+            weight=normedWeights)  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
 
