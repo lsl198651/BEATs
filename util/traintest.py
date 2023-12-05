@@ -245,10 +245,10 @@ def train_test(
         logging.info(f"patient_TPR:{test_TPR:.3f}")
         logging.info(f"best_acc:{best_acc:.2%}")
         # 画混淆矩阵
-        draw_confusion_matrix(
-            test_cm.numpy(),
-            ["Absent", "Present"],
-            "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
-            pdf_save_path=confusion_matrix_path,
-            epoch=epochs + 1,
-        )
+        # draw_confusion_matrix(
+        #     test_cm.numpy(),
+        #     ["Absent", "Present"],
+        #     "epoch" + str(epochs + 1) + ",testacc: {:.3%}".format(test_acc),
+        #     pdf_save_path=confusion_matrix_path,
+        #     epoch=epochs + 1,
+        # )
