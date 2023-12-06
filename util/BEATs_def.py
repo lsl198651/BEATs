@@ -1,4 +1,3 @@
-
 from pickle import TRUE
 from sympy import true
 import torch
@@ -39,7 +38,7 @@ from scipy import signal
 # from python_speech_features import logfbank
 from spafe.features.gfcc import erb_spectrogram
 from spafe.utils.preprocessing import SlidingWindow
-from get_wide_feature import hand_fea
+from util.get_wide_feature import hand_fea
 warnings.filterwarnings('ignore')
 
 
@@ -183,6 +182,7 @@ def get_wav_data(dir_path, num=0):
     label = []
     file_names = []
     wav_nums = []
+    feat = []
     data_length = 6000
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
@@ -212,10 +212,11 @@ def get_wav_data(dir_path, num=0):
                 # 标签读取
                 if file_name[4] == "Absent":  # Absent
                     label.append(0)
-                if file_name[4] == "Present":  # Present
-                    label.append(1)  # 说明该听诊区无杂音
+                elif file_name[4] == "Present":  # Present
+                    label.append(1)  # 说明该听诊区有杂音
+                feat.append(file_name[-1])
 
-    return wav, label, file_names, wav_nums, num
+    return wav, label, file_names, wav_nums, num, feat
 
 
 def cal_len(dir_path, csv_path, Murmur: str, id_data, Murmur_locations):
@@ -302,12 +303,13 @@ class DatasetClass(Dataset):
     """
 
     # Initialize your data, download, etc.
-    def __init__(self, wavlabel, wavdata, wavidx):
+    def __init__(self, wavlabel, wavdata, wavidx, wavebd):
         # 直接传递data和label
         # self.len = wavlen
         self.data = torch.from_numpy(wavdata)
         self.label = torch.from_numpy(wavlabel)
         self.id = torch.from_numpy(wavidx)
+        # self.wavebd = torch.from_numpy(wavebd)
 
     def __getitem__(self, index):
         # 根据索引返回数据和对应的标签

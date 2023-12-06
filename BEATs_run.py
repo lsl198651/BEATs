@@ -24,7 +24,7 @@ if __name__ == '__main__':
     parser.add_argument("--num_epochs", type=int,
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
-    parser.add_argument("--loss_type", type=str, default="CE",
+    parser.add_argument("--loss_type", type=str, default="FocalLoss",
                         help="loss function", choices=["BCE", "CE", "FocalLoss"])
     parser.add_argument("--scheduler_flag", type=str, default=None,
                         help="the dataset used", choices=["cos", "cos_warmup"],)
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_fold", type=list,
                         default=['0', '1', '2',  '3'])
     parser.add_argument("--test_fold", type=list, default=['4'])
-    parser.add_argument("--setType", type=str, default=r"\08_dropabsent")
+    parser.add_argument("--setType", type=str, default=r"\09_addhumanfeat")
     parser.add_argument("--model_folder", type=str,
                         default=r"D:\Shilong\murmur\00_Code\LM\beats1\BEATs\MyModels")
     args = parser.parse_args()
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         if val in args.train_fold:
             raise ValueError("train_fold and test_fold have same fold")
 
-    train_features, train_label, test_features, test_label, train_index, test_index = fold5_dataloader(
+    train_features, train_label, train_index, train_ebd, test_features,  test_label, test_index, test_ebd = fold5_dataloader(
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
     # ========================/ setup loader /========================== #
     if args.samplerWeight == True:
@@ -68,15 +68,15 @@ if __name__ == '__main__':
         Data_sampler = WeightedRandomSampler(
             weights, num_samples=len(weights), replacement=True
         )
-        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
+        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
                                   sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True, num_workers=4)
     else:
-        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
+        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
                                   batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=4)
 
     val_loader = DataLoader(
         DatasetClass(wavlabel=test_label,
-                     wavdata=test_features, wavidx=test_index),
+                     wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
         batch_size=args.batch_size, shuffle=True, drop_last=True, pin_memory=True, num_workers=4)
 
     # ========================/ dataset size /========================== #
