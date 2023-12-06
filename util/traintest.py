@@ -8,9 +8,9 @@ import torch.nn as nn
 from torch import optim
 from datetime import datetime
 from transformers import optimization
-from sklearn.metrics import confusion_matrix
-from torch.cuda.amp import autocast, GradScaler
-from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
+# from sklearn.metrics import confusion_matrix
+# from torch.cuda.amp import autocast, GradScaler
+# from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
 from torch.utils.tensorboard import SummaryWriter
 from util.BEATs_def import Log_GF
 from util.BEATs_def import FocalLoss, segment_classifier, get_segment_target_list, FocalLoss_VGG
@@ -64,7 +64,7 @@ def train_test(
     if args.loss_type == "BCE":
         loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
     elif args.loss_type == "CE":
-        normedWeights = [1, 5]
+        normedWeights = [1, 7]
         normedWeights = torch.FloatTensor(normedWeights).to(device)
         loss_fn = nn.CrossEntropyLoss(
             weight=normedWeights)  # 内部会自动加上Softmax层
@@ -179,7 +179,7 @@ def train_test(
         if best_acc < test_acc:
             utils.save_checkpoint({"epoch": epochs + 1,
                                    "model": model.state_dict(),
-                                   "optimizer": optimizer.state_dict()}, args.test_fold[0], "{}".format(args.model_folder))
+                                   "optimizer": optimizer.state_dict()}, args.model, args.test_fold[0], "{}".format(args.model_folder))
         # --------------------------------------------------------
         pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                          str(epochs+1)+".csv", index=False, header=False)

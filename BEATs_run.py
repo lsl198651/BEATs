@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     parser.add_argument("--model", type=str,
-                        default="CNN", help="the model used")
+                        default="CNN+LSTM", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
     # ========================/ setup scaler /========================== #
     logger_init()
-    logging.info(f"{args.model} + {args.layers} fc layer")
+    logging.info(f"{args.model} ")
     logging.info(f"# Batch_size = {args.batch_size}")
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")

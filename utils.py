@@ -38,14 +38,14 @@ class RunningAverage():
         return (self.total/float(self.steps))
 
 
-def save_checkpoint(state,  split, checkpoint):
+def save_checkpoint(state, modelname, split, checkpoint):
     filename = os.path.join(checkpoint, 'last{}.pth.tar'.format(split))
     if not os.path.exists(checkpoint):
         print("Checkpoint Directory does not exist")
         os.mkdir(checkpoint)
     torch.save(state, filename)
     shutil.copyfile(filename, os.path.join(
-        checkpoint, "model_best_{}.pth.tar".format(split)))
+        checkpoint, f"{modelname}_model_best_{split}.pth.tar"))
 
 
 def load_checkpoint(checkpoint, model, optimizer=None, parallel=False):
