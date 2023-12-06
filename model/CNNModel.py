@@ -107,17 +107,13 @@ class AudioClassifier(nn.Module):
         fbank = self.preprocess(x, args=None)
         fbank = fbank.unsqueeze(1)
         x = self.conv(fbank)
-
         # Adaptive pool and flatten for input to linear layer
         x = self.ap(x)
         x_all = x.view(x.shape[0], -1)
-
         # add wide features and concat two layers
-        # print(x1.size())
         x1 = self.wide(x1)
         x_all = torch.cat((x_all, x1, x2all), dim=1)
         y, _ = self.segLSTM(x_all)
-        # x = self.dp(x)
         # Linear layer
         x_all = self.lin(y)
         # x_all = torch.softmax(x_all, dim=1)
