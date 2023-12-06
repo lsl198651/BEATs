@@ -375,16 +375,19 @@ def get_segment_target_list(test_fold, set_type):
                     # 以id_loc的形式存储present的id和位置
                     segment_present.append(id+'_'+loc)
                 else:
-                    print(f'[WANGING 1]: {id} - [{loc}] not in locations')
+                    print(f'[WANGING 1]: {id}_{loc} not in locations')
         else:
             print(f'[WANGING 2]: {id} murmurs is not present?')
 
     patient_dic = {}
+    present_id_loc = {}
     # 创建一个空字典，用来存储id和对应的听诊区,formate: id:听诊区
+    # present_id_loc用于保存有杂音的id和对应的听诊区：id：AV+PV+TV
     # print(absent_test_id)
     for id in test_id:
         patient_dic[id] = Recording_locations[id_data.index(id)]
-    return segment_present, patient_dic, absent_test_id, present_test_id
+        present_id_loc[id] = Murmur_locations[id_data.index(id)]
+    return segment_present, patient_dic, absent_test_id, present_test_id, present_id_loc
 
 
 def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
@@ -444,7 +447,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
         result_dic[id_pos] = np.mean(value_list)
     # result_dic格式：12345_AV: 0.5, 12345_MV: 0.3
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
-    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list(
+    segment_present, patient_dic, absent_test_id, present_test_id, present_id_loc = get_segment_target_list(
         test_fold, set_type)
     # 创建两个列表，分别保存outcome和target列表
     segment_output = []
@@ -497,6 +500,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
                 else:
                     patient_result_dic[patient_id] += result_dic[id_location]
             else:
+                # patient_result_dic[patient_id] += 0
                 # 正常情况不会报这个错，因为result_dic中的id_loc都是在segment_target_list中的
                 print('[WANGING 3]: ' + id_location+' not in result_dic')
     # 遍历patient_result_dic，计算每个患者的最终分类结果
