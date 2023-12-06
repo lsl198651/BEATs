@@ -387,7 +387,7 @@ def get_segment_target_list(test_fold, set_type):
     for id in test_id:
         patient_dic[id] = Recording_locations[id_data.index(id)]
         present_id_loc[id] = Murmur_locations[id_data.index(id)]
-    return segment_present, patient_dic, absent_test_id, present_test_id, present_id_loc
+    return segment_present, patient_dic, absent_test_id, present_test_id  # , present_id_loc
 
 
 def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
@@ -447,7 +447,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
         result_dic[id_pos] = np.mean(value_list)
     # result_dic格式：12345_AV: 0.5, 12345_MV: 0.3
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
-    segment_present, patient_dic, absent_test_id, present_test_id, present_id_loc = get_segment_target_list(
+    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list(
         test_fold, set_type)
     # 创建两个列表，分别保存outcome和target列表
     segment_output = []
@@ -455,7 +455,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
     # 最后，根据target_list，将分类结果转换为0和1并产生outcome_list
     for id_loc, result_value in result_dic.items():
         # TODO: 这里的阈值是0.4,会提升性能吗？
-        if result_value >= 0.4:
+        if result_value >= 0.5:
             segment_output.append(1)
             result_dic[id_loc] = 1
         else:
