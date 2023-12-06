@@ -60,11 +60,15 @@ def train_test(
             num_warmup_steps=warm_up_ratio * total_steps,
             num_training_steps=total_steps,
         )
+    elif args.scheduler_flag == "step":
+        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=25, gamma=0.5)
 # ==========loss function================
     if args.loss_type == "BCE":
         loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
     elif args.loss_type == "CE":
-        loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层
+        normedWeights = [1, 10]
+        normedWeights = torch.FloatTensor(normedWeights).to(device)
+        loss_fn = nn.CrossEntropyLoss(weight=normedWeights)  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
         # loss_fn = FocalLoss_ecg(class_weight=tensor(0.2))

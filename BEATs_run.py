@@ -8,10 +8,11 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
-# from model.CNN_GRU import AudioClassifier_CNNGRU
-from model.senet.se_resnet import se_resnet18
+from model.CNN import AudioClassifier
+# from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 # from model.resnet import ResidualNet
+from model.networks.imagenet import create_net
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
 from util.BEATs_def import ( logger_init, DatasetClass)
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     parser.add_argument("--model", type=str,
-                        default="ResidualNet with new attention", help="the model used")
+                        default="CNN", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -55,9 +56,12 @@ if __name__ == '__main__':
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['0', '1', '2', '3'])
-    parser.add_argument("--test_fold", type=list, default=['4'])
+                        default=['0', '1', '3', '4'])
+    parser.add_argument("--test_fold", type=list, default=['2'])
     parser.add_argument("--setType", type=str, default=r"\08_dropabsent")
+    # parser.add_argument("--attention_type", type=str, default="simam")
+    # parser.add_argument("--attention_param", type=float, default=4,
+    #                 help="attention parameter (reduction factor in se and cbam, e_lambda in simam)")
     args = parser.parse_args()
     # 检测分折重复
     for val in args.test_fold:
@@ -97,8 +101,9 @@ if __name__ == '__main__':
         args.batch_size, padding_size
     ).bool()  # we randomly mask 75% of the input patches,
     padding_mask = torch.Tensor(padding)
-    # MyModel =  AudioClassifier_CNNGRU()
-    MyModel = se_resnet18(num_classes=2)
+    MyModel =  AudioClassifier()
+    # MyModel = se_resnet18(num_classes=2)
+    # MyModel = create_net(args)
     # MyModel = ResidualNet(None, 18, 2, "TripletAttention")
     # model = triplet_attention_mobilenet_v2()
 

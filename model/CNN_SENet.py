@@ -99,6 +99,7 @@ class AudioClassifier_SENet(nn.Module):
         fbank = self.preprocess(x, args=None)
         fbank = fbank.unsqueeze(1)
         x = self.conv(fbank)
+        # self.se = SELayer(planes, reduction)
 
         # Adaptive pool and flatten for input to linear layer
         x = self.ap(x)

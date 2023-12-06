@@ -92,7 +92,7 @@ def se_resnet18(num_classes=1_000):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(SEBasicBlock, [2, 2, 2, 2], num_classes=num_classes)
+    model = ResNet(SEBasicBlock, [1, 1, 2, 2], num_classes=num_classes)
     model.avgpool = nn.AdaptiveAvgPool2d(1)
     return model
 
