@@ -5,9 +5,10 @@ import pandas as pd
 import torch
 import utils
 import torch.nn as nn
-from torch import optim
+from torch import optim, tensor
 from datetime import datetime
 from transformers import optimization
+import numpy as np
 # from sklearn.metrics import confusion_matrix
 # from torch.cuda.amp import autocast, GradScaler
 # from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
@@ -89,16 +90,18 @@ def train_test(
             embedings = []
             for ebed in embeding:
                 ebd_List = []
-                ebd_List.append(embedding1(int(ebed[0])))
-                ebd_List.append(embedding2(int(ebed[1])))
-                ebd_List.append(embedding3(int(ebed[2])))
+                ebd_List.append(embedding1(
+                    torch.tensor(ebed//10 % 10)).detach().numpy())
+                ebd_List.append(embedding2(
+                    torch.tensor(ebed//10 % 10)).detach().numpy())
+                ebd_List.append(embedding3(
+                    torch.tensor(ebed % 10)).detach().numpy())
                 embedings.append(ebd_List)
-            embedings = torch.stack(embedings)
-            data_t, label_t,  index_t, feat, embeding = data_t.to(
-                device), label_t.to(device),  index_t.to(device), feat.to(device), embeding.to(device)
+            embedings = torch.tensor(embedings)
+            data_t, label_t,  index_t, feat, embedings = data_t.to(
+                device), label_t.to(device),  index_t.to(device), feat.to(device), embedings.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-
-            predict_t = model(data_t, feat)
+            predict_t = model(data_t, feat, embedings)
             if args.loss_type == "BCE":
                 predict_t2 = torch.argmax(predict_t, dim=1)
                 loss = loss_fn(predict_t2.float(), label_t)
@@ -141,16 +144,27 @@ def train_test(
         test_loss = 0
         correct_v = 0
         with torch.no_grad():
-            for data_v, label_v, index_v, feat_v in test_loader:
+            for data_v, label_v, index_v, feat_v, embeding_v in test_loader:
                 # data_v = butterworth_low_pass_filter(data_v)
                 # gfcc = Log_GF(data_v)
                 # gfcc = gfcc.to(device)
+                embedings_v = []
+                for ebed in embeding_v:
+                    ebd_List = []
+                    ebd_List.append(embedding1(
+                        torch.tensor(ebed//10 % 10)).detach().numpy())
+                    ebd_List.append(embedding2(
+                        torch.tensor(ebed//10 % 10)).detach().numpy())
+                    ebd_List.append(embedding3(
+                        torch.tensor(ebed % 10)).detach().numpy())
+                    embedings_v.append(ebd_List)
+                embedings_v = torch.tensor(embedings_v)
 
-                data_v, label_v, feat_v,  index_v = \
+                data_v, label_v, feat_v,  index_v, embedings_v = \
                     (data_v.to(device), label_v.to(device),
-                     feat_v.to(device), index_v.to(device))
+                     feat_v.to(device), index_v.to(device), embedings_v.to(device))
                 optimizer.zero_grad()
-                predict_v = model(data_v, feat_v)
+                predict_v = model(data_v, feat_v, embedings_v)
                 # recall = recall_score(y_hat, y)
                 if args.loss_type == "BCE":
                     predict_v2 = torch.argmax(predict_v, dim=1)

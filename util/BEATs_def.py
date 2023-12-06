@@ -1,4 +1,5 @@
 from pickle import TRUE
+from re import split
 from sympy import true
 import torch
 import sys
@@ -38,7 +39,7 @@ from scipy import signal
 # from python_speech_features import logfbank
 from spafe.features.gfcc import erb_spectrogram
 from spafe.utils.preprocessing import SlidingWindow
-from get_wide_feature import hand_fea
+from util.get_wide_feature import hand_fea
 warnings.filterwarnings('ignore')
 
 
@@ -306,18 +307,23 @@ class DatasetClass(Dataset):
     def __init__(self, wavlabel, wavdata, wavidx, wavebd):
         # 直接传递data和label
         # self.len = wavlen
+        embeds = []
+        for embed in wavebd:
+            embed = int(embed.split('.')[0])
+            embeds.append(embed)
+        self.wavebd = embeds
         self.data = torch.from_numpy(wavdata)
         self.label = torch.from_numpy(wavlabel)
         self.id = torch.from_numpy(wavidx)
-        # self.wavebd = torch.from_numpy(wavebd)
 
     def __getitem__(self, index):
         # 根据索引返回数据和对应的标签
         dataitem = self.data[index]
         labelitem = self.label[index]
         iditem = self.id[index]
+        embeding = self.wavebd[index]
         wide_feat = hand_fea((dataitem, 16000))
-        return dataitem.float(), labelitem, iditem, wide_feat
+        return dataitem.float(), labelitem, iditem, wide_feat, embeding
 
     def __len__(self):
         # 返回文件数据的数目

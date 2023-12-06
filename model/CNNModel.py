@@ -1,3 +1,4 @@
+from turtle import st
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -68,7 +69,7 @@ class AudioClassifier(nn.Module):
         # self.lin1 = nn.Linear(in_features=80, out_features=128)
         # Wrap the Convolutional Blocks
         self.conv = nn.Sequential(*conv_layers)
-        self.segLSTM = nn.LSTM(74, 32, num_layers=2,
+        self.segLSTM = nn.LSTM(104, 32, num_layers=2,
                                bidirectional=True, batch_first=True)
         self.rnn = nn.RNN(74, 32, num_layers=2,)
         self.dp = nn.Dropout(p=0.3)
@@ -100,8 +101,9 @@ class AudioClassifier(nn.Module):
     # Forward pass computations
     # ----------------------------
 
-    def forward(self, x, x1):
+    def forward(self, x, x1, x2):
         # Run the convolutional blocks
+        x2all = x2.flatten(start_dim=1)
         fbank = self.preprocess(x, args=None)
         fbank = fbank.unsqueeze(1)
         x = self.conv(fbank)
@@ -113,7 +115,7 @@ class AudioClassifier(nn.Module):
         # add wide features and concat two layers
         # print(x1.size())
         x1 = self.wide(x1)
-        x_all = torch.cat((x_all, x1), dim=1)
+        x_all = torch.cat((x_all, x1, x2all), dim=1)
         y, _ = self.segLSTM(x_all)
         # x = self.dp(x)
         # Linear layer
