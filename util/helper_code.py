@@ -244,6 +244,7 @@ def get_pregnancy_status(data):
                 pass
     return is_pregnant
 
+
 # Get pregnancy status from patient data.
 
 

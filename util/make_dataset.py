@@ -20,7 +20,7 @@ import soundfile as sf
 from BEATs_def import get_wav_data, get_patientid
 from dataAugmentation import data_Auge
 import pandas as pd
-
+from util.helper_code import *
 # ========================/ functions define /========================== #
 
 
@@ -107,6 +107,9 @@ def period_div(
 ):
     for mur in murmur:
         for patient_id in patient_id_list:
+            patient_dir_path = path + mur + patient_id + "\\" + patient_id
+            txtpath = patient_dir_path+".txt"
+            hunman_feat = get_features_mod(txtpath)
             for pos in positoin:
                 dir_path = path + mur + patient_id + "\\" + patient_id + pos
                 tsv_path = dir_path + ".tsv"
@@ -134,18 +137,20 @@ def period_div(
                     Diastolic_murmur = "Absent"
                     Systolic_state = "nan"
                     Diastolic_state = "nan"
-                if os.path.exists(tsv_path):
-                    # 切割数据
-                    state_div(
-                        tsv_path,
-                        wav_path,
-                        dir_path + "\\",
-                        patient_id + pos,
-                        Systolic_murmur,
-                        Diastolic_murmur,
-                        Systolic_state,
-                        Diastolic_state,
-                    )
+                # 如果是present的有杂音区域，或absent区域
+                if murmur == "Absent\\" or (murmur == "Present\\" and (wav_location in locations)):
+                    if os.path.exists(tsv_path):
+                        state_div(
+                            tsv_path,
+                            wav_path,
+                            dir_path + "\\",
+                            patient_id + pos,
+                            Systolic_murmur,
+                            Diastolic_murmur,
+                            Systolic_state,
+                            Diastolic_state,
+                            hunman_feat
+                        )
 
 
 def state_div(
@@ -157,6 +162,7 @@ def state_div(
     Diastolic_murmur,
     Systolic_state,
     Diastolic_state,
+    hunman_feat
 ):
     """切割出s1+收缩和s2+舒张"""
     index_file = index_load(tsvname)
@@ -182,41 +188,20 @@ def state_div(
             buff2 = recording[int(start_index2): int(end_index2)]  # 字符串索引切割
             print("buff1 len: " + str(len(buff1)),
                   "buff2 len: " + str(len(buff2)))
-            if (Systolic_murmur == "Present" and Diastolic_murmur == "Present"):
-                soundfile.write(
-                    state_path
-                    + "{}_{}_{}_{}_{}.wav".format(
-                        index, "s1", num, Systolic_murmur, Systolic_state
-                    ),
-                    buff1,
-                    fs,
-                )
-                soundfile.write(
-                    state_path
-                    + "{}_{}_{}_{}_{}.wav".format(
-                        index, "s2", num, Diastolic_murmur, Diastolic_state
-                    ),
-                    buff2,
-                    fs,
-                )
-            elif (Systolic_murmur == "Absent" and Diastolic_murmur == "Absent") or (Systolic_murmur == "Present" and Diastolic_murmur == "Absent"):
-                soundfile.write(
-                    state_path
-                    + "{}_{}_{}_{}_{}.wav".format(
-                        index, "s1+Systolic", num, Systolic_murmur, Systolic_state
-                    ),
-                    buff1,
-                    fs,
-                )
-            elif Systolic_murmur == "Absent" and Diastolic_murmur == "Present":
-                soundfile.write(
-                    state_path
-                    + "{}_{}_{}_{}_{}.wav".format(
-                        index, "s2+Diastolic", num, Diastolic_murmur, Diastolic_state
-                    ),
-                    buff2,
-                    fs,
-                )
+            # 切收缩期
+            soundfile.write(
+                state_path
+                + f"{index}_s1+Systolic_{num}_{Systolic_murmur}_{Systolic_state}_{hunman_feat}.wav",
+                buff1,
+                fs,
+            )
+            # 切舒张期
+            soundfile.write(
+                state_path
+                + f"{index}_s2+Diastolic_{num}_{Diastolic_murmur}_{Diastolic_state}_{hunman_feat}.wav",
+                buff2,
+                fs,
+            )
 
 
 def state_div2(
@@ -356,6 +341,37 @@ def data_set(root_path):
             pd.DataFrame(absent_train_dic).to_csv(
                 index_path+f"\\fold{k}_{folder}_disc.csv", index=False, header=False)
     print("data set done!")
+
+
+def get_features_mod(data):
+    # Extract the age group, sex and the pregnancy status features
+    age_group = get_age(data)
+    age_list = ['Neonate', 'Infant', 'Child', 'Adolescent', 'Young Adult']
+    is_pregnant = get_pregnancy_status(data)
+    if age_group not in ['Neonate', 'Infant', 'Child', 'Adolescent', 'Young Adult']:
+        if is_pregnant:
+            age = 'Young Adult'
+        else:
+            age = 'Child'
+    else:
+        age = age_group
+    age_fea = np.zeros(5, dtype=int)
+    age_fea = age_list.index(age)
+    # Extract sex. Use one-hot encoding.
+    sex = get_sex(data)
+    sex_features = np.zeros(2, dtype=int)
+    if compare_strings(sex, 'Female'):
+        sex_features = 0
+    elif compare_strings(sex, 'Male'):
+        sex_features = 1
+    preg_fea = np.zeros(2, dtype=int)
+    if is_pregnant:
+        preg_fea = 1
+    else:
+        preg_fea = 0
+
+    wide_fea = (age_fea, sex_features, preg_fea)
+    return wide_fea
 
 
 # ==================================================================== #
