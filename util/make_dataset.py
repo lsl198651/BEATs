@@ -20,7 +20,7 @@ import soundfile as sf
 from BEATs_def import get_wav_data, get_patientid
 from dataAugmentation import data_Auge
 import pandas as pd
-from util.helper_code import *
+from helper_code import *
 # ========================/ functions define /========================== #
 
 
@@ -62,11 +62,14 @@ def copy_wav_file(src_path, folder_path, patient_id_list, mur, position):
             os.makedirs(target_dir, exist_ok=True)
             wavname = src_path + "\\" + patient_id + pos + ".wav"
             tsvname = src_path + "\\" + patient_id + pos + ".tsv"
+            txtname = src_path + "\\" + patient_id + ".txt"
             if os.path.exists(wavname):
                 shutil.copy(wavname, target_dir + "\\")
                 count += 1
             if os.path.exists(tsvname):
                 shutil.copy(tsvname, target_dir + "\\")
+            if os.path.exists(txtname):
+                shutil.copy(txtname, target_dir + "\\")
     print("copy file num: ", count)
 
 
@@ -105,52 +108,53 @@ def period_div(
     Systolic_murmur_timing,
     Diastolic_murmur_timing,
 ):
-    for mur in murmur:
-        for patient_id in patient_id_list:
-            patient_dir_path = path + mur + patient_id + "\\" + patient_id
-            txtpath = patient_dir_path+".txt"
-            hunman_feat = get_features_mod(txtpath)
-            for pos in positoin:
-                dir_path = path + mur + patient_id + "\\" + patient_id + pos
-                tsv_path = dir_path + ".tsv"
-                wav_path = dir_path + ".wav"
-                index = id_data.index(patient_id)
-                wav_location = pos[1:]  # 听诊区域
-                locations = Murmur_locations[index].split("+")  # 有杂音的区域
-                # 此听诊区有杂音
-                if wav_location in locations:
-                    Systolic_state = Systolic_murmur_timing[index]
-                    Diastolic_state = Diastolic_murmur_timing[index]
-                    # 没有 Systolic murmur
-                    if Systolic_state == "nan":
-                        Systolic_murmur = "Absent"
-                    else:
-                        Systolic_murmur = "Present"
-                    # 没有 Diastolic murmur
-                    if Diastolic_state == "nan":
-                        Diastolic_murmur = "Absent"
-                    else:
-                        Diastolic_murmur = "Present"
-                # 此听诊区没有杂音
-                else:
+
+    for patient_id in patient_id_list:
+        patient_dir_path = path + murmur + patient_id + "\\" + patient_id
+        txtpath = patient_dir_path+".txt"
+        current_patient_data = load_patient_data(txtpath)
+        hunman_feat = get_features_mod(current_patient_data)
+        for pos in positoin:
+            dir_path = path + mur + patient_id + "\\" + patient_id + pos
+            tsv_path = dir_path + ".tsv"
+            wav_path = dir_path + ".wav"
+            index = id_data.index(patient_id)
+            wav_location = pos[1:]  # 听诊区域
+            locations = Murmur_locations[index].split("+")  # 有杂音的区域
+            # 此听诊区有杂音
+            if wav_location in locations:
+                Systolic_state = Systolic_murmur_timing[index]
+                Diastolic_state = Diastolic_murmur_timing[index]
+                # 没有 Systolic murmur
+                if Systolic_state == "nan":
                     Systolic_murmur = "Absent"
+                else:
+                    Systolic_murmur = "Present"
+                # 没有 Diastolic murmur
+                if Diastolic_state == "nan":
                     Diastolic_murmur = "Absent"
-                    Systolic_state = "nan"
-                    Diastolic_state = "nan"
-                # 如果是present的有杂音区域，或absent区域
-                if murmur == "Absent\\" or (murmur == "Present\\" and (wav_location in locations)):
-                    if os.path.exists(tsv_path):
-                        state_div(
-                            tsv_path,
-                            wav_path,
-                            dir_path + "\\",
-                            patient_id + pos,
-                            Systolic_murmur,
-                            Diastolic_murmur,
-                            Systolic_state,
-                            Diastolic_state,
-                            hunman_feat
-                        )
+                else:
+                    Diastolic_murmur = "Present"
+            # 此听诊区没有杂音
+            else:
+                Systolic_murmur = "Absent"
+                Diastolic_murmur = "Absent"
+                Systolic_state = "nan"
+                Diastolic_state = "nan"
+            # 如果是present的有杂音区域，或absent区域
+            if murmur == "Absent\\" or (murmur == "Present\\" and (wav_location in locations)):
+                if os.path.exists(tsv_path):
+                    state_div(
+                        tsv_path,
+                        wav_path,
+                        dir_path + "\\",
+                        patient_id + pos,
+                        Systolic_murmur,
+                        Diastolic_murmur,
+                        Systolic_state,
+                        Diastolic_state,
+                        hunman_feat
+                    )
 
 
 def state_div(
@@ -355,23 +359,18 @@ def get_features_mod(data):
             age = 'Child'
     else:
         age = age_group
-    age_fea = np.zeros(5, dtype=int)
-    age_fea = age_list.index(age)
+    age_fea = str(age_list.index(age))
     # Extract sex. Use one-hot encoding.
     sex = get_sex(data)
-    sex_features = np.zeros(2, dtype=int)
     if compare_strings(sex, 'Female'):
-        sex_features = 0
+        sex_features = '0'
     elif compare_strings(sex, 'Male'):
-        sex_features = 1
-    preg_fea = np.zeros(2, dtype=int)
+        sex_features = '1'
     if is_pregnant:
-        preg_fea = 1
+        preg_fea = '1'
     else:
-        preg_fea = 0
-
-    wide_fea = (age_fea, sex_features, preg_fea)
-    return wide_fea
+        preg_fea = '0'
+    return age_fea + sex_features + preg_fea
 
 
 # ==================================================================== #
@@ -396,7 +395,8 @@ if __name__ == '__main__':
     Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
-    root_path = r"D:\Shilong\murmur\01_dataset\09_dropabsentmore"
+    # TODO 修改此处的root_path
+    root_path = r"D:\Shilong\murmur\01_dataset\09_addhumanfeat"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file
@@ -455,7 +455,7 @@ if __name__ == '__main__':
     murmur = ["Absent\\", "Present\\"]
     period = ["s1", "systolic", "s2", "diastolic"]
     src_path = r"D:\Shilong\murmur\dataset_all\training_data"
-    folder_path = root_path+r"\\"
+    folder_path = root_path+"\\"
     # 将wav文件和tsv文件copy到目标文件夹
     copy_wav_file(src_path, folder_path, absent_patient_id, "Absent", positoin)
     copy_wav_file(src_path, folder_path,
@@ -475,7 +475,7 @@ if __name__ == '__main__':
     # absent
     period_div(
         folder_path,
-        murmur,
+        murmur[0],
         absent_patient_id,
         positoin,
         id_data,
@@ -486,7 +486,7 @@ if __name__ == '__main__':
     # present
     period_div(
         folder_path,
-        murmur,
+        murmur[1],
         present_patient_id,
         positoin,
         id_data,
@@ -576,6 +576,8 @@ if __name__ == '__main__':
             src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
 
 data_set(root_path)
+
+
 # # 复制到trainset和testset
 # # trainset
 # 将训练集和测试集文件分别copy到train和test文件夹
