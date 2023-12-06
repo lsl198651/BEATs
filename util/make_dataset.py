@@ -100,7 +100,7 @@ def index_load(tsvname):
 # preprocessed PCGs were segmented into four heart sound states
 def period_div(
     path,
-    murmur,
+    mur,
     patient_id_list,
     positoin,
     id_data,
@@ -110,7 +110,7 @@ def period_div(
 ):
 
     for patient_id in patient_id_list:
-        patient_dir_path = path + murmur + patient_id + "\\" + patient_id
+        patient_dir_path = path + mur + patient_id + "\\" + patient_id
         txtpath = patient_dir_path+".txt"
         current_patient_data = load_patient_data(txtpath)
         hunman_feat = get_features_mod(current_patient_data)
@@ -142,7 +142,7 @@ def period_div(
                 Systolic_state = "nan"
                 Diastolic_state = "nan"
             # 如果是present的有杂音区域，或absent区域
-            if murmur == "Absent\\" or (murmur == "Present\\" and (wav_location in locations)):
+            if (mur == "Absent\\") or (mur == "Present\\" and (wav_location in locations)):
                 if os.path.exists(tsv_path):
                     state_div(
                         tsv_path,
@@ -477,7 +477,7 @@ if __name__ == '__main__':
     # absent
     period_div(
         folder_path,
-        murmur[0],
+        "Absent\\",
         absent_patient_id,
         positoin,
         id_data,
@@ -488,7 +488,7 @@ if __name__ == '__main__':
     # present
     period_div(
         folder_path,
-        murmur[1],
+        "Present\\",
         present_patient_id,
         positoin,
         id_data,

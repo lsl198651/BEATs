@@ -70,7 +70,9 @@ def train_test(
             weight=normedWeights)  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
-
+    embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
+    embedding2 = nn.Embedding(2, 10)  # 2个类别，每个类别用10维向量表示
+    embedding3 = nn.Embedding(2, 10)
 # ============ training ================
     for epochs in range(args.num_epochs):
         # train model
@@ -80,13 +82,22 @@ def train_test(
         train_len = 0
         input_train = []
         target_train = []
-        for data_t, label_t, index_t, feat in train_loader:
+        for data_t, label_t, index_t, feat, embeding in train_loader:
             # data_t = butterworth_low_pass_filter(data_t)
             # gfcc = Log_GF(data_t)
             # gfcc = gfcc.to(device)
-            data_t, label_t,  index_t, feat = data_t.to(
-                device), label_t.to(device),  index_t.to(device), feat.to(device)
+            embedings = []
+            for ebed in embeding:
+                ebd_List = []
+                ebd_List.append(embedding1(int(ebed[0])))
+                ebd_List.append(embedding2(int(ebed[1])))
+                ebd_List.append(embedding3(int(ebed[2])))
+                embedings.append(ebd_List)
+            embedings = torch.stack(embedings)
+            data_t, label_t,  index_t, feat, embeding = data_t.to(
+                device), label_t.to(device),  index_t.to(device), feat.to(device), embeding.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
+
             predict_t = model(data_t, feat)
             if args.loss_type == "BCE":
                 predict_t2 = torch.argmax(predict_t, dim=1)
