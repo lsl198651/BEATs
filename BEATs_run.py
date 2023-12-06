@@ -59,9 +59,6 @@ if __name__ == '__main__':
                         default=['0', '1', '3', '4'])
     parser.add_argument("--test_fold", type=list, default=['2'])
     parser.add_argument("--setType", type=str, default=r"\08_dropabsent")
-    # parser.add_argument("--attention_type", type=str, default="simam")
-    # parser.add_argument("--attention_param", type=float, default=4,
-    #                 help="attention parameter (reduction factor in se and cbam, e_lambda in simam)")
     args = parser.parse_args()
     # 检测分折重复
     for val in args.test_fold:
