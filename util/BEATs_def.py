@@ -498,8 +498,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
                     patient_result_dic[patient_id] += result_dic[id_location]
             else:
                 # 正常情况不会报这个错，因为result_dic中的id_loc都是在segment_target_list中的
-                print('[WANGING 3]: '+patient_id +
-                      id_location+' not in result_dic')
+                print('[WANGING 3]: ' + id_location+' not in result_dic')
     # 遍历patient_result_dic，计算每个患者的最终分类结果
     patient_output_dic = {}
     patient_output = []
