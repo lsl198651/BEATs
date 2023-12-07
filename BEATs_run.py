@@ -48,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     parser.add_argument("--model", type=str,
-                        default="se_resnet18 improve", help="the model used")
+                        default="se_resnet18 + SEBottleneck improve", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -56,8 +56,8 @@ if __name__ == '__main__':
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['1', '2', '3', '4'])
-    parser.add_argument("--test_fold", type=list, default=['0'])
+                        default=['0','1', '2', '3'])
+    parser.add_argument("--test_fold", type=list, default=['4'])
     parser.add_argument("--setType", type=str, default=r"\08_dropabsent")
     args = parser.parse_args()
     # 检测分折重复
