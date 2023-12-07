@@ -324,7 +324,7 @@ def data_set(root_path):
         os.makedirs(index_path)
     for k in range(5):
         src_fold_root_path = root_path+r"\fold_set_"+str(k)
-        data_Auge(src_fold_root_path)
+        # data_Auge(src_fold_root_path)
         for folder in os.listdir(src_fold_root_path):
             dataset_path = os.path.join(src_fold_root_path, folder)
             if k == 0 and folder == "absent":

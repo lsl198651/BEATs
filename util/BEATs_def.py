@@ -39,7 +39,7 @@ from scipy import signal
 # from python_speech_features import logfbank
 from spafe.features.gfcc import erb_spectrogram
 from spafe.utils.preprocessing import SlidingWindow
-from util.get_wide_feature import hand_fea
+from get_wide_feature import hand_fea
 warnings.filterwarnings('ignore')
 
 
@@ -158,7 +158,7 @@ def get_patientid(csv_path):
 def wav_normalize(data):
     """归一化"""
     # range = np.max(data) - np.min(data)
-    data = (data-np.mean(data))/abs(data).max()
+    data = (data-np.mean(data))/range
     return data
     # recording -= recording.mean()
     # recording /= recording.abs().max()
