@@ -441,6 +441,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
     segment_target = []
     # 最后，根据target_list，将分类结果转换为0和1并产生outcome_list
     for id_loc, result_value in result_dic.items():
+        # TODO 设置阈值
         if result_value >= 0.5:
             segment_output.append(1)
             result_dic[id_loc] = 1
@@ -487,8 +488,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
                     patient_result_dic[patient_id] += result_dic[id_location]
             else:
                 # 正常情况不会报这个错，因为result_dic中的id_loc都是在segment_target_list中的
-                print('[WANGING 3]: '+patient_id +
-                      id_location+' not in result_dic')
+                print(f'[WANGING 3]: {id_location} not in result_dic')
     # 遍历patient_result_dic，计算每个患者的最终分类结果
     patient_output_dic = {}
     patient_output = []

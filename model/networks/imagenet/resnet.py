@@ -331,7 +331,7 @@ def resnet18(**kwargs):
         progress (bool): If True, displays a progress bar of the download to stderr
     """
 
-    return _resnet('resnet18', BasicBlock, [2, 2, 2, 2], **kwargs)
+    return _resnet('resnet18', Bottleneck, [1, 1, 1, 1], **kwargs)
 
 
 

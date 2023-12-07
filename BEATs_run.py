@@ -9,7 +9,7 @@ from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
 from model.CNN import AudioClassifier
-# from model.senet.se_resnet import se_resnet18
+from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 # from model.resnet import ResidualNet
 from model.networks.imagenet import create_net
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     parser.add_argument("--model", type=str,
-                        default="CNN", help="the model used")
+                        default="se_resnet18 improve", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -56,8 +56,8 @@ if __name__ == '__main__':
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['0', '1', '3', '4'])
-    parser.add_argument("--test_fold", type=list, default=['2'])
+                        default=['1', '2', '3', '4'])
+    parser.add_argument("--test_fold", type=list, default=['0'])
     parser.add_argument("--setType", type=str, default=r"\08_dropabsent")
     args = parser.parse_args()
     # 检测分折重复
@@ -98,8 +98,8 @@ if __name__ == '__main__':
         args.batch_size, padding_size
     ).bool()  # we randomly mask 75% of the input patches,
     padding_mask = torch.Tensor(padding)
-    MyModel =  AudioClassifier()
-    # MyModel = se_resnet18(num_classes=2)
+    # MyModel =  AudioClassifier()
+    MyModel = se_resnet18(num_classes=2)
     # MyModel = create_net(args)
     # MyModel = ResidualNet(None, 18, 2, "TripletAttention")
     # model = triplet_attention_mobilenet_v2()
