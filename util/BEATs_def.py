@@ -157,7 +157,7 @@ def get_patientid(csv_path):
 
 def wav_normalize(data):
     """归一化"""
-    # range = np.max(data) - np.min(data)
+    range = np.max(data) - np.min(data)
     data = (data-np.mean(data))/range
     return data
     # recording -= recording.mean()
