@@ -4,16 +4,16 @@ import os
 import pandas as pd
 import torch
 import torch.nn as nn
-from torch import optim, tensor
+from torch import optim#, tensor
 from datetime import datetime
 from transformers import optimization
-from sklearn.metrics import confusion_matrix
-from torch.cuda.amp import autocast, GradScaler
-from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
+# from sklearn.metrics import confusion_matrix
+# from torch.cuda.amp import autocast, GradScaler
+# from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
 from torch.utils.tensorboard import SummaryWriter
-from util.BEATs_def import Log_GF
-from torch_ecg.models.loss import FocalLoss as FocalLoss_ecg
-from util.BEATs_def import segment_classifier, get_segment_target_list, FocalLoss, FocalLoss_VGG
+# from util.BEATs_def import Log_GF
+# from torch_ecg.models.loss import FocalLoss as FocalLoss_ecg
+from util.BEATs_def import segment_classifier, FocalLoss # ,get_segment_target_list,FocalLoss_VGG
 from torcheval.metrics.functional import binary_auprc, binary_auroc, binary_f1_score, binary_confusion_matrix, binary_accuracy, binary_precision, binary_recall
 
 
