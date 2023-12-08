@@ -176,14 +176,17 @@ def state_div(
     # end_index1 = 0
     # start_index2 = 0
     # end_index2 = 0
-
+    count = 0
     for i in range(index_file.shape[0] - 3):
+        if count == 20:
+            break
         if index_file[i][2] == "1" and index_file[i + 2][2] == "3":
             start_index1 = float(index_file[i][0]) * fs
             end_index1 = float(index_file[i+1][1]) * fs
             start_index2 = float(index_file[i + 2][0]) * fs
             end_index2 = float(index_file[i + 3][1]) * fs
             num = num + 1
+
             #  解决出现_0.wav的问题
             print(start_index1, end_index1, start_index2, end_index2)
             print("=============================================")
@@ -200,12 +203,13 @@ def state_div(
                 fs,
             )
             # 切舒张期
-            # soundfile.write(
-            #     state_path
-            #     + f"{index}_s2+Diastolic_{num}_{Diastolic_murmur}_{Diastolic_state}_{hunman_feat}.wav",
-            #     buff2,
-            #     fs,
-            # )
+            soundfile.write(
+                state_path
+                + f"{index}_s2+Diastolic_{num}_{Diastolic_murmur}_{Diastolic_state}_{hunman_feat}.wav",
+                buff2,
+                fs,
+            )
+            count += 1
 
 
 def state_div2(
@@ -398,7 +402,7 @@ if __name__ == '__main__':
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
     # TODO 修改此处的root_path
-    root_path = r"D:\Shilong\murmur\01_dataset\10_shousuoonly"
+    root_path = r"D:\Shilong\murmur\01_dataset\11_limitecount"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file
