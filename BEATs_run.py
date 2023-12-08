@@ -42,8 +42,9 @@ if __name__ == '__main__':
                         help="use grad_no_requiredn", choices=[True, False],)
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
+    # TODO改模型名字
     parser.add_argument("--model", type=str,
-                        default="CNN 4 layers", help="the model used")
+                        default="CNN_4_layers_embeddings", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")

@@ -10,3 +10,4 @@ __pycache__
 *.csv
 patient_error_index
 MyModels
+log
