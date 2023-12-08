@@ -93,7 +93,7 @@ class AudioClassifier(nn.Module):
         # Run the convolutional blocks
         fbank = self.preprocess(x, args=None)
         fbank = fbank.unsqueeze(1)
-        x = self.conv(x)
+        x = self.conv(fbank)
         # Adaptive pool and flatten for input to linear layer
         x = self.ap(x)
         x_all = x.view(x.shape[0], -1)
