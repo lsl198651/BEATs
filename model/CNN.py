@@ -64,8 +64,8 @@ class AudioClassifier(nn.Module):
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
 
         # wide features
-        self.wide = nn.Linear(in_features=15, out_features=20)
-        self.lin = nn.Linear(in_features=64, out_features=2)
+        self.wide = nn.Linear(in_features=6, out_features=10)
+        self.lin = nn.Linear(in_features=74, out_features=2)
         # Wrap the Convolutional Blocks
         self.conv = nn.Sequential(*conv_layers)
         self.dp = nn.Dropout(p=0.3)
@@ -92,7 +92,7 @@ class AudioClassifier(nn.Module):
     # Forward pass computations
     # ----------------------------
 
-    def forward(self, x):
+    def forward(self, x,x1):
         # Run the convolutional blocks
         fbank = self.preprocess(x, args=None)
         fbank = fbank.unsqueeze(1)
@@ -101,8 +101,8 @@ class AudioClassifier(nn.Module):
         x = self.ap(x)
         x_all = x.view(x.shape[0], -1)
         # add wide features and concat two layers
-        # x1 = self.wide(wavfeat)
-        # x_all = torch.cat((x_all, x1), dim=1)
+        x1 = self.wide(x1)
+        x_all = torch.cat((x_all, x1), dim=1)
         # x = self.dp(x)
         # Linear layer
         x_all = self.lin(x_all)

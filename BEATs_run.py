@@ -12,7 +12,7 @@ from model.CNN import AudioClassifier
 # from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 # from model.resnet import ResidualNet
-from model.networks.imagenet import create_net
+# from model.networks.imagenet import create_net
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
 from util.BEATs_def import ( logger_init, DatasetClass)
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     parser.add_argument("--model", type=str,
-                        default="CNN", help="the model used")
+                        default="CNN base", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_fold", type=list,
                         default=['0','1', '2', '3'])
     parser.add_argument("--test_fold", type=list, default=['4'])
-    parser.add_argument("--setType", type=str, default=r"\06_new5fold")
+    parser.add_argument("--setType", type=str, default=r"\09_addhumanfeat")
     args = parser.parse_args()
     # 检测分折重复
     for val in args.test_fold:
