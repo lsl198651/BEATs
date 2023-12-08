@@ -89,11 +89,11 @@ if __name__ == '__main__':
     testset_size = test_label.shape[0]
 
     # ========================/ setup padding /========================== #
-    padding_size = train_features.shape[1]  # 3500
-    padding = torch.zeros(
-        args.batch_size, padding_size
-    ).bool()  # we randomly mask 75% of the input patches,
-    padding_mask = torch.Tensor(padding)
+    # padding_size = train_features.shape[1]  # 3500
+    # padding = torch.zeros(
+    #     args.batch_size, padding_size
+    # ).bool()  # we randomly mask 75% of the input patches,
+    # padding_mask = torch.Tensor(padding)
 
     MyModel = AudioClassifier()
 
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
     logging.info(f"# lr_scheduler = {args.scheduler_flag}")
-    logging.info(f"# Padding_size = {padding_size}")
+    # logging.info(f"# Padding_size = {padding_size}")
     logging.info(f"# Loss_fn = {args.loss_type}")
     logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
     logging.info(f"# Trainset_balance = {args.trainset_balence}")
@@ -135,7 +135,7 @@ if __name__ == '__main__':
         model=MyModel,
         train_loader=train_loader,
         test_loader=val_loader,
-        padding=padding_mask,
+        padding=None,
         optimizer=optimizer,
         args=args,
     )
