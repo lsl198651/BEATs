@@ -142,19 +142,19 @@ def period_div(
                 Systolic_state = "nan"
                 Diastolic_state = "nan"
             # 如果是present的有杂音区域，或absent区域
-            if (mur == "Absent\\") or (mur == "Present\\" and (wav_location in locations)):
-                if os.path.exists(tsv_path):
-                    state_div(
-                        tsv_path,
-                        wav_path,
-                        dir_path + "\\",
-                        patient_id + pos,
-                        Systolic_murmur,
-                        Diastolic_murmur,
-                        Systolic_state,
-                        Diastolic_state,
-                        hunman_feat
-                    )
+            # if (mur == "Absent\\") or (mur == "Present\\" and (wav_location in locations)):
+            if os.path.exists(tsv_path):
+                state_div(
+                    tsv_path,
+                    wav_path,
+                    dir_path + "\\",
+                    patient_id + pos,
+                    Systolic_murmur,
+                    Diastolic_murmur,
+                    Systolic_state,
+                    Diastolic_state,
+                    hunman_feat
+                )
 
 
 def state_div(
@@ -176,10 +176,10 @@ def state_div(
     # end_index1 = 0
     # start_index2 = 0
     # end_index2 = 0
-    count = 0
+    # count = 0
     for i in range(index_file.shape[0] - 3):
-        if count == 20:
-            break
+        # if count == 20:
+        #     break
         if index_file[i][2] == "1" and index_file[i + 2][2] == "3":
             start_index1 = float(index_file[i][0]) * fs
             end_index1 = float(index_file[i+1][1]) * fs
@@ -195,21 +195,30 @@ def state_div(
             buff2 = recording[int(start_index2): int(end_index2)]  # 字符串索引切割
             print("buff1 len: " + str(len(buff1)),
                   "buff2 len: " + str(len(buff2)))
-            # 切收缩期
-            soundfile.write(
-                state_path
-                + f"{index}_s1+Systolic_{num}_{Systolic_murmur}_{Systolic_state}_{hunman_feat}.wav",
-                buff1,
-                fs,
-            )
-            # 切舒张期
-            soundfile.write(
-                state_path
-                + f"{index}_s2+Diastolic_{num}_{Diastolic_murmur}_{Diastolic_state}_{hunman_feat}.wav",
-                buff2,
-                fs,
-            )
-            count += 1
+            if Systolic_murmur == "Present" and Diastolic_murmur == "Absent":
+                # 切收缩期
+                soundfile.write(
+                    state_path
+                    + f"{index}_s1+Systolic_{num}_{Systolic_murmur}_{Systolic_state}_{hunman_feat}.wav",
+                    buff1,
+                    fs,
+                )
+            else:
+                # 切收缩期
+                soundfile.write(
+                    state_path
+                    + f"{index}_s1+Systolic_{num}_{Systolic_murmur}_{Systolic_state}_{hunman_feat}.wav",
+                    buff1,
+                    fs,
+                )
+                # 切舒张期
+                soundfile.write(
+                    state_path
+                    + f"{index}_s2+Diastolic_{num}_{Diastolic_murmur}_{Diastolic_state}_{hunman_feat}.wav",
+                    buff2,
+                    fs,
+                )
+            # count += 1
 
 
 def state_div2(
@@ -402,7 +411,7 @@ if __name__ == '__main__':
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
     # TODO 修改此处的root_path
-    root_path = r"D:\Shilong\murmur\01_dataset\11_limitecount"
+    root_path = r"D:\Shilong\murmur\01_dataset\08_remake"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file
