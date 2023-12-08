@@ -68,7 +68,7 @@ class AudioClassifier(nn.Module):
         self.conv = nn.Sequential(*conv_layers)
         # wide features
         self.wide = nn.Linear(in_features=6, out_features=10)
-        self.lin = nn.Linear(in_features=74, out_features=2)
+        self.lin = nn.Linear(in_features=104, out_features=2)
         self.segLSTM = nn.LSTM(74, 32, num_layers=2,
                                bidirectional=True, batch_first=True)
         self.rnn = nn.RNN(74, 32, num_layers=2,)
@@ -112,7 +112,8 @@ class AudioClassifier(nn.Module):
         x_all = x.view(x.shape[0], -1)
         # add wide features and concat two layers
         x1 = self.wide(x1)
-        x_all = torch.cat((x_all, x1), dim=1)
+        x2 = x2.flatten(start_dim=1)
+        x_all = torch.cat((x_all, x1, x2), dim=1)
         # y, _ = self.segLSTM(x_all)
         # Linear layer
         x_all = self.lin(x_all)
