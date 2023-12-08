@@ -25,7 +25,7 @@ class AudioClassifier(nn.Module):
         self.relu1 = nn.ReLU()
         self.bn1 = nn.BatchNorm2d(32)
         self.mp1 = nn.MaxPool2d(2)
-        self.dp1 = nn.Dropout(p=0.1)
+        self.dp1 = nn.Dropout(p=0.15)
         init.kaiming_normal_(self.conv1.weight, a=0.1)
         self.conv1.bias.data.zero_()
         conv_layers += [self.conv1, self.bn1, self.relu1,  self.mp1]
@@ -63,15 +63,12 @@ class AudioClassifier(nn.Module):
         # Linear Classifier
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
 
-        # self.lin1 = nn.Linear(in_features=80, out_features=128)
+        # wide features
+        self.wide = nn.Linear(in_features=6, out_features=20)
+        self.lin = nn.Linear(in_features=114, out_features=2)
+        self.lin1 = nn.Linear(in_features=80, out_features=128)
         # Wrap the Convolutional Blocks
         self.conv = nn.Sequential(*conv_layers)
-        # wide features
-        self.wide = nn.Linear(in_features=6, out_features=10)
-        self.lin = nn.Linear(in_features=104, out_features=2)
-        self.segLSTM = nn.LSTM(74, 32, num_layers=2,
-                               bidirectional=True, batch_first=True)
-        self.rnn = nn.RNN(74, 32, num_layers=2,)
         self.dp = nn.Dropout(p=0.3)
 
     # calculate fbank value
