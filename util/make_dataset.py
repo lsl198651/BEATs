@@ -195,29 +195,29 @@ def state_div(
             buff2 = recording[int(start_index2): int(end_index2)]  # 字符串索引切割
             print("buff1 len: " + str(len(buff1)),
                   "buff2 len: " + str(len(buff2)))
-            if Systolic_murmur == "Present" and Diastolic_murmur == "Absent":
-                # 切收缩期
-                soundfile.write(
-                    state_path
-                    + f"{index}_s1+Systolic_{num}_{Systolic_murmur}_{Systolic_state}_{hunman_feat}.wav",
-                    buff1,
-                    fs,
-                )
-            else:
-                # 切收缩期
-                soundfile.write(
-                    state_path
-                    + f"{index}_s1+Systolic_{num}_{Systolic_murmur}_{Systolic_state}_{hunman_feat}.wav",
-                    buff1,
-                    fs,
-                )
-                # 切舒张期
-                soundfile.write(
-                    state_path
-                    + f"{index}_s2+Diastolic_{num}_{Diastolic_murmur}_{Diastolic_state}_{hunman_feat}.wav",
-                    buff2,
-                    fs,
-                )
+            # if Systolic_murmur == "Present" and Diastolic_murmur == "Absent":
+            #     # 切收缩期
+            #     soundfile.write(
+            #         state_path
+            #         + f"{index}_s1+Systolic_{num}_{Systolic_murmur}_{Systolic_state}_{hunman_feat}.wav",
+            #         buff1,
+            #         fs,
+            #     )
+            # else:
+            # 切收缩期
+            soundfile.write(
+                state_path
+                + f"{index}_s1+Systolic_{num}_{Systolic_murmur}_{Systolic_state}_{hunman_feat}.wav",
+                buff1,
+                fs,
+            )
+            # 切舒张期
+            soundfile.write(
+                state_path
+                + f"{index}_s2+Diastolic_{num}_{Diastolic_murmur}_{Diastolic_state}_{hunman_feat}.wav",
+                buff2,
+                fs,
+            )
             # count += 1
 
 
@@ -411,7 +411,7 @@ if __name__ == '__main__':
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
     # TODO 修改此处的root_path
-    root_path = r"D:\Shilong\murmur\01_dataset\08_remake"
+    root_path = r"D:\Shilong\murmur\01_dataset\11_baseset"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file
