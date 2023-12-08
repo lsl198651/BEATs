@@ -678,7 +678,7 @@ def sigmoid_focal_loss(
 
 def logger_init(
     log_level=logging.DEBUG,
-    log_dir=r"./ResultFile",
+    log_dir=r"./log",
 ):
     """初始化logging"""
     # 指定路径
