@@ -8,7 +8,7 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
-from model.CNNModel import AudioClassifier
+from model.model_sknet import AudioClassifier
 # from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 # from model.resnet import ResidualNet
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
     logging.info(f"# lr_scheduler = {args.scheduler_flag}")
-    logging.info(f"# Padding_size = {padding_size}")
+    # logging.info(f"# Padding_size = {padding_size}")
     logging.info(f"# Loss_fn = {args.loss_type}")
     logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
     logging.info(f"# Trainset_balance = {args.trainset_balence}")
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         model=MyModel,
         train_loader=train_loader,
         test_loader=val_loader,
-        padding=padding_mask,
+        # padding=padding_mask,
         optimizer=optimizer,
         args=args,
     )
