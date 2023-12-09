@@ -8,7 +8,7 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
-from model.CNN import AudioClassifier
+from model.CNNModel import AudioClassifier
 # from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 # from model.resnet import ResidualNet
@@ -16,8 +16,8 @@ from model.CNN import AudioClassifier
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
 from util.BEATs_def import ( logger_init, DatasetClass)
-from model.mobilenet import *
-from model.resnet import *
+# from model.mobilenet import *
+# from model.resnet import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
