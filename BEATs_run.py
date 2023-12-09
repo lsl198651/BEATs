@@ -94,11 +94,11 @@ if __name__ == '__main__':
     testset_size = test_label.shape[0]
 
     # ========================/ setup padding /========================== #
-    padding_size = train_features.shape[1]  # 3500
-    padding = torch.zeros(
-        args.batch_size, padding_size
-    ).bool()  # we randomly mask 75% of the input patches,
-    padding_mask = torch.Tensor(padding)
+    # padding_size = train_features.shape[1]  # 3500
+    # padding = torch.zeros(
+    #     args.batch_size, padding_size
+    # ).bool()  # we randomly mask 75% of the input patches,
+    # padding_mask = torch.Tensor(padding)
     MyModel =  AudioClassifier()
     # MyModel = se_resnet18(num_classes=2)
     # MyModel = create_net(args)
