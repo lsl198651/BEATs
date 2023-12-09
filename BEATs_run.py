@@ -7,8 +7,9 @@ import logging
 import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
-from BEATs import BEATs_Pre_Train_itere3
-from model.CNNModel import AudioClassifier
+# from BEATs import BEATs_Pre_Train_itere3
+# from model.CNNModel import AudioClassifier
+from model.senet.se_resnet import se_resnet18
 from util.dataloaders import get_features
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
@@ -44,7 +45,7 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO改模型名字
     parser.add_argument("--model", type=str,
-                        default="CNN_4_layers_embeddings", help="the model used")
+                        default="se_resnet", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
@@ -95,7 +96,7 @@ if __name__ == '__main__':
     # ).bool()  # we randomly mask 75% of the input patches,
     # padding_mask = torch.Tensor(padding)
 
-    MyModel = AudioClassifier()
+    MyModel = se_resnet18(num_classes=2)
 
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
