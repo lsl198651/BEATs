@@ -8,8 +8,8 @@ import logging
 import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
-# from BEATs import BEATs_Pre_Train_itere3
-from model.CNNModel import AudioClassifier
+from BEATs import BEATs_Pre_Train_itere3
+# from model.CNN_SENet import AudioClassifier_SENet
 # from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 from util.dataloaders_5fold import fold5_dataloader
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO改模型名字
-    parser.add_argument("--model", type=str, default="CNN+LSTM",
+    parser.add_argument("--model", type=str, default="BEATs_iter3_plus_AS2M",
                         help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
@@ -91,14 +91,14 @@ if __name__ == '__main__':
     testset_size = test_label.shape[0]
 
     # ========================/ setup padding /========================== #
-    # padding_size = train_features.shape[1]  # 3500
-    # padding = torch.zeros(
-    #     args.batch_size, padding_size
-    # ).bool()  # we randomly mask 75% of the input patches,
-    # padding_mask = torch.Tensor(padding)
+    padding_size = train_features.shape[1]  # 3500
+    padding = torch.zeros(
+        args.batch_size, padding_size
+    ).bool()  # we randomly mask 75% of the input patches,
+    padding_mask = torch.Tensor(padding)
 
-    # MyModel = BEATs_Pre_Train_itere3(args=args)
-    MyModel = AudioClassifier()
+    MyModel = BEATs_Pre_Train_itere3(args=args)
+    # MyModel = se_resnet18()
 
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
     logging.info(f"# lr_scheduler = {args.scheduler_flag}")
-    # logging.info(f"# Padding_size = {padding_size}")
+    logging.info(f"# Padding_size = {padding_size}")
     logging.info(f"# Loss_fn = {args.loss_type}")
     logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
     logging.info(f"# Trainset_balance = {args.trainset_balence}")
@@ -138,7 +138,7 @@ if __name__ == '__main__':
         model=MyModel,
         train_loader=train_loader,
         test_loader=val_loader,
-        padding=None,
+        padding=padding_mask,
         optimizer=optimizer,
         args=args,
     )
