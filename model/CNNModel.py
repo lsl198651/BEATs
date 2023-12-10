@@ -64,10 +64,10 @@ class AudioClassifier(nn.Module):
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
 
         # wide features
-        self.wide = nn.Linear(in_features=6, out_features=10)
+        self.wide = nn.Linear(in_features=6, out_features=20)
         self.lin = nn.Linear(in_features=64, out_features=2)
         self.lin1 = nn.Linear(in_features=80, out_features=128)
-        self.segLSTM = nn.LSTM(74, 32, num_layers=2,
+        self.segLSTM = nn.LSTM(84, 32, num_layers=2,
                                bidirectional=True, batch_first=True)
         # Wrap the Convolutional Blocks
         self.conv = nn.Sequential(*conv_layers)

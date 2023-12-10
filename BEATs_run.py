@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     # ========================/ setup scaler /========================== #
     logger_init()
-    logging.info(f"{args.model} + CNN * 3 ")
+    logging.info(f"{args.model}  ")
     logging.info(f"# Batch_size = {args.batch_size}")
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
