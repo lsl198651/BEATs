@@ -71,9 +71,9 @@ def train_test(
             weight=normedWeights)  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
-    embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
-    embedding2 = nn.Embedding(2, 10)  # 2个类别，每个类别用10维向量表示
-    embedding3 = nn.Embedding(2, 10)
+    # embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
+    # embedding2 = nn.Embedding(2, 10)  # 2个类别，每个类别用10维向量表示
+    # embedding3 = nn.Embedding(2, 10)
 # ============ training ================
     for epochs in range(args.num_epochs):
         # train model
@@ -100,9 +100,9 @@ def train_test(
             # embedings = torch.tensor(embedings)
 
             data_t, label_t,  index_t, feat = data_t.to(
-                device), label_t.to(device),  index_t.to(device), feat.to(device)
+                device), label_t.to(device),  index_t.to(device), feat.to(device)  # , feat.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t)  # , feat
+            predict_t = model(data_t, feat)  # , feat
             if args.loss_type == "BCE":
                 predict_t2 = torch.argmax(predict_t, dim=1)
                 loss = loss_fn(predict_t2.float(), label_t)
@@ -161,11 +161,11 @@ def train_test(
                 #     embedings_v.append(ebd_List)
                 # embedings_v = torch.tensor(embedings_v)
                 # , embedings_v
-                data_v, label_v, index_v = \
-                    (data_v.to(device), label_v.to(device),
-                     index_v.to(device))  # , embedings_v.to(device))
+                data_v, label_v, index_v, feat_v = \
+                    data_v.to(device), label_v.to(device), index_v.to(
+                        device), feat_v.to(device)  # , embedings_v.to(device))
                 optimizer.zero_grad()
-                predict_v = model(data_v)  # , feat_v, embedings_v
+                predict_v = model(data_v, feat_v)  # , feat_v, embedings_v
                 # recall = recall_score(y_hat, y)
                 if args.loss_type == "BCE":
                     predict_v2 = torch.argmax(predict_v, dim=1)

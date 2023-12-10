@@ -65,8 +65,10 @@ class AudioClassifier(nn.Module):
 
         # wide features
         self.wide = nn.Linear(in_features=6, out_features=20)
-        self.lin = nn.Linear(in_features=114, out_features=2)
+        self.lin = nn.Linear(in_features=168, out_features=2)
         self.lin1 = nn.Linear(in_features=80, out_features=128)
+        self.segLSTM = nn.LSTM(
+            input_size=84, hidden_size=84, num_layers=2, bidirectional=True)
         # Wrap the Convolutional Blocks
         self.conv = nn.Sequential(*conv_layers)
         self.dp = nn.Dropout(p=0.3)
@@ -95,7 +97,7 @@ class AudioClassifier(nn.Module):
     # Forward pass computations
     # ----------------------------
 
-    def forward(self, x, x1, x2):
+    def forward(self, x, x1):
         # Run the convolutional blocks
         # x2all = x2.flatten(start_dim=1)
         fbank = self.preprocess(x, args=None)
@@ -106,11 +108,11 @@ class AudioClassifier(nn.Module):
         x_all = x.view(x.shape[0], -1)
         # add wide features and concat two layers
         x1 = self.wide(x1)
-        x2 = x2.flatten(start_dim=1)
-        x_all = torch.cat((x_all, x1, x2), dim=1)
-        # y, _ = self.segLSTM(x_all)
+        # x2 = x2.flatten(start_dim=1)
+        x_all = torch.cat((x_all, x1), dim=1)
+        y, _ = self.segLSTM(x_all)
         # Linear layer
-        x_all = self.lin(x_all)
+        x_all = self.lin(y)
         # x_all = torch.softmax(x_all, dim=1)
         # Final output
         return x_all

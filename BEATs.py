@@ -314,7 +314,7 @@ class BEATs_Pre_Train_itere3(nn.Module):
             nn.Linear(16, 2),
         )
 
-    def forward(self, x,  padding_mask: torch.Tensor = None, gfcc=None):
+    def forward(self, x,  padding_mask: torch.Tensor = None):  # , gfcc=None
         # with torch.no_grad():
         x, _ = self.BEATs.extract_features(x, padding_mask, args=self.args)
         # dropout

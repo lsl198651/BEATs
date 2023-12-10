@@ -1,5 +1,6 @@
 import argparse
 from os import name
+from tkinter import NO
 from sympy import true
 import torch
 import torch.profiler
@@ -8,12 +9,12 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
-# from model.CNNModel import AudioClassifier
-from model.senet.se_resnet import se_resnet18
+from model.CNNModel import AudioClassifier
+# from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
-from util.BEATs_def import (MyDataset, logger_init, DatasetClass)
+from util.BEATs_def import (logger_init, DatasetClass)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -21,7 +22,7 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=512,
                         help="args.batch_size for training")
     parser.add_argument("--learning_rate", type=float,
-                        default=0.0001, help="learning_rate for training")
+                        default=0.0000001, help="learning_rate for training")
     parser.add_argument("--num_epochs", type=int,
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
@@ -44,7 +45,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO改模型名字
-    parser.add_argument("--model", type=str, default="se_resnet",
+    parser.add_argument("--model", type=str, default="BEATs_iter3_plus_AS2M",
                         help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
@@ -96,7 +97,8 @@ if __name__ == '__main__':
     # ).bool()  # we randomly mask 75% of the input patches,
     # padding_mask = torch.Tensor(padding)
 
-    MyModel = se_resnet18(num_classes=2)
+    # MyModel = BEATs_Pre_Train_itere3(args=args)
+    MyModel = AudioClassifier()
 
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
@@ -110,7 +112,7 @@ if __name__ == '__main__':
 
     # ========================/ setup scaler /========================== #
     logger_init()
-    logging.info(f"{args.model} ")
+    logging.info(f"{args.model} + CNN * 3 ")
     logging.info(f"# Batch_size = {args.batch_size}")
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
