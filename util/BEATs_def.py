@@ -1,6 +1,6 @@
-from pickle import TRUE
-from re import split
-from sympy import true
+# from pickle import TRUE
+# from re import split
+# from sympy import true
 import torch
 import sys
 import torch.nn as nn
@@ -14,18 +14,18 @@ import csv
 import os
 import librosa
 import torch
-import pywt
+# import pywt
 import shutil
 import pandas as pd
 import numpy as np
 import logging
 import datetime
-import random
-import torchaudio
-from torchaudio import transforms
+# import random
+# import torchaudio
+# from torchaudio import transforms
 from IPython.display import display
 from sklearn.metrics import confusion_matrix
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 from datetime import datetime
 # from torch.utils.data import DataLoader, Dataset
 # from torch.utils.tensorboard import SummaryWriter
@@ -37,56 +37,56 @@ from scipy import signal
 import warnings
 from scipy import signal
 # from python_speech_features import logfbank
-from spafe.features.gfcc import erb_spectrogram
-from spafe.utils.preprocessing import SlidingWindow
+# from spafe.features.gfcc import erb_spectrogram
+# from spafe.utils.preprocessing import SlidingWindow
 from util.get_wide_feature import hand_fea
 warnings.filterwarnings('ignore')
 
 
-def myDownSample_2d(data, sample_Fs, targetFreq):
-    step = sample_Fs // targetFreq
-    newData = np.array([data[:, i] for i in range(
-        data.shape[1]) if i % step == 0]).transpose([1, 0])
-    return newData
+# def myDownSample_2d(data, sample_Fs, targetFreq):
+#     step = sample_Fs // targetFreq
+#     newData = np.array([data[:, i] for i in range(
+#         data.shape[1]) if i % step == 0]).transpose([1, 0])
+#     return newData
 
 
-def Mel_Time_Frequency_Spectrum_2(signal, Fs):
-    EPS = 1E-6
-    coef, freqs = pywt.cwt(signal, np.arange(1, 17), 'cgau3')
-    coef = np.abs(coef)
-    coef = myDownSample_2d(coef, Fs, Fs/8)
-    lms = np.log(coef + EPS)
+# def Mel_Time_Frequency_Spectrum_2(signal, Fs):
+#     EPS = 1E-6
+#     coef, freqs = pywt.cwt(signal, np.arange(1, 17), 'cgau3')
+#     coef = np.abs(coef)
+#     coef = myDownSample_2d(coef, Fs, Fs/8)
+#     lms = np.log(coef + EPS)
 
-    # plt.imshow(coef[:,500:800], origin='lower')
-    # plt.ylabel("Wavelet D=16")
-    # plt.xlabel("Time")
-    # # plt.axis('off')
-    # plt.show()
+#     # plt.imshow(coef[:,500:800], origin='lower')
+#     # plt.ylabel("Wavelet D=16")
+#     # plt.xlabel("Time")
+#     # # plt.axis('off')
+#     # plt.show()
 
-    return lms
+#     return lms
 
 
-def Log_GF(wavform):
-    # x, fs = librosa.load(filename, sr=16000)
-    # energy = Energy(x,fs,100,50)
-    fbank_feat_all = []
-    for i in range(wavform.shape[0]):
-        gSpec, gfreqs = erb_spectrogram(wavform[i, :].numpy(), fs=16000, pre_emph=0, pre_emph_coeff=0.97, window=SlidingWindow(
-            0.025, 0.0125, "hamming"), nfilts=64, nfft=512, low_freq=25, high_freq=2000)
-        fbank_feat = gSpec.T
-        # fbank_feat = fbank_feat*energy
-        # fbank_feat = np.log(fbank_feat)
-        # if i == 0:
-        fbank_feat_all.append(fbank_feat)
-    fbank_feat_all = np.stack(fbank_feat_all, axis=0)
-    # else:
-    #     fbank_feat_all = np.vstack((fbank_feat_all, fbank_feat))
-    # gSpec, gfreqs = erb_spectrogram(wavform[1, :].numpy(), fs=16000, pre_emph=0, pre_emph_coeff=0.97, window=SlidingWindow(
-    #     0.025, 0.0125, "hamming"), nfilts=64, nfft=512, low_freq=25, high_freq=2000)
-    # fbank_feat = gSpec.T
-    # # fbank_feat = fbank_feat*energy
-    # fbank_feat = np.log(fbank_feat)
-    return torch.FloatTensor(fbank_feat_all)
+# def Log_GF(wavform):
+#     # x, fs = librosa.load(filename, sr=16000)
+#     # energy = Energy(x,fs,100,50)
+#     fbank_feat_all = []
+#     for i in range(wavform.shape[0]):
+#         gSpec, gfreqs = erb_spectrogram(wavform[i, :].numpy(), fs=16000, pre_emph=0, pre_emph_coeff=0.97, window=SlidingWindow(
+#             0.025, 0.0125, "hamming"), nfilts=64, nfft=512, low_freq=25, high_freq=2000)
+#         fbank_feat = gSpec.T
+#         # fbank_feat = fbank_feat*energy
+#         # fbank_feat = np.log(fbank_feat)
+#         # if i == 0:
+#         fbank_feat_all.append(fbank_feat)
+#     fbank_feat_all = np.stack(fbank_feat_all, axis=0)
+#     # else:
+#     #     fbank_feat_all = np.vstack((fbank_feat_all, fbank_feat))
+#     # gSpec, gfreqs = erb_spectrogram(wavform[1, :].numpy(), fs=16000, pre_emph=0, pre_emph_coeff=0.97, window=SlidingWindow(
+#     #     0.025, 0.0125, "hamming"), nfilts=64, nfft=512, low_freq=25, high_freq=2000)
+#     # fbank_feat = gSpec.T
+#     # # fbank_feat = fbank_feat*energy
+#     # fbank_feat = np.log(fbank_feat)
+#     return torch.FloatTensor(fbank_feat_all)
 
 
 def butterworth_low_pass_filter(original_signal, order=3, lowcut=25, highcut=800, sampling_frequency=16000):
