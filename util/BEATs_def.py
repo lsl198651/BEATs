@@ -301,14 +301,14 @@ class DatasetClass(Dataset):
     """
 
     # Initialize your data, download, etc.
-    def __init__(self, wavlabel, wavdata, wavidx):
+    def __init__(self, wavlabel, wavdata, wavidx, wavebd):
         # 直接传递data和label
         # self.len = wavlen
-        # embeds = []
-        # for embed in wavebd:
-        #     embed = int(embed.split('.')[0])
-        #     embeds.append(embed)
-        # self.wavebd = embeds
+        embeds = []
+        for embed in wavebd:
+            embed = int(embed.split('.')[0])
+            embeds.append(embed)
+        self.wavebd = embeds
         self.data = torch.from_numpy(wavdata)
         self.label = torch.from_numpy(wavlabel)
         self.id = torch.from_numpy(wavidx)
@@ -318,9 +318,9 @@ class DatasetClass(Dataset):
         dataitem = self.data[index]
         labelitem = self.label[index]
         iditem = self.id[index]
-        # embeding = self.wavebd[index]
+        embeding = self.wavebd[index]
         wide_feat = hand_fea((dataitem, 16000))
-        return dataitem.float(), labelitem, iditem, wide_feat#, embeding
+        return dataitem.float(), labelitem, iditem, wide_feat, embeding
 
     def __len__(self):
         # 返回文件数据的数目

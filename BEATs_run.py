@@ -49,7 +49,7 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str,
-                        default="se_resnet +FEAT", help="the model used")
+                        default="se_resnet +FEAT+embeddings", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         if val in args.train_fold:
             raise ValueError("train_fold and test_fold have same fold")
 
-    train_features, train_label, test_features, test_label, train_index, test_index = fold5_dataloader(
+    train_features, train_label, train_index, train_ebd, test_features,  test_label, test_index, test_ebd = fold5_dataloader(
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
     # ========================/ setup loader /========================== #
     if args.samplerWeight == True:
@@ -74,15 +74,15 @@ if __name__ == '__main__':
         Data_sampler = WeightedRandomSampler(
             weights, num_samples=len(weights), replacement=True
         )
-        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
+        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
                                   sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True, num_workers=4)
     else:
-        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
+        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
                                   batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=4)
 
     val_loader = DataLoader(
         DatasetClass(wavlabel=test_label,
-                     wavdata=test_features, wavidx=test_index),
+                     wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
         batch_size=args.batch_size, shuffle=True, drop_last=True, pin_memory=True, num_workers=4)
 
     # ========================/ dataset size /========================== #
