@@ -42,19 +42,6 @@ class SKConv(nn.Module):
         x = torch.sum(x * attention, dim=1)
         return x
 
-    def preprocess(self, source: torch.Tensor, args=None,) -> torch.Tensor:
-        fbanks = []
-        for waveform in source:
-            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
-            waveform = waveform.unsqueeze(0)
-            fbank = ta_kaldi.fbank(
-                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
-            fbank_mean = fbank.mean()
-            fbank_std = fbank.std()
-            fbank = (fbank - fbank_mean) / fbank_std
-            fbanks.append(fbank)
-        fbank = torch.stack(fbanks, dim=0)
-        return fbank
 
 # ----------------------------
 # Audio Classification Model
@@ -126,15 +113,29 @@ class AudioClassifier(nn.Module):
 
         # Linear Classifier
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
-        self.dense1 = nn.Linear(in_features=32, out_features=128)
+        self.wide = nn.Linear(in_features=6, out_features=20)
+        self.dense1 = nn.Linear(in_features=82, out_features=128)
         self.dense2 = nn.Linear(in_features=128, out_features=2)
         self.dp = nn.Dropout(p=0.5)
 
+    def preprocess(self, source: torch.Tensor, args=None,) -> torch.Tensor:
+        fbanks = []
+        for waveform in source:
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / fbank_std
+            fbanks.append(fbank)
+        fbank = torch.stack(fbanks, dim=0)
+        return fbank
     # ----------------------------
     # Forward pass computations
     # ----------------------------
 
-    def forward(self, x):
+    def forward(self, x, x1, x2):
         # Run the convolutional blocks
         fbank = self.preprocess(x)
         # x = self.pre(x)
@@ -150,6 +151,9 @@ class AudioClassifier(nn.Module):
         # Adaptive pool and flatten for input to linear layer
         x = self.ap(x)
         x_all = x.view(x.shape[0], -1)
+        x1 = self.wide(x1)
+        x2 = x2.flatten(1)
+        x_all = torch.cat((x_all, x1, x2), dim=1)
         x_all = self.dp(x_all)
         x_all = self.dense1(x_all)
         x_all = self.dp(x_all)
