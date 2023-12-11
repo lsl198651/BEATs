@@ -8,8 +8,8 @@ import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
-from model.model_sknet import AudioClassifier
-# from model.senet.se_resnet import se_resnet18
+# from model.model_sknet import AudioClassifier
+from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 # from model.resnet import ResidualNet
 # from model.networks.imagenet import create_net
@@ -49,7 +49,7 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str,
-                        default="SK_CONV +FEAT", help="the model used")
+                        default="se_resnet +FEAT", help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -99,8 +99,8 @@ if __name__ == '__main__':
     #     args.batch_size, padding_size
     # ).bool()  # we randomly mask 75% of the input patches,
     # padding_mask = torch.Tensor(padding)
-    MyModel =  AudioClassifier()
-    # MyModel = se_resnet18(num_classes=2)
+    # MyModel =  AudioClassifier()
+    MyModel = se_resnet18(num_classes=2)
     # MyModel = create_net(args)
     # MyModel = ResidualNet(None, 18, 2, "TripletAttention")
     # model = triplet_attention_mobilenet_v2()
