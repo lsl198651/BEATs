@@ -147,7 +147,7 @@ class AudioClassifier(nn.Module):
 
         x = self.block3(x)
 
-        x = self.block4(x)
+        # x = self.block4(x)
         # Adaptive pool and flatten for input to linear layer
         x = self.ap(x)
         x_all = x.view(x.shape[0], -1)
