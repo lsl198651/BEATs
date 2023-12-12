@@ -1,7 +1,4 @@
 import argparse
-from os import name
-from tkinter import NO
-from sympy import true
 import torch
 import torch.profiler
 import logging
@@ -23,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=512,
                         help="args.batch_size for training")
     parser.add_argument("--learning_rate", type=float,
-                        default=0.0001, help="learning_rate for training")
+                        default=0.00001, help="learning_rate for training")
     parser.add_argument("--num_epochs", type=int,
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
