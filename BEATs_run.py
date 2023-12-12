@@ -27,7 +27,7 @@ if __name__ == '__main__':
     parser.add_argument("--loss_type", type=str, default="FocalLoss",
                         help="loss function", choices=["BCE", "CE", "FocalLoss"])
     parser.add_argument("--scheduler_flag", type=str, default=None,
-                        help="the dataset used", choices=["cos", "cos_warmup"],)
+                        help="the dataset used", choices=["cos", "MultiStepLR"],)
     parser.add_argument("--freqm_value",  type=int, default=0,
                         help="frequency mask max length")
     parser.add_argument("--timem_value", type=int, default=0,

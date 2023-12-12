@@ -56,11 +56,11 @@ def train_test(
     if args.scheduler_flag == "cos":
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=10, eta_min=0)
-    elif args.scheduler_flag == "cos_warmup":
-        scheduler = optimization.get_cosine_schedule_with_warmup(
+    elif args.scheduler_flag == "MultiStep":
+        scheduler = optim.lr_scheduler.MultiStepLR(
             optimizer,
-            num_warmup_steps=warm_up_ratio * total_steps,
-            num_training_steps=total_steps,
+            [40, 80],
+            gamma=0.5
         )
 # ==========loss function================
     if args.loss_type == "BCE":
@@ -99,7 +99,6 @@ def train_test(
                     torch.tensor(ebed % 10)).detach().numpy())
                 embedings.append(ebd_List)
             embedings = torch.tensor(embedings)
-
             data_t, label_t,  index_t, feat, embedings = data_t.to(
                 device), label_t.to(device),  index_t.to(device), feat.to(device), embedings.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
@@ -130,8 +129,7 @@ def train_test(
                 target_train.extend(label_t.cpu().tolist())
                 correct_t += pred_t.eq(label_t).sum().item()
                 train_len += len(pred_t)
-        if args.scheduler_flag is not None:
-            scheduler.step()
+
         # ------------------调库计算指标--------------------------
         train_input, train_target = torch.as_tensor(
             input_train), torch.as_tensor(target_train)
@@ -196,6 +194,8 @@ def train_test(
                         print("TypeError: 'int' object is not iterable")
                     pred.extend(pred_v.cpu().tolist())
                     label.extend(label_v.cpu().tolist())
+        if args.scheduler_flag is not None:
+            scheduler.step()
         # ------------------调库计算指标--------------------------
         test_input, test_target = torch.as_tensor(pred), torch.as_tensor(label)
         test_auprc = binary_auprc(test_input, test_target)
