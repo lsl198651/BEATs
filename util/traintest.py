@@ -104,7 +104,7 @@ def train_test(
             data_t, label_t,  index_t,embedings= data_t.to(
                 device), label_t.to(device), index_t.to(device),embedings.to(device)#,feat.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t)
+            predict_t = model(data_t,embedings)
             loss = loss_fn(
                 predict_t, label_t.long())
             optimizer.zero_grad()
