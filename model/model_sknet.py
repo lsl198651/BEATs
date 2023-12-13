@@ -114,7 +114,7 @@ class AudioClassifier(nn.Module):
         # Linear Classifier
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
         self.wide = nn.Linear(in_features=6, out_features=20)
-        self.dense1 = nn.Linear(in_features=52, out_features=128)
+        self.dense1 = nn.Linear(in_features=32, out_features=128)
         self.dense2 = nn.Linear(in_features=128, out_features=2)
         self.dp = nn.Dropout(p=0.5)
 
@@ -135,7 +135,7 @@ class AudioClassifier(nn.Module):
     # Forward pass computations
     # ----------------------------
 
-    def forward(self, x, ):
+    def forward(self, x ):
         # Run the convolutional blocks
         fbank = self.preprocess(x)
         # x = self.pre(x)
