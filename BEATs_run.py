@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO改模型名字
-    parser.add_argument("--model", type=str, default="skconv+feat+embeddings",
+    parser.add_argument("--model", type=str, default="skconv+feat",
                         help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
