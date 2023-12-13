@@ -197,8 +197,8 @@ def get_wav_data(dir_path, num=0):
                 print("reading: " + subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
                 # TODO采样率:4k
-                # y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                y_16k_norm = wav_normalize(y)  # 归一化
+                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                y_16k_norm = wav_normalize(y_16k)  # 归一化
                 print("num is "+str(num), "y_16k size: "+str(y_16k_norm.size))
                 if y_16k_norm.shape[0] < data_length:
                     y_16k_norm = np.pad(
