@@ -5,9 +5,9 @@ import logging
 import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
-from model.model_sknet import AudioClassifier
+# from model.model_sknet import AudioClassifier
 # from BEATs import BEATs_Pre_Train_itere3
-# from model.CNN_SENet import AudioClassifier_SENet
+from model.CNNModel import AudioClassifier
 # from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 from util.dataloaders_5fold import fold5_dataloader
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO改模型名字
-    parser.add_argument("--model", type=str, default="skconv+feat",
+    parser.add_argument("--model", type=str, default="CNN+LSTM+feat",
                         help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
