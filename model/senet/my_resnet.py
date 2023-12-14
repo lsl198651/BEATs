@@ -1,5 +1,5 @@
 # from functools import partial
-from typing import  Callable, List, Optional, Type, Union
+from typing import Callable, List, Optional, Type, Union
 
 import torch
 import torch.nn as nn
@@ -10,6 +10,7 @@ import torchaudio.compliance.kaldi as ta_kaldi
 # from ._api import register_model, Weights, WeightsEnum
 # from ._meta import _IMAGENET_CATEGORIES
 # from ._utils import _ovewrite_named_param, handle_legacy_interface
+
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
@@ -48,9 +49,11 @@ class BasicBlock(nn.Module):
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         if groups != 1 or base_width != 64:
-            raise ValueError("BasicBlock only supports groups=1 and base_width=64")
+            raise ValueError(
+                "BasicBlock only supports groups=1 and base_width=64")
         if dilation > 1:
-            raise NotImplementedError("Dilation > 1 not supported in BasicBlock")
+            raise NotImplementedError(
+                "Dilation > 1 not supported in BasicBlock")
         # Both self.conv1 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = norm_layer(planes)
@@ -168,20 +171,25 @@ class My_ResNet(nn.Module):
             )
         self.groups = groups
         self.base_width = width_per_group
-        self.conv1 = nn.Conv2d(1, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = nn.Conv2d(
+            1, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 32, layers[0])
-        self.layer2 = self._make_layer(block, 64, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
-        self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
+        self.layer2 = self._make_layer(
+            block, 64, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
+        self.layer3 = self._make_layer(
+            block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
+        self.layer4 = self._make_layer(
+            block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(94, num_classes)
+        self.fc = nn.Linear(70, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
+                nn.init.kaiming_normal_(
+                    m.weight, mode="fan_out", nonlinearity="relu")
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
@@ -192,9 +200,11 @@ class My_ResNet(nn.Module):
         if zero_init_residual:
             for m in self.modules():
                 if isinstance(m, Bottleneck) and m.bn3.weight is not None:
-                    nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
+                    # type: ignore[arg-type]
+                    nn.init.constant_(m.bn3.weight, 0)
                 elif isinstance(m, BasicBlock) and m.bn2.weight is not None:
-                    nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
+                    # type: ignore[arg-type]
+                    nn.init.constant_(m.bn2.weight, 0)
 
     def _make_layer(
         self,
@@ -236,7 +246,7 @@ class My_ResNet(nn.Module):
             )
 
         return nn.Sequential(*layers)
-    
+
     def preprocess(
             self,
             source: torch.Tensor,
@@ -254,11 +264,10 @@ class My_ResNet(nn.Module):
         fbank = torch.stack(fbanks, dim=0)
         return fbank
 
-
-    def forward(self, x: Tensor,x2:Tensor) -> Tensor:
+    def forward(self, x: Tensor, x2: Tensor) -> Tensor:
         # See note [TorchScript super()]
-        x=self.preprocess(x)
-        x=x.unsqueeze(1)
+        x = self.preprocess(x)
+        x = x.unsqueeze(1)
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -272,8 +281,8 @@ class My_ResNet(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.shape[0], -1)
         # x1 = self.wide(x1)
-        x2=x2.flatten(1)
-        xall=torch.cat((x,x2),dim=1)
+        x2 = x2.flatten(1)
+        xall = torch.cat((x, x2), dim=1)
         x = torch.flatten(xall, 1)
         x = self.fc(x)
 

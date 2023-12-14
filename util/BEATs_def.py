@@ -39,7 +39,7 @@ from scipy import signal
 # from python_speech_features import logfbank
 # from spafe.features.gfcc import erb_spectrogram
 # from spafe.utils.preprocessing import SlidingWindow
-from get_wide_feature import hand_fea
+from util.get_wide_feature import hand_fea
 warnings.filterwarnings('ignore')
 
 
@@ -184,7 +184,7 @@ def get_wav_data(dir_path, num=0):
     file_names = []
     wav_nums = []
     feat = []
-    data_length = 6000
+    data_length = 2000
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
