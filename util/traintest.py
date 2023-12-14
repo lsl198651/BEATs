@@ -89,22 +89,22 @@ def train_test(
             # data_t = butterworth_low_pass_filter(data_t)
             # gfcc = Log_GF(data_t)
             # gfcc = gfcc.to(device)
-            embedings = []
-            for ebed in embeding:
-                ebd_List = []
-                ebd_List.append(embedding1(
-                    torch.tensor(ebed//10 % 10)).detach().numpy())
-                ebd_List.append(embedding2(
-                    torch.tensor(ebed//10 % 10)).detach().numpy())
-                ebd_List.append(embedding3(
-                    torch.tensor(ebed % 10)).detach().numpy())
-                embedings.append(ebd_List)
-            embedings = torch.tensor(embedings)
+            # embedings = []
+            # for ebed in embeding:
+            #     ebd_List = []
+            #     ebd_List.append(embedding1(
+            #         torch.tensor(ebed//10 % 10)).detach().numpy())
+            #     ebd_List.append(embedding2(
+            #         torch.tensor(ebed//10 % 10)).detach().numpy())
+            #     ebd_List.append(embedding3(
+            #         torch.tensor(ebed % 10)).detach().numpy())
+            #     embedings.append(ebd_List)
+            # embedings = torch.tensor(embedings)
 
-            data_t, label_t,  index_t,embedings= data_t.to(
-                device), label_t.to(device), index_t.to(device),embedings.to(device)#,feat.to(device)
+            data_t, label_t,  index_t,feat= data_t.to(
+                device), label_t.to(device), index_t.to(device),feat.to(device)#,feat.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t,embedings)
+            predict_t = model(data_t,feat)
             loss = loss_fn(
                 predict_t, label_t.long())
             optimizer.zero_grad()
@@ -139,27 +139,27 @@ def train_test(
                 # data_v = butterworth_low_pass_filter(data_v)
                 # gfcc = Log_GF(data_v)
                 # gfcc = gfcc.to(device)
-                embedings_v = []
-                for ebed in embeding_v:
-                    ebd_List = []
-                    ebd_List.append(embedding1(
-                        torch.tensor(ebed//10 % 10)).detach().numpy())
-                    ebd_List.append(embedding2(
-                        torch.tensor(ebed//10 % 10)).detach().numpy())
-                    ebd_List.append(embedding3(
-                        torch.tensor(ebed % 10)).detach().numpy())
-                    embedings_v.append(ebd_List)
-                embedings_v = torch.tensor(embedings_v)
+                # embedings_v = []
+                # for ebed in embeding_v:
+                #     ebd_List = []
+                #     ebd_List.append(embedding1(
+                #         torch.tensor(ebed//10 % 10)).detach().numpy())
+                #     ebd_List.append(embedding2(
+                #         torch.tensor(ebed//10 % 10)).detach().numpy())
+                #     ebd_List.append(embedding3(
+                #         torch.tensor(ebed % 10)).detach().numpy())
+                #     embedings_v.append(ebd_List)
+                # embedings_v = torch.tensor(embedings_v)
 
-                data_v, label_v,  index_v,embedings_v= (
+                data_v, label_v,  index_v,feat_v= (
                     data_v.to(device),
                     label_v.to(device),                    
                     index_v.to(device),
                     # feat_v.to(device),
-                    embedings_v.to(device),
+                    feat_v.to(device),
                 )
                 optimizer.zero_grad()
-                predict_v = model(data_v,embedings_v)
+                predict_v = model(data_v,feat_v)
                 # recall = recall_score(y_hat, y)
                 loss_v = loss_fn(predict_v, label_v.long())
                 # get the index of the max log-probability
