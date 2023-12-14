@@ -411,7 +411,7 @@ if __name__ == '__main__':
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
     # TODO 修改此处的root_path
-    root_path = r"D:\Shilong\murmur\01_dataset\12_baseset"
+    root_path = r"D:\Shilong\murmur\01_dataset\12_baseset_16k"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file
