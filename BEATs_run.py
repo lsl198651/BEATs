@@ -7,8 +7,8 @@ from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from model.model_sknet import AudioClassifier
 # from BEATs import BEATs_Pre_Train_itere3
-# from model.CNNModel import AudioClassifier
-from model.senet.se_resnet import se_resnet18
+from model.CNN import AudioClassifier
+# from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
@@ -43,15 +43,15 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO改模型名字
-    parser.add_argument("--model", type=str, default="resnet6+feat",
+    parser.add_argument("--model", type=str, default="CNN base",
                         help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['0', '1', '2', '3'])
-    parser.add_argument("--test_fold", type=list, default=['4'])
+                        default=['0', '1', '4', '3'])
+    parser.add_argument("--test_fold", type=list, default=['2'])
     parser.add_argument("--setType", type=str, default=r"\12_baseset_16k")
     parser.add_argument("--model_folder", type=str,
                         default=r"D:\Shilong\murmur\00_Code\LM\beats1\BEATs\MyModels")
@@ -95,8 +95,8 @@ if __name__ == '__main__':
     # ).bool()  # we randomly mask 75% of the input patches,
     # padding_mask = torch.Tensor(padding)
 
-    # MyModel = AudioClassifier()
-    MyModel = se_resnet18()
+    MyModel = AudioClassifier()
+    # MyModel = se_resnet18()
 
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！

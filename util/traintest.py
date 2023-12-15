@@ -7,7 +7,7 @@ import utils
 import torch.nn as nn
 from torch import optim, tensor
 from datetime import datetime
-from transformers import optimization
+# from transformers import optimization
 # import numpy as np
 # from sklearn.metrics import confusion_matrix
 # from torch.cuda.amp import autocast, GradScaler
@@ -72,9 +72,9 @@ def train_test(
             weight=normedWeights)  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
-    embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
-    embedding2 = nn.Embedding(2, 10)  # 2个类别，每个类别用10维向量表示
-    embedding3 = nn.Embedding(2, 10)
+    # embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
+    # embedding2 = nn.Embedding(2, 10)  # 2个类别，每个类别用10维向量表示
+    # embedding3 = nn.Embedding(2, 10)
 # ============ training ================
     for epochs in range(args.num_epochs):
         # train model
