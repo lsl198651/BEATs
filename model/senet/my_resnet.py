@@ -184,7 +184,8 @@ class My_ResNet(nn.Module):
         self.layer4 = self._make_layer(
             block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(70, num_classes)
+        self.fc = nn.Linear(84, num_classes)
+        self.wide = nn.Linear(6, 20)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -264,7 +265,7 @@ class My_ResNet(nn.Module):
         fbank = torch.stack(fbanks, dim=0)
         return fbank
 
-    def forward(self, x: Tensor, x2: Tensor) -> Tensor:
+    def forward(self, x: Tensor, x1: Tensor) -> Tensor:
         # See note [TorchScript super()]
         x = self.preprocess(x)
         x = x.unsqueeze(1)
@@ -280,10 +281,10 @@ class My_ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = x.view(x.shape[0], -1)
-        # x1 = self.wide(x1)
-        x2 = x2.flatten(1)
-        xall = torch.cat((x, x2), dim=1)
-        x = torch.flatten(xall, 1)
-        x = self.fc(x)
+        x1 = self.wide(x1)
+        # x2 = x2.flatten(1)
+        xall = torch.cat((x, x1), dim=1)
+        # x = torch.flatten(xall, 1)
+        x = self.fc(xall)
 
         return x

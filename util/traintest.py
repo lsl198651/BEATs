@@ -51,8 +51,8 @@ def train_test(
     # for amp
 # ============lr scheduler================
     # scaler = GradScaler()
-    warm_up_ratio = 0.1
-    total_steps = len(train_loader) * args.num_epochs
+    # warm_up_ratio = 0.1
+    # total_steps = len(train_loader) * args.num_epochs
     if args.scheduler_flag == "cos":
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=10, eta_min=0)
@@ -60,7 +60,7 @@ def train_test(
         scheduler = optim.lr_scheduler.MultiStepLR(
             optimizer,
             [40, 80],
-            gamma=0.5
+            gamma=0.1
         )
 # ==========loss function================
     if args.loss_type == "BCE":
