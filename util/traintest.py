@@ -47,9 +47,9 @@ def train_test(
     # torch.backends.cudnn.benchmark = False
     model = model.to(device)  # 放到设备中
     # for amp
-    embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
-    embedding2 = nn.Embedding(2, 10)  # 2个类别，每个类别用10维向量表示
-    embedding3 = nn.Embedding(2, 10)
+    # embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
+    # embedding2 = nn.Embedding(2, 10)  # 2个类别，每个类别用10维向量表示
+    # embedding3 = nn.Embedding(2, 10)
 # ============lr scheduler================
     # scaler = GradScaler()
     warm_up_ratio = 0.1

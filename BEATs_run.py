@@ -9,8 +9,8 @@ from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
 # from model.model_sknet import AudioClassifier
-from model.CNN import AudioClassifier
-# from model.senet.se_resnet import se_resnet18
+# from model.CNN import AudioClassifier
+from model.senet.se_resnet import se_resnet18
 # from util.dataloaders import get_features
 # from model.resnet import ResidualNet
 # from model.networks.imagenet import create_net
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     # ).bool()  # we randomly mask 75% of the input patches,
     # padding_mask = torch.Tensor(padding)
     # MyModel =  AudioClassifier()
-    MyModel = AudioClassifier()
+    MyModel = se_resnet18()
     # MyModel = create_net(args)
     # MyModel = ResidualNet(None, 18, 2, "TripletAttention")
     # model = triplet_attention_mobilenet_v2()
