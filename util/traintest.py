@@ -1,4 +1,3 @@
-
 import logging
 import os
 import pandas as pd
@@ -7,7 +6,7 @@ import utils
 import torch.nn as nn
 from torch import optim, tensor
 from datetime import datetime
-# from transformers import optimization
+from transformers import optimization
 # import numpy as np
 # from sklearn.metrics import confusion_matrix
 # from torch.cuda.amp import autocast, GradScaler
@@ -23,7 +22,6 @@ def train_test(
     model,
     train_loader,
     test_loader,
-    padding=None,
     optimizer=None,
     args=None,
 ):
@@ -43,7 +41,6 @@ def train_test(
     max_test_acc = []
     max_train_acc = []
     best_acc = 0.0
-    gfcc = None
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # torch.backends.cudnn.deterministic = True
     # torch.backends.cudnn.benchmark = False
@@ -51,25 +48,24 @@ def train_test(
     # for amp
 # ============lr scheduler================
     # scaler = GradScaler()
-    # warm_up_ratio = 0.1
-    # total_steps = len(train_loader) * args.num_epochs
+    warm_up_ratio = 0.1
+    total_steps = len(train_loader) * args.num_epochs
     if args.scheduler_flag == "cos":
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=10, eta_min=0)
-    elif args.scheduler_flag == "MultiStep":
-        scheduler = optim.lr_scheduler.MultiStepLR(
+    elif args.scheduler_flag == "cos_warmup":
+        scheduler = optimization.get_cosine_schedule_with_warmup(
             optimizer,
-            [40, 80],
-            gamma=0.1
+            num_warmup_steps=warm_up_ratio * total_steps,
+            num_training_steps=total_steps,
         )
+    elif args.scheduler_flag == "step":
+        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=25, gamma=0.5)
 # ==========loss function================
-    if args.loss_type == "BCE":
-        loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
-    elif args.loss_type == "CE":
-        normedWeights = [1, 2]
+    if  args.loss_type == "CE":
+        normedWeights = [1, 5]
         normedWeights = torch.FloatTensor(normedWeights).to(device)
-        loss_fn = nn.CrossEntropyLoss(
-            weight=normedWeights)  # 内部会自动加上Softmax层
+        loss_fn = nn.CrossEntropyLoss(weight=normedWeights)  # 内部会自动加上Softmax层
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
     # embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
@@ -85,9 +81,6 @@ def train_test(
         input_train = []
         target_train = []
         for data_t, label_t, index_t, feat, embeding in train_loader:
-            # data_t = butterworth_low_pass_filter(data_t)
-            # gfcc = Log_GF(data_t)
-            # gfcc = gfcc.to(device)
             # embedings = []
             # for ebed in embeding:
             #     ebd_List = []
@@ -102,34 +95,20 @@ def train_test(
             data_t, label_t,  index_t, feat = data_t.to(
                 device), label_t.to(device),  index_t.to(device), feat.to(device)  # , embedings.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t, feat)  # , feat
-            if args.loss_type == "BCE":
-                predict_t2 = torch.argmax(predict_t, dim=1)
-                loss = loss_fn(predict_t2.float(), label_t)
-                optimizer.zero_grad()
-                loss.requires_grad_(True)
-                loss.backward()
-                optimizer.step()
-                train_loss += loss.item()
-                # predict_t2 = predict_t2.squeeze(1)
-                correct_t += predict_t2.eq(label_t).sum().item()
-                train_len += len(label_t)
-            elif args.loss_type == "FocalLoss" or "CE":
-                loss = loss_fn(
-                    predict_t, label_t.long())
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-                train_loss += loss.item()
-                # get the index of the max log-probability
-                pred_t = predict_t.max(1, keepdim=True)[1]
-                # label_t = torch.int64(label_t)
-                pred_t = pred_t.squeeze(1)
-                input_train.extend(pred_t.cpu().tolist())
-                target_train.extend(label_t.cpu().tolist())
-                correct_t += pred_t.eq(label_t).sum().item()
-                train_len += len(pred_t)
-
+            predict_t = model(data_t, feat)  #
+            loss = loss_fn(
+                predict_t, label_t.long())
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item()
+            # get the index of the max log-probability
+            pred_t = predict_t.max(1, keepdim=True)[1]
+            pred_t = pred_t.squeeze(1)
+            input_train.extend(pred_t.cpu().tolist())
+            target_train.extend(label_t.cpu().tolist())
+            correct_t += pred_t.eq(label_t).sum().item()
+            train_len += len(pred_t)
         # ------------------调库计算指标--------------------------
         train_input, train_target = torch.as_tensor(
             input_train), torch.as_tensor(target_train)
@@ -145,9 +124,6 @@ def train_test(
         correct_v = 0
         with torch.no_grad():
             for data_v, label_v, index_v, feat_v, embeding_v in test_loader:
-                # data_v = butterworth_low_pass_filter(data_v)
-                # gfcc = Log_GF(data_v)
-                # gfcc = gfcc.to(device)
                 # embedings_v = []
                 # for ebed in embeding_v:
                 #     ebd_List = []
@@ -159,41 +135,27 @@ def train_test(
                 #         torch.tensor(ebed % 10)).detach().numpy())
                 #     embedings_v.append(ebd_List)
                 # embedings_v = torch.tensor(embedings_v)
-                #
                 data_v, label_v, index_v, feat_v = \
                     data_v.to(device), label_v.to(device), index_v.to(
-                        device), feat_v.to(device)  # , embedings_v.to(device)
+                        device), feat_v.to(device) 
                 optimizer.zero_grad()
-                # , feat_v, embedings_v
                 predict_v = model(data_v, feat_v)
-                # recall = recall_score(y_hat, y)
-                if args.loss_type == "BCE":
-                    predict_v2 = torch.argmax(predict_v, dim=1)
-                    loss_v = loss_fn(predict_v2.float(), label_t)
-                    test_loss += loss_v.item()
-                    # predict_v2 = predict_v2.squeeze(1)
-                    correct_v += predict_v2.eq(label_v).sum().item()
-                    pred.extend(predict_v2.cpu().tolist())
-                    label.extend(label_v.cpu().tolist())
-                elif args.loss_type == "FocalLoss" or "CE":
-                    loss_v = loss_fn(predict_v, label_v.long())
-                    # get the index of the max log-probability
-                    pred_v = predict_v.max(1, keepdim=True)[1]
-                    test_loss += loss_v.item()
-                    pred_v = pred_v.squeeze(1)
-                    correct_v += pred_v.eq(label_v).sum().item()
-                    idx_v = index_v[torch.nonzero(
-                        torch.eq(pred_v.ne(label_v), True))]
-                    # idx_v = idx_v.squeeze()
-                    result_list_present.extend(index_v[torch.nonzero(
-                        torch.eq(pred_v.eq(1), True))].cpu().tolist())
-                    # result_list_present = result_list_present.squeeze()
-                    try:
-                        error_index.extend(idx_v.cpu().tolist())
-                    except TypeError:
-                        print("TypeError: 'int' object is not iterable")
-                    pred.extend(pred_v.cpu().tolist())
-                    label.extend(label_v.cpu().tolist())
+                loss_v = loss_fn(predict_v, label_v.long())
+                # get the index of the max log-probability
+                pred_v = predict_v.max(1, keepdim=True)[1]
+                test_loss += loss_v.item()
+                pred_v = pred_v.squeeze(1)
+                correct_v += pred_v.eq(label_v).sum().item()
+                idx_v = index_v[torch.nonzero(
+                    torch.eq(pred_v.ne(label_v), True))]
+                result_list_present.extend(index_v[torch.nonzero(
+                    torch.eq(pred_v.eq(1), True))].cpu().tolist())
+                try:
+                    error_index.extend(idx_v.cpu().tolist())
+                except TypeError:
+                    print("TypeError: 'int' object is not iterable")
+                pred.extend(pred_v.cpu().tolist())
+                label.extend(label_v.cpu().tolist())
         if args.scheduler_flag is not None:
             scheduler.step()
         # ------------------调库计算指标--------------------------
@@ -263,9 +225,6 @@ def train_test(
         logging.info(f"segments_auroc:{test_auroc:.3f}")
         logging.info(f"segments_auprc:{test_auprc:.3f}")
         logging.info(f"segments_f1_:{test_f1:.3f}")
-        # logging.info(f"----------------------------")
-        # logging.info(f"location_acc:{location_acc:.2%}")
-        # logging.info(f"location_cm:{location_cm}")
         logging.info(f"----------------------------")
         logging.info(f"patient_acc:{test_patient_acc:.2%}")
         logging.info(f"patient_cm:{test_patient_cm.numpy()}")

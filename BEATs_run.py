@@ -5,14 +5,14 @@ import logging
 import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
-# from model.model_sknet import AudioClassifier
-# from BEATs import BEATs_Pre_Train_itere3
-# from model.CNN import AudioClassifier
-from model.senet.se_resnet import se_resnet18
-# from util.dataloaders import get_features
+from model.senet.se_resnet import se_resnet6
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
 from util.BEATs_def import (logger_init, DatasetClass)
+# from util.dataloaders import get_features
+# from model.model_sknet import AudioClassifier
+# from BEATs import BEATs_Pre_Train_itere3
+# from model.CNN import AudioClassifier
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -43,15 +43,15 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO改模型名字
-    parser.add_argument("--model", type=str, default="resnet +wide",
+    parser.add_argument("--model", type=str, default="logmel +feat-wide resnetv2 ",
                         help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['2', '1', '4', '3'])
-    parser.add_argument("--test_fold", type=list, default=['0'])
+                        default=['0', '1', '2', '4'])
+    parser.add_argument("--test_fold", type=list, default=['3'])
     parser.add_argument("--setType", type=str, default=r"\12_baseset_16k")
     parser.add_argument("--model_folder", type=str,
                         default=r"D:\Shilong\murmur\00_Code\LM\beats1\BEATs\MyModels")
@@ -87,17 +87,9 @@ if __name__ == '__main__':
     test_absent_size = np.sum(test_label == 0)
     trainset_size = train_label.shape[0]
     testset_size = test_label.shape[0]
-
     # ========================/ setup padding /========================== #
-    # padding_size = train_features.shape[1]  # 3500
-    # padding = torch.zeros(
-    #     args.batch_size, padding_size
-    # ).bool()  # we randomly mask 75% of the input patches,
-    # padding_mask = torch.Tensor(padding)
-
     # MyModel = AudioClassifier()
-    MyModel = se_resnet18()
-
+    MyModel = se_resnet6()
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
         for param in MyModel.BEATs.parameters():
@@ -107,7 +99,6 @@ if __name__ == '__main__':
     else:
         optimizer = torch.optim.AdamW(MyModel.parameters(),
                                       lr=args.learning_rate, betas=args.beta,)
-
     # ========================/ setup scaler /========================== #
     logger_init()
     logging.info(f"{args.model}  ")
@@ -115,7 +106,6 @@ if __name__ == '__main__':
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
     logging.info(f"# lr_scheduler = {args.scheduler_flag}")
-    # logging.info(f"# Padding_size = {padding_size}")
     logging.info(f"# Loss_fn = {args.loss_type}")
     logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
     logging.info(f"# Trainset_balance = {args.trainset_balence}")
@@ -136,7 +126,6 @@ if __name__ == '__main__':
         model=MyModel,
         train_loader=train_loader,
         test_loader=val_loader,
-        padding=None,
         optimizer=optimizer,
         args=args,
     )
