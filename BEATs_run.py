@@ -10,17 +10,17 @@ from torch.utils.data import DataLoader
 # from BEATs import BEATs_Pre_Train_itere3
 # from model.model_sknet import AudioClassifier
 # from model.CNN import AudioClassifier
-from model.senet.se_resnet import se_resnet18
+from model.senet.se_resnet import se_resnet6
 # from util.dataloaders import get_features
 # from model.resnet import ResidualNet
 # from model.networks.imagenet import create_net
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
 from util.BEATs_def import ( logger_init, DatasetClass)
-# from model.mobilenet import *
-# from model.resnet import *
+
 
 if __name__ == '__main__':
+    print(torch.cuda.is_available())
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--batch_size", type=int, default=512,
@@ -50,7 +50,7 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str,
-                        default="CNN base", help="the model used")
+                        default="CNN base", help="logmel +feat resnetv2")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -95,16 +95,8 @@ if __name__ == '__main__':
     testset_size = test_label.shape[0]
 
     # ========================/ setup padding /========================== #
-    # padding_size = train_features.shape[1]  # 3500
-    # padding = torch.zeros(
-    #     args.batch_size, padding_size
-    # ).bool()  # we randomly mask 75% of the input patches,
-    # padding_mask = torch.Tensor(padding)
     # MyModel =  AudioClassifier()
-    MyModel = se_resnet18()
-    # MyModel = create_net(args)
-    # MyModel = ResidualNet(None, 18, 2, "TripletAttention")
-    # model = triplet_attention_mobilenet_v2()
+    MyModel = se_resnet6()
 
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
@@ -123,7 +115,6 @@ if __name__ == '__main__':
     logging.info(f"# Num_epochs = {args.num_epochs}")
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
     logging.info(f"# lr_scheduler = {args.scheduler_flag}")
-    # logging.info(f"# Padding_size = {padding_size}")
     logging.info(f"# Loss_fn = {args.loss_type}")
     logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
     logging.info(f"# Trainset_balance = {args.trainset_balence}")
