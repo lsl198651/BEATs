@@ -47,7 +47,7 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str,
-                        default="CNN base", help="logmel +feat resnetv2")
+                        default="logmel +feat resnetv2", help="logmel +feat resnetv2")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
