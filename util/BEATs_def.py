@@ -430,7 +430,6 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
         else:
             id_idx_dic[id_pos].append(data_index)
     # id_idx_dic格式：12345_AV: [001,002,003,004,005]
-
     # 创建一个空字典，用来存储分类结果,formate: id_pos: result
     result_dic = {}
     # 这样就生成了每个听诊区对应的数据索引，然后就可以根据索引读取数据了
@@ -478,14 +477,6 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
     # -----------------/ patient classifier /----------------- #
     # -------------------------------------------------------- #
     # patient_result_dic用于保存每个患者每个听诊区的分类结果，formate: id: location1_result,location2_result
-    """# ------------------修复bug----------------
-    # # 以下五个列表的听诊区数据有重复
-    # patient_dic['50115'] = 'AV+MV'
-    # patient_dic['49748'] = 'TV+MV'
-    # patient_dic['50802'] = 'PV+MV'
-    # patient_dic['50782'] = 'PV+TV'
-    # patient_dic['49952'] = 'AV+PV+TV'
-    # ------------------修复bug---------------"""
     patient_result_dic = {}
     # patient_dic，formate: id:听诊区，123：AV+MV， 456：PV+TV
     for patient_id, locations in patient_dic.items():
@@ -494,7 +485,6 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
             # 这里除去了phc，因为phc不在result_dic中
             if location in ['AV', 'PV', 'TV', 'MV']:
                 id_location = patient_id+'_'+location
-
             if id_location in result_dic.keys():
                 if not patient_id in patient_result_dic.keys():
                     patient_result_dic[patient_id] = result_dic[id_location]

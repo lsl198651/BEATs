@@ -165,11 +165,6 @@ def train_test(
         test_acc = binary_accuracy(test_input, test_target)
         test_f1 = binary_f1_score(test_input, test_target)
         test_cm = binary_confusion_matrix(test_input, test_target)
-        # ---------------------------------------------------------
-        if best_acc < test_acc:
-            utils.save_checkpoint({"epoch": epochs + 1,
-                                   "model": model.state_dict(),
-                                   "optimizer": optimizer.state_dict()}, args.model, args.test_fold[0], "{}".format(args.model_folder))
         # --------------------------------------------------------
         pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
                                          str(epochs+1)+".csv", index=False, header=False)
@@ -190,8 +185,13 @@ def train_test(
         # 这两个算出来的都是present的
         test_PPV = binary_precision(test_patient_input, test_patient_target)
         test_TPR = binary_recall(test_patient_input, test_patient_target)
+        # 保存最好的模型
         if test_patient_acc > best_acc:
             best_acc = test_patient_acc
+            utils.save_checkpoint({"epoch": epochs + 1,
+                                   "model": model.state_dict(),
+                                   "optimizer": optimizer.state_dict()}, args.model, args.test_fold[0], "{}".format(args.model_folder))
+
         pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
                                               str(epochs+1)+".csv", index=False, header=False)
         for group in optimizer.param_groups:

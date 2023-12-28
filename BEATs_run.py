@@ -25,7 +25,7 @@ if __name__ == '__main__':
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
     parser.add_argument("--loss_type", type=str, default="FocalLoss",
-                        help="loss function", choices=["BCE", "CE", "FocalLoss"])
+                        help="loss function", choices=[ "CE", "FocalLoss"])
     parser.add_argument("--scheduler_flag", type=str, default=None,
                         help="the dataset used", choices=["cos", "MultiStepLR"],)
     parser.add_argument("--freqm_value",  type=int, default=0,
@@ -42,8 +42,8 @@ if __name__ == '__main__':
                         help="use grad_no_requiredn", choices=[True, False],)
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
-    # TODO改模型名字
-    parser.add_argument("--model", type=str, default="logmel +feat-wide resnetv2 ",
+    # TODO 改模型名字
+    parser.add_argument("--model", type=str, default="logmel +feat(linear)",
                         help="the model used")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     parser.add_argument("--test_fold", type=list, default=['3'])
     parser.add_argument("--setType", type=str, default=r"\12_baseset_16k")
     parser.add_argument("--model_folder", type=str,
-                        default=r"D:\Shilong\murmur\00_Code\LM\beats1\BEATs\MyModels")
+                        default=r"D:\Shilong\murmur\00_Code\LM\beats1\SE_ResNet6\MyModels")
     args = parser.parse_args()
     # 检测分折重复
     for val in args.test_fold:
@@ -73,12 +73,12 @@ if __name__ == '__main__':
                                   sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True, num_workers=4)
     else:
         train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                                  batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=4)
+                                  batch_size=args.batch_size, drop_last=True, shuffle=False, pin_memory=True, num_workers=4)
 
     val_loader = DataLoader(
         DatasetClass(wavlabel=test_label,
                      wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
-        batch_size=args.batch_size, shuffle=True, drop_last=True, pin_memory=True, num_workers=4)
+        batch_size=1, shuffle=False,pin_memory=True)
 
     # ========================/ dataset size /========================== #
     train_present_size = np.sum(train_label == 1)
