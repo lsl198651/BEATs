@@ -175,7 +175,7 @@ class My_ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 32, layers[0])
         self.layer2 = self._make_layer(block, 64, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(84, num_classes)
+        self.fc = nn.Linear(70, num_classes)
         self.wide=nn.Linear(6, 20)
 
         for m in self.modules():
@@ -266,7 +266,6 @@ class My_ResNet(nn.Module):
         x = self.layer2(x)
         x = self.avgpool(x)
         x = x.view(x.shape[0], -1)
-        x1=self.wide(x1)
         xall=torch.cat((x,x1),dim=1)
         x = self.fc(xall)
         
