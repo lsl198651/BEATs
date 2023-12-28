@@ -174,8 +174,6 @@ class My_ResNet(nn.Module):
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 32, layers[0])
         self.layer2 = self._make_layer(block, 64, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
-        # self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
-        # self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(70, num_classes)
 
@@ -243,7 +241,6 @@ class My_ResNet(nn.Module):
     ) -> torch.Tensor:
         fbanks = []
         for waveform in source:
-            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
             waveform = waveform.unsqueeze(0)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
@@ -266,15 +263,9 @@ class My_ResNet(nn.Module):
 
         x = self.layer1(x)
         x = self.layer2(x)
-        # x = self.layer3(x)
-        # x = self.layer4(x)
-
         x = self.avgpool(x)
         x = x.view(x.shape[0], -1)
-        # x1 = self.wide(x1)
-        # x2=x2.flatten(1)
         xall=torch.cat((x,x1),dim=1)
-        # x = torch.flatten(xall, 1)
         x = self.fc(xall)
-
+        
         return x

@@ -46,7 +46,7 @@ def train_test(
     # torch.backends.cudnn.deterministic = True
     # torch.backends.cudnn.benchmark = False
     model = model.to(device)  # 放到设备中
-    # for amp
+    # for Embedding
     # embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示
     # embedding2 = nn.Embedding(2, 10)  # 2个类别，每个类别用10维向量表示
     # embedding3 = nn.Embedding(2, 10)
@@ -66,9 +66,7 @@ def train_test(
     elif args.scheduler_flag == "step":
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=25, gamma=0.5)
 # ==========loss function================
-    if args.loss_type == "BCE":
-        loss_fn = nn.BCEWithLogitsLoss()  # BCELoss+sigmoid
-    elif args.loss_type == "CE":
+    if  args.loss_type == "CE":
         normedWeights = [1, 5]
         normedWeights = torch.FloatTensor(normedWeights).to(device)
         loss_fn = nn.CrossEntropyLoss(weight=normedWeights)  # 内部会自动加上Softmax层
@@ -86,9 +84,6 @@ def train_test(
         input_train = []
         target_train = []
         for data_t, label_t, index_t ,feat,embeding in train_loader:
-            # data_t = butterworth_low_pass_filter(data_t)
-            # gfcc = Log_GF(data_t)
-            # gfcc = gfcc.to(device)
             # embedings = []
             # for ebed in embeding:
             #     ebd_List = []
@@ -100,9 +95,8 @@ def train_test(
             #         torch.tensor(ebed % 10)).detach().numpy())
             #     embedings.append(ebd_List)
             # embedings = torch.tensor(embedings)
-
             data_t, label_t,  index_t,feat= data_t.to(
-                device), label_t.to(device), index_t.to(device),feat.to(device)#,feat.to(device)
+                device), label_t.to(device), index_t.to(device),feat.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
             predict_t = model(data_t,feat)
             loss = loss_fn(
@@ -113,7 +107,6 @@ def train_test(
             train_loss += loss.item()
             # get the index of the max log-probability
             pred_t = predict_t.max(1, keepdim=True)[1]
-            # label_t = torch.int64(label_t)
             pred_t = pred_t.squeeze(1)
             input_train.extend(pred_t.cpu().tolist())
             target_train.extend(label_t.cpu().tolist())
@@ -125,7 +118,6 @@ def train_test(
         train_input, train_target = torch.as_tensor(
             input_train), torch.as_tensor(target_train)
         train_acc = binary_accuracy(train_input, train_target)
-        # print(f"train_acc:{train_acc:.2%}")
         # ============ evalue ================
         model.eval()
         label = []
@@ -136,9 +128,6 @@ def train_test(
         correct_v = 0
         with torch.no_grad():
             for data_v, label_v, index_v,feat_v,embeding_v in test_loader:
-                # data_v = butterworth_low_pass_filter(data_v)
-                # gfcc = Log_GF(data_v)
-                # gfcc = gfcc.to(device)
                 # embedings_v = []
                 # for ebed in embeding_v:
                 #     ebd_List = []
@@ -150,17 +139,14 @@ def train_test(
                 #         torch.tensor(ebed % 10)).detach().numpy())
                 #     embedings_v.append(ebd_List)
                 # embedings_v = torch.tensor(embedings_v)
-
                 data_v, label_v,  index_v,feat_v= (
                     data_v.to(device),
                     label_v.to(device),                    
                     index_v.to(device),
-                    # feat_v.to(device),
                     feat_v.to(device),
                 )
                 optimizer.zero_grad()
                 predict_v = model(data_v,feat_v)
-                # recall = recall_score(y_hat, y)
                 loss_v = loss_fn(predict_v, label_v.long())
                 # get the index of the max log-probability
                 pred_v = predict_v.max(1, keepdim=True)[1]
@@ -169,7 +155,6 @@ def train_test(
                 correct_v += pred_v.eq(label_v).sum().item()
                 idx_v = index_v[torch.nonzero(
                     torch.eq(pred_v.ne(label_v), True))]
-                # idx_v = idx_v.squeeze()
                 result_list_present.extend(index_v[torch.nonzero(
                     torch.eq(pred_v.eq(1), True))].cpu().tolist())
                 # result_list_present = result_list_present.squeeze()
@@ -241,9 +226,6 @@ def train_test(
         logging.info(f"segments_auroc:{test_auroc:.3f}")
         logging.info(f"segments_auprc:{test_auprc:.3f}")
         logging.info(f"segments_f1_:{test_f1:.3f}")
-        # logging.info(f"----------------------------")
-        # logging.info(f"location_acc:{location_acc:.2%}")
-        # logging.info(f"location_cm:{location_cm}")
         logging.info(f"----------------------------")
         logging.info(f"patient_acc:{test_patient_acc:.2%}")
         logging.info(f"patient_cm:{test_patient_cm.numpy()}")

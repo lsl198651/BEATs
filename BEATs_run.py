@@ -1,23 +1,20 @@
 import argparse
-# from os import name
-# from sympy import true
 import torch
 import torch.profiler
 import logging
 import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
-# from BEATs import BEATs_Pre_Train_itere3
-# from model.model_sknet import AudioClassifier
-# from model.CNN import AudioClassifier
 from model.senet.se_resnet import se_resnet6
-# from util.dataloaders import get_features
-# from model.resnet import ResidualNet
-# from model.networks.imagenet import create_net
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
 from util.BEATs_def import ( logger_init, DatasetClass)
-
+# from util.dataloaders import get_features
+# from model.resnet import ResidualNet
+# from model.networks.imagenet import create_net
+# from BEATs import BEATs_Pre_Train_itere3
+# from model.model_sknet import AudioClassifier
+# from model.CNN import AudioClassifier
 
 if __name__ == '__main__':
     print(torch.cuda.is_available())
@@ -31,7 +28,7 @@ if __name__ == '__main__':
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
     parser.add_argument("--loss_type", type=str, default="FocalLoss",
-                        help="loss function", choices=["BCE", "CE", "FocalLoss"])
+                        help="loss function", choices=["CE", "FocalLoss"])
     parser.add_argument("--scheduler_flag", type=str, default=None,
                         help="the dataset used", choices=["cos", "cos_warmup"],)
     parser.add_argument("--freqm_value",  type=int, default=0,
@@ -135,7 +132,6 @@ if __name__ == '__main__':
         model=MyModel,
         train_loader=train_loader,
         test_loader=val_loader,
-        # padding=padding_mask,
         optimizer=optimizer,
         args=args,
     )
