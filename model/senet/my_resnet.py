@@ -243,8 +243,8 @@ class My_ResNet(nn.Module):
         fbanks = []
         for waveform in source:
             waveform = waveform.unsqueeze(0)
-            fbank = ta_kaldi.mfcc(
-                waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=64, sample_frequency=16000, frame_length=25, frame_shift=10)
             fbank_mean = fbank.mean()
             fbank_std = fbank.std()
             fbank = (fbank - fbank_mean) / fbank_std
