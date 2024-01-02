@@ -394,22 +394,22 @@ def get_features_mod(data):
 if __name__ == '__main__':
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
     # get dataset tag from table
-    # row_line = csv_reader_row(csv_path, 0)
-    # tag_list = []
+    row_line = csv_reader_row(csv_path, 0)
+    tag_list = []
 
-    # # get index for 'Patient ID' and 'Outcome'
-    # tag_list.append(row_line.index("Patient ID"))
-    # tag_list.append(row_line.index("Murmur"))
-    # tag_list.append(row_line.index("Murmur locations"))
-    # tag_list.append(row_line.index("Systolic murmur timing"))
-    # tag_list.append(row_line.index("Diastolic murmur timing"))
+    # get index for 'Patient ID' and 'Outcome'
+    tag_list.append(row_line.index("Patient ID"))
+    tag_list.append(row_line.index("Murmur"))
+    tag_list.append(row_line.index("Murmur locations"))
+    tag_list.append(row_line.index("Systolic murmur timing"))
+    tag_list.append(row_line.index("Diastolic murmur timing"))
 
-    # # # for tag_index in tag_list:
-    # id_data = csv_reader_cl(csv_path, tag_list[0])
-    # Murmur = csv_reader_cl(csv_path, tag_list[1])
-    # Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
-    # Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
-    # Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
+    # # for tag_index in tag_list:
+    id_data = csv_reader_cl(csv_path, tag_list[0])
+    Murmur = csv_reader_cl(csv_path, tag_list[1])
+    Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
+    Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
+    Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
     # TODO 修改此处的root_path
     root_path = r"D:\Shilong\murmur\01_dataset\12_baseset_16k"
     data_set(root_path)
