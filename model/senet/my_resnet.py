@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 import torchaudio.compliance.kaldi as ta_kaldi
+import torchaudio.transforms as T
 # from ..transforms._presets import ImageClassification
 # from ..utils import _log_api_usage_once
 # from ._api import register_model, Weights, WeightsEnum
@@ -243,12 +244,15 @@ class My_ResNet(nn.Module):
         fbanks = []
         for waveform in source:
             waveform = waveform.unsqueeze(0)
-            fbank = ta_kaldi.fbank(
-                waveform, num_mel_bins=64, sample_frequency=16000, frame_length=25, frame_shift=10)
-            fbank_mean = fbank.mean()
-            fbank_std = fbank.std()
-            fbank = (fbank - fbank_mean) / fbank_std
-            fbanks.append(fbank)
+            spectrogram =T.Spectrogram(n_fft=128, win_length=64, hop_length=160, power=2.0, normalized=False)
+            spectrogram=spectrogram.to(device='cuda')
+            spec = spectrogram(waveform)
+            # fbank = ta_kaldi.fbank(
+            #     waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
+            # fbank_mean = fbank.mean()
+            # fbank_std = fbank.std()
+            # fbank = (fbank - fbank_mean) / fbank_std
+            fbanks.append(spec[0])
         fbank = torch.stack(fbanks, dim=0)
         return fbank
 

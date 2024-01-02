@@ -4,7 +4,7 @@ import pandas as pd
 import torch
 import utils
 import torch.nn as nn
-from torch import optim, tensor
+from torch import optim
 from datetime import datetime
 from transformers import optimization
 # import numpy as np
@@ -166,8 +166,8 @@ def train_test(
         test_f1 = binary_f1_score(test_input, test_target)
         test_cm = binary_confusion_matrix(test_input, test_target)
         # --------------------------------------------------------
-        pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
-                                         str(epochs+1)+".csv", index=False, header=False)
+        # pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
+        #                                  str(epochs+1)+".csv", index=False, header=False)
         location_acc, location_cm, patient_output, patient_target, patient_error_id = segment_classifier(
             result_list_present, args.test_fold, args.setType)  #
         test_patient_input, test_patient_target = torch.as_tensor(
@@ -188,12 +188,12 @@ def train_test(
         # 保存最好的模型
         if test_patient_acc > best_acc:
             best_acc = test_patient_acc
-            utils.save_checkpoint({"epoch": epochs + 1,
-                                   "model": model.state_dict(),
-                                   "optimizer": optimizer.state_dict()}, args.model, args.test_fold[0], "{}".format(args.model_folder))
+            # utils.save_checkpoint({"epoch": epochs + 1,
+            #                        "model": model.state_dict(),
+            #                        "optimizer": optimizer.state_dict()}, args.model, args.test_fold[0], "{}".format(args.model_folder))
 
-        pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
-                                              str(epochs+1)+".csv", index=False, header=False)
+        # pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
+        #                                       str(epochs+1)+".csv", index=False, header=False)
         for group in optimizer.param_groups:
             lr_now = group["lr"]
         lr.append(lr_now)
