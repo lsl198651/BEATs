@@ -243,7 +243,7 @@ class My_ResNet(nn.Module):
         fbanks = []
         for waveform in source:
             waveform = waveform.unsqueeze(0)
-            fbank = ta_kaldi.fbank(waveform, num_mel_bins=128, sample_frequency=4000, frame_length=25, frame_shift=10)
+            fbank = ta_kaldi.fbank(waveform, num_mel_bins=128, sample_frequency=16000, frame_length=25, frame_shift=10)
             fbank_mean = fbank.mean()
             fbank_std = fbank.std()
             fbank = (fbank - fbank_mean) / fbank_std
@@ -261,6 +261,7 @@ class My_ResNet(nn.Module):
         x = self.bn1(x)        
         x = self.maxpool(x)
         x = self.dp1(x)
+
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.avgpool(x)

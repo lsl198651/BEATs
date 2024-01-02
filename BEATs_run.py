@@ -51,7 +51,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_fold", type=list,
                         default=['0', '1', '3', '4'])
     parser.add_argument("--test_fold", type=list, default=['2'])
-    parser.add_argument("--setType", type=str, default=r"\12_baseset_4k")
+    parser.add_argument("--setType", type=str, default=r"\12_baseset_16k")
     parser.add_argument("--model_folder", type=str,
                         default=r"D:\Shilong\murmur\00_Code\LM\beats1\SE_ResNet6\MyModels")
     args = parser.parse_args()
