@@ -8,7 +8,7 @@ from torch import optim
 from datetime import datetime
 from transformers import optimization
 # import numpy as np
-# from sklearn.metrics import confusion_matrix
+import sklearn.metrics
 # from torch.cuda.amp import autocast, GradScaler
 # from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
 from torch.utils.tensorboard import SummaryWriter
@@ -60,12 +60,14 @@ def train_test(
             num_training_steps=total_steps,
         )
     elif args.scheduler_flag == "step":
-        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=25, gamma=0.5)
+        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=40, gamma=0.1)
+    elif args.scheduler_flag == "MultiStepLR":
+        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, [40,80], gamma=0.1)
 # ==========loss function================
     if  args.loss_type == "CE":
         normedWeights = [1, 5]
         normedWeights = torch.FloatTensor(normedWeights).to(device)
-        loss_fn = nn.CrossEntropyLoss(weight=normedWeights)  # 内部会自动加上Softmax层
+        loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层,weight=normedWeights
     elif args.loss_type == "FocalLoss":
         loss_fn = FocalLoss()
     # embedding1 = nn.Embedding(5, 10)  # 5个类别，每个类别用10维向量表示

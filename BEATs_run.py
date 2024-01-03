@@ -24,10 +24,10 @@ if __name__ == '__main__':
     parser.add_argument("--num_epochs", type=int,
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
-    parser.add_argument("--loss_type", type=str, default="FocalLoss",
+    parser.add_argument("--loss_type", type=str, default="CE",
                         help="loss function", choices=[ "CE", "FocalLoss"])
-    parser.add_argument("--scheduler_flag", type=str, default=None,
-                        help="the dataset used", choices=["cos", "MultiStepLR"],)
+    parser.add_argument("--scheduler_flag", type=str, default="step",
+                        help="the dataset used", choices=["cos", "MultiStepLR","step"],)
     parser.add_argument("--freqm_value",  type=int, default=0,
                         help="frequency mask max length")
     parser.add_argument("--timem_value", type=int, default=0,
@@ -36,14 +36,14 @@ if __name__ == '__main__':
                         help="number of classes", choices=[True, False])
     parser.add_argument("--trainset_balence", type=bool, default=False,
                         help="balance absent and present in testset", choices=[True, False],)
-    parser.add_argument("--Data_Augmentation", type=bool, default=False,
+    parser.add_argument("--Data_Augmentation", type=bool, default=True,
                         help="Add data augmentation", choices=[True, False],)
     parser.add_argument("--train_total", type=bool, default=True,
                         help="use grad_no_requiredn", choices=[True, False],)
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
-    parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try new arch")
+    parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try  kernel_size=3, stride=1, padding=1 and new arch in 4k sr")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_fold", type=list,
                         default=['0', '1', '3', '4'])
     parser.add_argument("--test_fold", type=list, default=['2'])
-    parser.add_argument("--setType", type=str, default=r"\12_baseset_16k")
+    parser.add_argument("--setType", type=str, default=r"\12_baseset_4k")
     parser.add_argument("--model_folder", type=str,
                         default=r"D:\Shilong\murmur\00_Code\LM\beats1\SE_ResNet6\MyModels")
     args = parser.parse_args()
@@ -83,11 +83,9 @@ if __name__ == '__main__':
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
         for param in MyModel.BEATs.parameters():
             param.requires_grad = False
-        optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
-                                      lr=args.learning_rate, betas=args.beta,)
+        optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),lr=args.learning_rate, betas=args.beta,)
     else:
-        optimizer = torch.optim.AdamW(MyModel.parameters(),
-                                      lr=args.learning_rate, betas=args.beta,)
+        optimizer = torch.optim.AdamW(MyModel.parameters(),lr=args.learning_rate, betas=args.beta,)
     # ========================/ setup scaler /========================== #
     logger_init()
     logging.info(f"{args.model}  ")
@@ -110,7 +108,6 @@ if __name__ == '__main__':
     logging.info("# Optimizer = " + str(optimizer))
     logging.info(
         "# ")
-
     train_test(
         model=MyModel,
         train_loader=train_loader,

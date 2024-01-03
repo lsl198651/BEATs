@@ -197,8 +197,8 @@ def get_wav_data(dir_path, num=0):
                 print("reading: " + subfile)
                 y, sr = librosa.load(wav_path, sr=4000)
                 # TODO采样率:4k
-                # y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                y_16k_norm = wav_normalize(y)  # 归一化
+                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                y_16k_norm = wav_normalize(y_16k)  # 归一化
                 print("num is "+str(num), "y_16k size: "+str(y_16k_norm.size))
                 if y_16k_norm.shape[0] < data_length:
                     y_16k_norm = np.pad(
@@ -308,11 +308,11 @@ class DatasetClass(Dataset):
     def __init__(self, wavlabel, wavdata, wavidx, wavebd):
         # 直接传递data和label
         # self.len = wavlen
-        embeds = []
-        for embed in wavebd:
-            embed = int(embed.split('.')[0])
-            embeds.append(embed)
-        self.wavebd = embeds
+        # embeds = []
+        # for embed in wavebd:
+        #     embed = int(embed.split('.')[0])
+        #     embeds.append(embed)
+        # self.wavebd = embeds
         self.data = torch.from_numpy(wavdata)
         self.label = torch.from_numpy(wavlabel)
         self.id = torch.from_numpy(wavidx)
@@ -322,9 +322,10 @@ class DatasetClass(Dataset):
         dataitem = self.data[index]
         labelitem = self.label[index]
         iditem = self.id[index]
-        embeding = self.wavebd[index]
-        wide_feat = hand_fea((dataitem, 16000))
-        return dataitem.float(), labelitem, iditem, wide_feat, embeding
+        # embeding = self.wavebd[index]
+        embeding=1# fake
+        wide_feat = hand_fea((dataitem, 4000))
+        return dataitem.float(), labelitem, iditem, wide_feat,embeding
 
     def __len__(self):
         # 返回文件数据的数目

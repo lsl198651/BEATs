@@ -8,7 +8,7 @@ import os
 def get_features(train_fold: list, test_fold: list, set_type: str):
     # npy_path_padded = r"D:\Shilong\murmur\01_dataset\05_5fold\npyFile_padded\npy_files01"
     root_path = r"D:\Shilong\murmur\01_dataset"+set_type
-    npy_path_padded = root_path+r"\npyFile_padded\npy_files01"
+    npy_path_padded = root_path+r"\npyFile_padded\npy_files01_4k"
     train_feature_dic = {}
     train_labels_dic = {}
     train_index_dic = {}
@@ -20,7 +20,8 @@ def get_features(train_fold: list, test_fold: list, set_type: str):
         train_index_dic[k] = {}
         train_ebd_dic[k] = {}
     # data_Auge(src_fold_root_path)
-        train_folders = ['absent', 'present']
+        train_folders = ['absent', 'present', 'reverse0.8', 'reverse0.9', 'reverse1.0', 'reverse1.1',
+                         'reverse1.2', 'time_stretch0.8', 'time_stretch0.9', 'time_stretch1.1', 'time_stretch1.2']
         for folder in train_folders:
             train_feature_dic[k][folder] = np.load(npy_path_padded +
                                                    f"\\{folder}_features_norm01_fold{k}.npy", allow_pickle=True)
@@ -40,8 +41,9 @@ def get_features(train_fold: list, test_fold: list, set_type: str):
         test_labels_dic[v] = {}
         test_index_dic[v] = {}
         test_ebd_dic[v] = {}
-        src_fold_root_path = root_path+r"\fold_set_"+k
-        test_folders = ['absent', 'present']
+        src_fold_root_path = root_path+r"\fold_set_"+v
+        test_folders = ['absent', 'present', 'reverse0.8', 'reverse0.9', 'reverse1.0', 'reverse1.1',
+                         'reverse1.2', 'time_stretch0.8', 'time_stretch0.9', 'time_stretch1.1', 'time_stretch1.2']
         for folder in test_folders:
             test_feature_dic[v][folder] = np.load(npy_path_padded +
                                                   f"\\{folder}_features_norm01_fold{v}.npy", allow_pickle=True)
@@ -204,6 +206,55 @@ def fold5_dataloader(train_folder, test_folder, Data_Augmentation, set_type):
                 train_index_dic[train_folder[3]][data_class[10]]
             )
         )
+        train_ebd = np.hstack(
+            (
+                train_ebd_dic[train_folder[0]][data_class[0]],
+                train_ebd_dic[train_folder[0]][data_class[1]],
+                train_ebd_dic[train_folder[0]][data_class[2]],
+                train_ebd_dic[train_folder[0]][data_class[3]],
+                train_ebd_dic[train_folder[0]][data_class[4]],
+                train_ebd_dic[train_folder[0]][data_class[5]],
+                train_ebd_dic[train_folder[0]][data_class[6]],
+                train_ebd_dic[train_folder[0]][data_class[7]],
+                train_ebd_dic[train_folder[0]][data_class[8]],
+                train_ebd_dic[train_folder[0]][data_class[9]],
+                train_ebd_dic[train_folder[0]][data_class[10]],
+                train_ebd_dic[train_folder[1]][data_class[0]],
+                train_ebd_dic[train_folder[1]][data_class[1]],
+                train_ebd_dic[train_folder[1]][data_class[2]],
+                train_ebd_dic[train_folder[1]][data_class[3]],
+                train_ebd_dic[train_folder[1]][data_class[4]],
+                train_ebd_dic[train_folder[1]][data_class[5]],
+                train_ebd_dic[train_folder[1]][data_class[6]],
+                train_ebd_dic[train_folder[1]][data_class[7]],
+                train_ebd_dic[train_folder[1]][data_class[8]],
+                train_ebd_dic[train_folder[1]][data_class[9]],
+                train_ebd_dic[train_folder[1]][data_class[10]],
+                train_ebd_dic[train_folder[2]][data_class[0]],
+                train_ebd_dic[train_folder[2]][data_class[1]],
+                train_ebd_dic[train_folder[2]][data_class[2]],
+                train_ebd_dic[train_folder[2]][data_class[3]],
+                train_ebd_dic[train_folder[2]][data_class[4]],
+                train_ebd_dic[train_folder[2]][data_class[5]],
+                train_ebd_dic[train_folder[2]][data_class[6]],
+                train_ebd_dic[train_folder[2]][data_class[7]],
+                train_ebd_dic[train_folder[2]][data_class[8]],
+                train_ebd_dic[train_folder[2]][data_class[9]],
+                train_ebd_dic[train_folder[2]][data_class[10]],
+                train_ebd_dic[train_folder[3]][data_class[0]],
+                train_ebd_dic[train_folder[3]][data_class[1]],
+                train_ebd_dic[train_folder[3]][data_class[2]],
+                train_ebd_dic[train_folder[3]][data_class[3]],
+                train_ebd_dic[train_folder[3]][data_class[4]],
+                train_ebd_dic[train_folder[3]][data_class[5]],
+                train_ebd_dic[train_folder[3]][data_class[6]],
+                train_ebd_dic[train_folder[3]][data_class[7]],
+                train_ebd_dic[train_folder[3]][data_class[8]],
+                train_ebd_dic[train_folder[3]][data_class[9]],
+                train_ebd_dic[train_folder[3]][data_class[10]]
+            )
+        )
+
     else:
         train_features = np.vstack(
             (
