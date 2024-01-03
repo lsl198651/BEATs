@@ -17,7 +17,6 @@ from util.BEATs_def import ( logger_init, DatasetClass)
 # from model.CNN import AudioClassifier
 
 if __name__ == '__main__':
-    print(torch.cuda.is_available())
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--batch_size", type=int, default=512,
@@ -46,8 +45,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
-    parser.add_argument("--model", type=str,
-                        default="logmel +feat resnetv2", help="logmel +feat resnetv2")
+    parser.add_argument("--model", type=str,default="logmel +feat resnetv2 + 16,32 channel +group norm + reduction==4")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -67,22 +65,18 @@ if __name__ == '__main__':
     train_features, train_label, train_index, train_ebd, test_features,  test_label, test_index, test_ebd = fold5_dataloader(
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
     # ========================/ setup loader /========================== #
-    if args.samplerWeight == True:
-        weights = [3 if label == 1 else 1 for label in train_label]
-        Data_sampler = WeightedRandomSampler(
-            weights, num_samples=len(weights), replacement=True
-        )
-        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                                  sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True, num_workers=4)
-    else:
-        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                                  batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=4)
-
-    val_loader = DataLoader(
-        DatasetClass(wavlabel=test_label,
-                     wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
-        batch_size=args.batch_size, shuffle=True, drop_last=True, pin_memory=True, num_workers=4)
-
+    # if args.samplerWeight == True:
+    #     weights = [3 if label == 1 else 1 for label in train_label]
+    #     Data_sampler = WeightedRandomSampler(
+    #         weights, num_samples=len(weights), replacement=True
+    #     )
+    #     train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
+    #                               sampler=Data_sampler, batch_size=args.args.batch_size, drop_last=True, num_workers=2)
+    # else:
+    train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
+                                batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=3)
+    val_loader = DataLoader(DatasetClass(wavlabel=test_label,wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
+                                batch_size=1, shuffle=False,  pin_memory=True, num_workers=3)
     # ========================/ dataset size /========================== #
     train_present_size = np.sum(train_label == 1)
     train_absent_size = np.sum(train_label == 0)
@@ -90,11 +84,9 @@ if __name__ == '__main__':
     test_absent_size = np.sum(test_label == 0)
     trainset_size = train_label.shape[0]
     testset_size = test_label.shape[0]
-
     # ========================/ setup padding /========================== #
     # MyModel =  AudioClassifier()
     MyModel = se_resnet6()
-
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
         for param in MyModel.BEATs.parameters():
@@ -102,8 +94,7 @@ if __name__ == '__main__':
         optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),
                                       lr=args.learning_rate, betas=args.beta)
     else:
-        optimizer = torch.optim.AdamW(MyModel.parameters(),
-                                      lr=args.learning_rate, betas=args.beta)
+        optimizer = torch.optim.AdamW(MyModel.parameters(),lr=args.learning_rate, betas=args.beta)
 
     # ========================/ setup scaler /========================== #
     logger_init()
@@ -113,10 +104,10 @@ if __name__ == '__main__':
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
     logging.info(f"# lr_scheduler = {args.scheduler_flag}")
     logging.info(f"# Loss_fn = {args.loss_type}")
-    logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
-    logging.info(f"# Trainset_balance = {args.trainset_balence}")
-    logging.info(f"# train_total = {args.train_total}")
-    logging.info(f"# Masking = {args.mask}")
+    # logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
+    # logging.info(f"# Trainset_balance = {args.trainset_balence}")
+    # logging.info(f"# train_total = {args.train_total}")
+    # logging.info(f"# Masking = {args.mask}")
     logging.info(f"# SetType = {args.setType}")
     logging.info(f"# Train_a/p = {train_absent_size}/{train_present_size}")
     logging.info(f"# Test_a/p = {test_absent_size}/{test_present_size}")

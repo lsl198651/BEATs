@@ -3,7 +3,7 @@ from typing import  Callable, List, Optional, Type, Union
 
 import torch
 import torch.nn as nn
-from torch import Tensor
+from torch import Tensor, softmax
 import torchaudio.compliance.kaldi as ta_kaldi
 # from ..transforms._presets import ImageClassification
 # from ..utils import _log_api_usage_once
@@ -142,7 +142,7 @@ class My_ResNet(nn.Module):
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
         layers: List[int],
-        num_classes: int = 1000,
+        num_classes: int = 2,
         zero_init_residual: bool = False,
         groups: int = 1,
         width_per_group: int = 64,
@@ -155,7 +155,7 @@ class My_ResNet(nn.Module):
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
 
-        self.inplanes = 32
+        self.inplanes = 16
         self.dilation = 1
         if replace_stride_with_dilation is None:
             # each element in the tuple indicates if we should replace
@@ -172,14 +172,15 @@ class My_ResNet(nn.Module):
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(block, 32, layers[0])
-        self.layer2 = self._make_layer(block, 64, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
+        self.layer1 = self._make_layer(block, 16, layers[0])
+        self.layer2 = self._make_layer(block, 32, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(70, num_classes)
+        self.fc = nn.Linear(38, num_classes)
+        self.wide=nn.Linear(6, 20)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
+                nn.init.kaiming_normal_(m.weight,a=0.1)
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
@@ -257,15 +258,18 @@ class My_ResNet(nn.Module):
         x=self.preprocess(x)
         x=x.unsqueeze(1)
         x = self.conv1(x)
-        x = self.bn1(x)
         x = self.relu(x)
+        x = self.bn1(x)
+        
         x = self.maxpool(x)
 
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.avgpool(x)
         x = x.view(x.shape[0], -1)
+        # x1 = self.wide(x1)
         xall=torch.cat((x,x1),dim=1)
         x = self.fc(xall)
+        x = torch.softmax(x,dim=1)
         
         return x

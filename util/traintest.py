@@ -172,8 +172,8 @@ def train_test(
         test_f1 = binary_f1_score(test_input, test_target)
         test_cm = binary_confusion_matrix(test_input, test_target)
         # ---------------------------------------------------------
-        pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
-                                         str(epochs+1)+".csv", index=False, header=False)
+        # pd.DataFrame(error_index).to_csv(error_index_path+"/epoch" +
+        #                                  str(epochs+1)+".csv", index=False, header=False)
         location_acc, location_cm, patient_output, patient_target, patient_error_id = segment_classifier(
             result_list_present, args.test_fold, args.setType)  #
         test_patient_input, test_patient_target = torch.as_tensor(
@@ -193,8 +193,8 @@ def train_test(
         test_TPR = binary_recall(test_patient_input, test_patient_target)
         if test_patient_acc > best_acc:
             best_acc = test_patient_acc
-        pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
-                                              str(epochs+1)+".csv", index=False, header=False)
+        # pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
+        #                                       str(epochs+1)+".csv", index=False, header=False)
         for group in optimizer.param_groups:
             lr_now = group["lr"]
         lr.append(lr_now)

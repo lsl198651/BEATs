@@ -2,7 +2,7 @@ import torch.nn as nn
 from model.senet.my_resnet import My_ResNet
 
 class SELayer(nn.Module):
-    def __init__(self, channel, reduction=16):
+    def __init__(self, channel, reduction):
         super(SELayer, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
@@ -26,25 +26,27 @@ class SEBasicBlock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                 base_width=64, dilation=1, norm_layer=None,
-                 *, reduction=16):
+                 base_width=64, dilation=1, norm_layer=None,*, reduction=4):
         super(SEBasicBlock, self).__init__()
-        self.conv1 = conv3x3(inplanes, planes, stride)
-        self.bn1 = nn.BatchNorm2d(32)
+        self.conv1 = conv3x3(inplanes,  planes, stride)
+        self.bn1 = nn.BatchNorm2d(inplanes)
+        self.gn1=nn.GroupNorm(4,inplanes)
         self.relu = nn.ReLU(inplace=True)
+        # self.Lrelu=nn.LeakyReLU(0.1)
         self.conv2 = conv3x3(planes, planes, 1)
         self.bn2 = nn.BatchNorm2d(planes)
+        self.gn2=nn.GroupNorm(4,planes)
         self.se = SELayer(planes, reduction)
         self.downsample = downsample
         self.stride = stride
 
     def forward(self, x):
         residual = x
-        out = self.bn1(x)
+        out = self.gn1(x)
         out = self.relu(out)
         out = self.conv1(out)
         
-        out = self.bn2(out)
+        out = self.gn2(out)
         out = self.relu(out)
         out = self.conv2(out) 
         out = self.se(out)
