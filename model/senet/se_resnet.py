@@ -2,7 +2,7 @@ import torch.nn as nn
 from model.senet.my_resnet import My_ResNet
 
 class SELayer(nn.Module):
-    def __init__(self, channel, reduction=8):
+    def __init__(self, channel, reduction):
         super(SELayer, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
@@ -26,8 +26,7 @@ class SEBasicBlock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                 base_width=64, dilation=1, norm_layer=None,
-                 *, reduction=16):
+                base_width=64, dilation=1, norm_layer=None,*, reduction=8):
         super(SEBasicBlock, self).__init__()
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(inplanes)

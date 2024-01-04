@@ -153,7 +153,7 @@ class My_ResNet(nn.Module):
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
 
-        self.inplanes = 16
+        self.inplanes = 32
         self.dilation = 1
         if replace_stride_with_dilation is None:
             # each element in the tuple indicates if we should replace
@@ -166,16 +166,17 @@ class My_ResNet(nn.Module):
             )
         self.groups = groups
         self.base_width = width_per_group
-        self.conv1 = nn.Conv2d(1, self.inplanes, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv1 = nn.Conv2d(1, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        self.mp1 = nn.MaxPool2d(2)
         self.dp1 = nn.Dropout(p=0.15)
-        self.layer1 = self._make_layer(block, 20, layers[0])
-        self.layer2 = self._make_layer(block, 40, layers[1], stride=1, dilate=replace_stride_with_dilation[0])
+        self.layer1 = self._make_layer(block, 32, layers[0])
+        self.layer2 = self._make_layer(block, 64, layers[1], stride=1, dilate=replace_stride_with_dilation[0])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(46, num_classes)
         self.wide=nn.Linear(6, 20)
+        self.fc = nn.Linear(70, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -259,7 +260,8 @@ class My_ResNet(nn.Module):
         x = self.conv1(x)
         x = self.relu(x)
         x = self.bn1(x)        
-        x = self.maxpool(x)
+        # x = self.maxpool(x)
+        x = self.mp1(x) 
         x = self.dp1(x)
 
         x = self.layer1(x)
