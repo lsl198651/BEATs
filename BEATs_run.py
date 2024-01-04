@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=512,
                         help="args.batch_size for training")
     parser.add_argument("--learning_rate", type=float,
-                        default=0.0001, help="learning_rate for training")
+                        default=0.001, help="learning_rate for training")
     parser.add_argument("--num_epochs", type=int,
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
@@ -40,11 +40,11 @@ if __name__ == '__main__':
                         help="Add data augmentation", choices=[True, False],)
     parser.add_argument("--train_total", type=bool, default=True,
                         help="use grad_no_requiredn", choices=[True, False],)
-    parser.add_argument("--samplerWeight", type=bool, default=False,
+    parser.add_argument("--samplerWeight", type=bool, default=True,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try  kernel_size=3, stride=1, \
-                        padding=1 and new arch new mp1 in 4k sr 32 64 channel")
+                        padding=1 and new arch new mp1 in 4k sr 32 64 channel use samplerWeight lr=0.001")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
@@ -64,8 +64,14 @@ if __name__ == '__main__':
     train_features, train_label, train_index, train_ebd, test_features,  test_label, test_index, test_ebd = fold5_dataloader(
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
     # ========================/ setup loader /========================== #
-    train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                    batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=3)
+    if args.samplerWeight == True:
+        weights = [5 if label == 1 else 1 for label in train_label]
+        Data_sampler = WeightedRandomSampler(weights, num_samples=len(weights), replacement=True)
+        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
+                                sampler=Data_sampler, batch_size=args.batch_size, drop_last=True,  pin_memory=True, num_workers=3)
+    else:
+        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
+                        batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=3)
 
     val_loader = DataLoader(DatasetClass(wavlabel=test_label,wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
                     batch_size=1, shuffle=False,pin_memory=True, num_workers=3)

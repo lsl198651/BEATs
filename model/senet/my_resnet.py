@@ -257,9 +257,9 @@ class My_ResNet(nn.Module):
         # See note [TorchScript super()]
         x=self.preprocess(x)
         x=x.unsqueeze(1)
-        x = self.conv1(x)
-        x = self.relu(x)
-        x = self.bn1(x)        
+        x = self.conv1(x)        
+        x = self.bn1(x)
+        x = self.relu(x)   
         # x = self.maxpool(x)
         x = self.mp1(x) 
         x = self.dp1(x)
