@@ -43,8 +43,8 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=True,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
-    parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try  kernel_size=3, stride=1, \
-                        padding=1 and new arch new mp1 in 4k sr 32 64 channel use samplerWeight lr=0.001")
+    parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try \
+                        4k sr 32 64 channel use samplerWeight[1,7] lr=0.001,reduction=8")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
     # ========================/ setup loader /========================== #
     if args.samplerWeight == True:
-        weights = [5 if label == 1 else 1 for label in train_label]
+        weights = [7 if label == 1 else 1 for label in train_label]
         Data_sampler = WeightedRandomSampler(weights, num_samples=len(weights), replacement=True)
         train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
                                 sampler=Data_sampler, batch_size=args.batch_size, drop_last=True,  pin_memory=True, num_workers=3)
