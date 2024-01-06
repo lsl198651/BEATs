@@ -329,8 +329,8 @@ def fold_devide(data, flod_num=5):
 def data_set(root_path):
     """数据增强，包括时间拉伸和反转"""
     # root_path = r"D:\Shilong\murmur\01_dataset\06_new5fold"
-    npy_path_padded = root_path+r"\npyFile_padded\npy_files01_nonorm1250"
-    index_path = root_path + r"\npyFile_padded\index_files01_nonorm1250"
+    npy_path_padded = root_path+r"\npyFile_padded\npy_files01_norm1250"
+    index_path = root_path + r"\npyFile_padded\index_files01_norm1250"
     if not os.path.exists(npy_path_padded):
         os.makedirs(npy_path_padded)
     if not os.path.exists(index_path):
@@ -394,7 +394,7 @@ def get_features_mod(data):
 # ==================================================================== #
 if __name__ == '__main__':
     # csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
-    csv_path = r"D:\Shilong\murmur\Dataset\PCGdataset\validation_data.csv"
+    csv_path = r"D:\Shilong\murmur\Dataset\PCGdataset\training_data.csv"
 
     # # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
@@ -414,9 +414,9 @@ if __name__ == '__main__':
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
     # TODO 修改此处的root_path
-    # root_path = r"D:\Shilong\murmur\01_dataset\12_baseset_4k"
-    root_path = r"D:\Shilong\murmur\01_dataset\validset_4k"
-    # data_set(root_path)
+    root_path = r"D:\Shilong\murmur\01_dataset\12_baseset_4k"
+    # root_path = r"D:\Shilong\murmur\01_dataset\trainset_4k"
+    data_set(root_path)
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file
@@ -479,7 +479,7 @@ if __name__ == '__main__':
 
     # TODO 修改此处的src_path
     # src_path = r"D:\Shilong\murmur\dataset_all\training_data"
-    src_path = r"D:\Shilong\murmur\Dataset\PCGdataset\validation_data"
+    src_path = r"D:\Shilong\murmur\Dataset\PCGdataset\training_data"
     folder_path = root_path+"\\"
     # 将wav文件和tsv文件copy到目标文件夹
     copy_wav_file(src_path, folder_path, absent_patient_id, "Absent", positoin)
@@ -533,8 +533,8 @@ if __name__ == '__main__':
     # present_test_id = list(set(present_patient_id)-set(present_train_id))
 
     # 将训练集和测试集文件分别copy到train和test文件夹
-    copy_states_data(absent_patient_id, root_path, "\\train", "\\Absent\\")
-    copy_states_data(present_patient_id, root_path,  "\\train", "\\Present\\")
+    # copy_states_data(absent_patient_id, root_path, "\\train", "\\Absent\\")
+    # copy_states_data(present_patient_id, root_path,  "\\train", "\\Present\\")
     # copy_states_data(absent_test_id,root_path,  "\\test", "\\Absent\\")
     # copy_states_data( present_test_id,root_path, "\\test", "\\Present\\")
 

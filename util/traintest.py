@@ -60,11 +60,13 @@ def train_test(
             num_training_steps=total_steps,
         )
     elif args.scheduler_flag == "step":
-        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=45, gamma=0.1)
+        scheduler = optim.lr_scheduler.StepLR(
+            optimizer, step_size=45, gamma=0.1)
     elif args.scheduler_flag == "MultiStepLR":
-        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, [40,80], gamma=0.1)
+        scheduler = optim.lr_scheduler.MultiStepLR(
+            optimizer, [40, 80], gamma=0.1)
 # ==========loss function================
-    if  args.loss_type == "CE":
+    if args.loss_type == "CE":
         normedWeights = [1, 5]
         normedWeights = torch.FloatTensor(normedWeights).to(device)
         loss_fn = nn.CrossEntropyLoss()  # 内部会自动加上Softmax层,weight=normedWeights
@@ -139,7 +141,7 @@ def train_test(
                 # embedings_v = torch.tensor(embedings_v)
                 data_v, label_v, index_v, feat_v = \
                     data_v.to(device), label_v.to(device), index_v.to(
-                        device), feat_v.to(device) 
+                        device), feat_v.to(device)
                 optimizer.zero_grad()
                 predict_v = model(data_v, feat_v)
                 loss_v = loss_fn(predict_v, label_v.long())
@@ -190,9 +192,9 @@ def train_test(
         # 保存最好的模型
         if test_patient_acc > best_acc:
             best_acc = test_patient_acc
-            # utils.save_checkpoint({"epoch": epochs + 1,
-            #                        "model": model.state_dict(),
-            #                        "optimizer": optimizer.state_dict()}, args.model, args.test_fold[0], "{}".format(args.model_folder))
+            utils.save_checkpoint({"epoch": epochs + 1,
+                                   "model": model.state_dict(),
+                                   "optimizer": optimizer.state_dict()}, "se_resnet6v2", args.test_fold[0], "{}".format(args.model_folder))
 
         # pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
         #                                       str(epochs+1)+".csv", index=False, header=False)

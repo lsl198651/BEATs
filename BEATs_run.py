@@ -44,7 +44,7 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try \
-                        4k sr 32 64 channel use samplerWeight[1,7] lr=0.001,reduction=8")
+4k sr 32 64 channel use samplerWeight[1,7] lr=0.001,reduction=8")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")

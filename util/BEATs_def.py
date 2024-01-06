@@ -196,10 +196,10 @@ def get_wav_data(dir_path, num=0):
                 wav_nums.append(num)
                 # 数据读取
                 print("reading: " + subfile)
-                y_16k_norm, sr = librosa.load(wav_path, sr=4000)
+                y, sr = librosa.load(wav_path, sr=4000)
                 # TODO 采样率:4k
                 # y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                # y_16k_norm = wav_normalize(y)  # 归一化
+                y_16k_norm = wav_normalize(y)  # 归一化
                 print("num is "+str(num), "y_16k size: "+str(y_16k_norm.size))
                 if y_16k_norm.shape[0] < data_length:
                     y_16k_norm = np.pad(
@@ -300,7 +300,7 @@ class MyDataset(Dataset):
 
 class DatasetClass_t(Dataset):
     # Initialize your data, download, etc.
-    def __init__(self, wavlabel, wavdata, wavidx, wavebd):
+    def __init__(self, wavlabel, wavdata, wavidx):
         # 直接传递data和label
         # self.len = wavlen
         # embeds = []
@@ -320,7 +320,7 @@ class DatasetClass_t(Dataset):
         # embeding = self.wavebd[index]
         embeding = 1  # fake
         wide_feat = hand_fea((dataitem, 4000))
-        return dataitem.float(), labelitem, iditem, wide_feat, embeding
+        return dataitem.float(), labelitem, iditem, wide_feat
 
     def __len__(self):
         # 返回文件数据的数目
