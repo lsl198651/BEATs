@@ -40,7 +40,7 @@ if __name__ == '__main__':
                         help="Add data augmentation", choices=[True, False],)
     parser.add_argument("--train_total", type=bool, default=True,
                         help="use grad_no_requiredn", choices=[True, False],)
-    parser.add_argument("--samplerWeight", type=bool, default=True,
+    parser.add_argument("--samplerWeight", type=bool, default=False,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try \
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
     # ========================/ setup loader /========================== #
     if args.samplerWeight == True:
-        weights = [7 if label == 1 else 1 for label in train_label]
+        weights = [1 if label == 1 else 1 for label in train_label]
         Data_sampler = WeightedRandomSampler(
             weights, num_samples=len(weights), replacement=True)
         train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
