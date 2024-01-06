@@ -1,9 +1,9 @@
 {
   "folders": [
-	{
-		"path": "."
-	}
-],
+    {
+      "path": "."
+    }
+  ],
   "settings": {
     "[python]": {
       "editor.defaultFormatter": "ms-python.autopep8"
@@ -15,7 +15,11 @@
     "editor.fontFamily": "'Fira Code',Consolas, 'Courier New', monospace",
     "python.autoComplete.extraPaths": [],
     "python.analysis.extraPaths": [],
-    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe"
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe",
+    "emmet.excludeLanguages": [
+      "markdown",
+      "“editor.formatOnType”: true, “editor.formatOnSave”: true"
+    ]
   },
   "extensions": {
     "recommendations": ["ms-ceintl.vscode-language-pack-zh-hans"]

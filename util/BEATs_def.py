@@ -39,7 +39,7 @@ from scipy import signal
 # from python_speech_features import logfbank
 # from spafe.features.gfcc import erb_spectrogram
 # from spafe.utils.preprocessing import SlidingWindow
-from util.get_wide_feature import hand_fea
+from get_wide_feature import hand_fea
 warnings.filterwarnings('ignore')
 
 
@@ -156,9 +156,10 @@ def get_patientid(csv_path):
 
 
 def wav_normalize(data):
-    """归一化"""
+    """min max归一化"""
     range = np.max(data) - np.min(data)
-    data = (data-np.mean(data))/range
+    data = (data-np.mean(data))/np.max(np.abs(data))
+    # data = (data-np.min(data))/range
     return data
     # recording -= recording.mean()
     # recording /= recording.abs().max()
@@ -184,7 +185,7 @@ def get_wav_data(dir_path, num=0):
     file_names = []
     wav_nums = []
     feat = []
-    data_length = 2000
+    data_length = 1250
     for root, dir, file in os.walk(dir_path):
         for subfile in file:
             wav_path = os.path.join(root, subfile)
@@ -195,10 +196,10 @@ def get_wav_data(dir_path, num=0):
                 wav_nums.append(num)
                 # 数据读取
                 print("reading: " + subfile)
-                y, sr = librosa.load(wav_path, sr=4000)
-                # TODO采样率:4k
-                y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
-                y_16k_norm = wav_normalize(y_16k)  # 归一化
+                y_16k_norm, sr = librosa.load(wav_path, sr=4000)
+                # TODO 采样率:4k
+                # y_16k = librosa.resample(y=y, orig_sr=sr, target_sr=16000)
+                # y_16k_norm = wav_normalize(y)  # 归一化
                 print("num is "+str(num), "y_16k size: "+str(y_16k_norm.size))
                 if y_16k_norm.shape[0] < data_length:
                     y_16k_norm = np.pad(
@@ -297,11 +298,39 @@ class MyDataset(Dataset):
         return len(self.data)
 
 
+class DatasetClass_t(Dataset):
+    # Initialize your data, download, etc.
+    def __init__(self, wavlabel, wavdata, wavidx, wavebd):
+        # 直接传递data和label
+        # self.len = wavlen
+        # embeds = []
+        # for embed in wavebd:
+        #     embed = int(embed.split('.')[0])
+        #     embeds.append(embed)
+        # self.wavebd = embeds
+        self.data = torch.from_numpy(wavdata)
+        self.label = torch.from_numpy(wavlabel)
+        self.id = torch.from_numpy(wavidx)
+
+    def __getitem__(self, index):
+        # 根据索引返回数据和对应的标签
+        dataitem = self.data[index]
+        labelitem = self.label[index]
+        iditem = self.id[index]
+        # embeding = self.wavebd[index]
+        embeding = 1  # fake
+        wide_feat = hand_fea((dataitem, 4000))
+        return dataitem.float(), labelitem, iditem, wide_feat, embeding
+
+    def __len__(self):
+        # 返回文件数据的数目
+        return len(self.data)
+
+
 class DatasetClass(Dataset):
     """继承Dataset类，重写__getitem__和__len__方法
     添加get_idx方法，返回id
     input: wavlabel, wavdata, wavidx
-
     """
 
     # Initialize your data, download, etc.
@@ -323,9 +352,9 @@ class DatasetClass(Dataset):
         labelitem = self.label[index]
         iditem = self.id[index]
         # embeding = self.wavebd[index]
-        embeding=1# fake
+        embeding = 1  # fake
         wide_feat = hand_fea((dataitem, 4000))
-        return dataitem.float(), labelitem, iditem, wide_feat,embeding
+        return dataitem.float(), labelitem, iditem, wide_feat, embeding
 
     def __len__(self):
         # 返回文件数据的数目

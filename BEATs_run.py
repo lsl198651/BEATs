@@ -25,9 +25,9 @@ if __name__ == '__main__':
                         default=100, help="num_epochs")
     parser.add_argument("--layers", type=int, default=3, help="layers number")
     parser.add_argument("--loss_type", type=str, default="FocalLoss",
-                        help="loss function", choices=[ "CE", "FocalLoss"])
+                        help="loss function", choices=["CE", "FocalLoss"])
     parser.add_argument("--scheduler_flag", type=str, default="step",
-                        help="the dataset used", choices=["cos", "MultiStepLR","step"],)
+                        help="the dataset used", choices=["cos", "MultiStepLR", "step"],)
     parser.add_argument("--freqm_value",  type=int, default=0,
                         help="frequency mask max length")
     parser.add_argument("--timem_value", type=int, default=0,
@@ -66,15 +66,16 @@ if __name__ == '__main__':
     # ========================/ setup loader /========================== #
     if args.samplerWeight == True:
         weights = [7 if label == 1 else 1 for label in train_label]
-        Data_sampler = WeightedRandomSampler(weights, num_samples=len(weights), replacement=True)
+        Data_sampler = WeightedRandomSampler(
+            weights, num_samples=len(weights), replacement=True)
         train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                                sampler=Data_sampler, batch_size=args.batch_size, drop_last=True,  pin_memory=True, num_workers=3)
+                                  sampler=Data_sampler, batch_size=args.batch_size, drop_last=True,  pin_memory=True, num_workers=3)
     else:
         train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                        batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=3)
+                                  batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=3)
 
-    val_loader = DataLoader(DatasetClass(wavlabel=test_label,wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
-                    batch_size=1, shuffle=False,pin_memory=True, num_workers=3)
+    val_loader = DataLoader(DatasetClass(wavlabel=test_label, wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
+                            batch_size=1, shuffle=False, pin_memory=True, num_workers=3)
 
     # ========================/ dataset size /========================== #
     train_present_size = np.sum(train_label == 1)
@@ -90,9 +91,11 @@ if __name__ == '__main__':
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
         for param in MyModel.BEATs.parameters():
             param.requires_grad = False
-        optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters()),lr=args.learning_rate, betas=args.beta,)
+        optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, MyModel.parameters(
+        )), lr=args.learning_rate, betas=args.beta,)
     else:
-        optimizer = torch.optim.AdamW(MyModel.parameters(),lr=args.learning_rate, betas=args.beta,)
+        optimizer = torch.optim.AdamW(
+            MyModel.parameters(), lr=args.learning_rate, betas=args.beta,)
     # ========================/ setup scaler /========================== #
     logger_init()
     logging.info(f"{args.model}  ")
