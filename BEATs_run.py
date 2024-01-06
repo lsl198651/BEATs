@@ -44,22 +44,23 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try \
-4k sr 32 64 channel use samplerWeight[1,7] lr=0.001,reduction=8")
+4k sr 32 64 channel use samplerWeight[1,7] lr=0.001,reduction=8 on testset_4k")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['0', '1', '3', '4'])
-    parser.add_argument("--test_fold", type=list, default=['2'])
-    parser.add_argument("--setType", type=str, default=r"\12_baseset_4k")
+                        default=['0', '1', '2', '3', '4'])
+    parser.add_argument("--test_fold", type=list,
+                        default=['0', '1', '2', '3', '4'])
+    parser.add_argument("--setType", type=str, default=r"\testset_4k")
     parser.add_argument("--model_folder", type=str,
                         default=r"D:\Shilong\murmur\00_Code\LM\beats1\SE_ResNet6\MyModels")
     args = parser.parse_args()
     # 检测分折重复
-    for val in args.test_fold:
-        if val in args.train_fold:
-            raise ValueError("train_fold and test_fold have same fold")
+    # for val in args.test_fold:
+    #     if val in args.train_fold:
+    #         raise ValueError("train_fold and test_fold have same fold")
 
     train_features, train_label, train_index, train_ebd, test_features,  test_label, test_index, test_ebd = fold5_dataloader(
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
@@ -69,13 +70,13 @@ if __name__ == '__main__':
         Data_sampler = WeightedRandomSampler(
             weights, num_samples=len(weights), replacement=True)
         train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                                  sampler=Data_sampler, batch_size=args.batch_size, drop_last=True,  pin_memory=True, num_workers=3)
+                                  sampler=Data_sampler, batch_size=args.batch_size, drop_last=True,  pin_memory=True, num_workers=4)
     else:
         train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                                  batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=3)
+                                  batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=4)
 
     val_loader = DataLoader(DatasetClass(wavlabel=test_label, wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
-                            batch_size=1, shuffle=False, pin_memory=True, num_workers=3)
+                            batch_size=1, shuffle=False, pin_memory=True, num_workers=4)
 
     # ========================/ dataset size /========================== #
     train_present_size = np.sum(train_label == 1)
