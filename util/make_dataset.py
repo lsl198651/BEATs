@@ -329,15 +329,16 @@ def fold_devide(data, flod_num=5):
 def data_set(root_path):
     """数据增强，包括时间拉伸和反转"""
     # root_path = r"D:\Shilong\murmur\01_dataset\06_new5fold"
-    npy_path_padded = root_path+r"\npyFile_padded\npy_files01_16k"
-    index_path = root_path + r"\npyFile_padded\index_files01_16k"
+    npy_path_padded = root_path+r"\npyFile_padded\npy_files01_nonorm1250"
+    index_path = root_path + r"\npyFile_padded\index_files01_nonorm1250"
     if not os.path.exists(npy_path_padded):
         os.makedirs(npy_path_padded)
     if not os.path.exists(index_path):
         os.makedirs(index_path)
     for k in range(5):
         src_fold_root_path = root_path+r"\fold_set_"+str(k)
-        data_Auge(src_fold_root_path)
+        # TODO 是否做数据增强
+        # data_Auge(src_fold_root_path)
         for folder in os.listdir(src_fold_root_path):
             dataset_path = os.path.join(src_fold_root_path, folder)
             if k == 0 and folder == "absent":
@@ -392,27 +393,30 @@ def get_features_mod(data):
 # ========================/ code executive /========================== #
 # ==================================================================== #
 if __name__ == '__main__':
-    csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
-    # get dataset tag from table
-    # row_line = csv_reader_row(csv_path, 0)
-    # tag_list = []
+    # csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
+    csv_path = r"D:\Shilong\murmur\Dataset\PCGdataset\validation_data.csv"
+
+    # # get dataset tag from table
+    row_line = csv_reader_row(csv_path, 0)
+    tag_list = []
 
     # # get index for 'Patient ID' and 'Outcome'
-    # tag_list.append(row_line.index("Patient ID"))
-    # tag_list.append(row_line.index("Murmur"))
-    # tag_list.append(row_line.index("Murmur locations"))
-    # tag_list.append(row_line.index("Systolic murmur timing"))
-    # tag_list.append(row_line.index("Diastolic murmur timing"))
+    tag_list.append(row_line.index("Patient ID"))
+    tag_list.append(row_line.index("Murmur"))
+    tag_list.append(row_line.index("Murmur locations"))
+    tag_list.append(row_line.index("Systolic murmur timing"))
+    tag_list.append(row_line.index("Diastolic murmur timing"))
 
-    # # # for tag_index in tag_list:
-    # id_data = csv_reader_cl(csv_path, tag_list[0])
-    # Murmur = csv_reader_cl(csv_path, tag_list[1])
-    # Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
-    # Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
-    # Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
-    # # TODO 修改此处的root_path
-    root_path = r"D:\Shilong\murmur\01_dataset\12_baseset_16k"
-    data_set(root_path)
+    # # for tag_index in tag_list:
+    id_data = csv_reader_cl(csv_path, tag_list[0])
+    Murmur = csv_reader_cl(csv_path, tag_list[1])
+    Murmur_locations = csv_reader_cl(csv_path, tag_list[2])
+    Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
+    Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
+    # TODO 修改此处的root_path
+    # root_path = r"D:\Shilong\murmur\01_dataset\12_baseset_4k"
+    root_path = r"D:\Shilong\murmur\01_dataset\validset_4k"
+    # data_set(root_path)
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     # save data to csv file
@@ -455,29 +459,33 @@ if __name__ == '__main__':
         absent_id_path, index=False, header=False)
     pd.DataFrame(data=present_patient_id, index=None).to_csv(
         patient_id_path, index=False, header=False)
-    fold_absent = fold_devide(absent_patient_id)
-    fold_present = fold_devide(present_patient_id)
+
+    # fold_absent = fold_devide(absent_patient_id)
+    # fold_present = fold_devide(present_patient_id)
     # 对Present和Absent分五折
     # 分别保存每折的id
-    for k, v in fold_absent.items():
-        pd.DataFrame(data=v, index=None).to_csv(
-            root_path+r"\absent_fold_"+str(k)+".csv", index=False, header=False)
-    for k, v in fold_present.items():
-        pd.DataFrame(data=v, index=None).to_csv(
-            root_path+r"\present_fold_"+str(k)+".csv", index=False, header=False)
+    # for k, v in fold_absent.items():
+    #     pd.DataFrame(data=v, index=None).to_csv(
+    #         root_path+r"\absent_fold_"+str(k)+".csv", index=False, header=False)
+    # for k, v in fold_present.items():
+    #     pd.DataFrame(data=v, index=None).to_csv(
+    #         root_path+r"\present_fold_"+str(k)+".csv", index=False, header=False)
+
     # digaiation position
     # define path options
     positoin = ["_AV", "_MV", "_PV", "_TV"]
     murmur = ["Absent\\", "Present\\"]
     period = ["s1", "systolic", "s2", "diastolic"]
-    src_path = r"D:\Shilong\murmur\dataset_all\training_data"
+
+    # TODO 修改此处的src_path
+    # src_path = r"D:\Shilong\murmur\dataset_all\training_data"
+    src_path = r"D:\Shilong\murmur\Dataset\PCGdataset\validation_data"
     folder_path = root_path+"\\"
     # 将wav文件和tsv文件copy到目标文件夹
     copy_wav_file(src_path, folder_path, absent_patient_id, "Absent", positoin)
     copy_wav_file(src_path, folder_path,
                   present_patient_id, "Present", positoin)
 
-    src_path = r"D:\Shilong\murmur\dataset_all\training_data"
     # 创建每个wav文件的文件夹
     for mur in murmur:
         dir_path = folder_path + mur
@@ -525,17 +533,17 @@ if __name__ == '__main__':
     # present_test_id = list(set(present_patient_id)-set(present_train_id))
 
     # 将训练集和测试集文件分别copy到train和test文件夹
-    # copy_states_data(absent_train_id, root_path, "\\train", "\\Absent\\")
-    # copy_states_data(present_train_id,root_path,  "\\train", "\\Present\\")
+    copy_states_data(absent_patient_id, root_path, "\\train", "\\Absent\\")
+    copy_states_data(present_patient_id, root_path,  "\\train", "\\Present\\")
     # copy_states_data(absent_test_id,root_path,  "\\test", "\\Absent\\")
     # copy_states_data( present_test_id,root_path, "\\test", "\\Present\\")
 
     # 按照每折的id复制数据到每折对应文件夹
     # 此处执行后的数据，数据只按折分开了，并没有按present和Absnet分开
-    for k, v in fold_absent.items():
-        copy_states_data(v, root_path, "\\fold_"+str(k), "\\Absent\\")
-    for k, v in fold_present.items():
-        copy_states_data(v, root_path, "\\fold_"+str(k), "\\Present\\")
+    # for k, v in fold_absent.items():
+    #     copy_states_data(v, root_path, "\\fold_"+str(k), "\\Absent\\")
+    # for k, v in fold_present.items():
+    #     copy_states_data(v, root_path, "\\fold_"+str(k), "\\Present\\")
     # 若要继续按照present和absent分开，需要在save_as_npy.py中修改代码
 
     # 保存train、test id为CSV文件
@@ -564,34 +572,61 @@ if __name__ == '__main__':
     # target_dir_test_a = root_path+r'\testset\absent'
     # target_dir_test_p = root_path+r'\testset\present'
 
-    for k in range(5):
-        for murmur in ['Absent', 'Present']:
-            src_fold_path = root_path+r"\fold_"+str(k)+"\\"+murmur+"\\"
-            target_dir = root_path+r'\fold_set_'+str(k)
-            if not os.path.exists(target_dir):
-                os.makedirs(target_dir)
-            if not os.path.exists(target_dir + "\\absent\\"):
-                os.makedirs(target_dir + "\\absent\\")
-            if not os.path.exists(target_dir + "\\present\\"):
-                os.makedirs(target_dir + "\\present\\")
-            for root, dir, file in os.walk(src_fold_path):
-                for subfile in file:
-                    files = os.path.join(root, subfile)
-                    print(subfile)
-                    state = subfile.split("_")[4]
-                    if state == 'Absent':
-                        shutil.copy(files, target_dir + "\\absent\\")
-                    elif state == 'Present':
-                        shutil.copy(files, target_dir + "\\present\\")
-                    else:
-                        raise ValueError("state error")
+    # for k in range(5):
+    #     for murmur in ['Absent', 'Present']:
+    #         src_fold_path = root_path+r"\fold_"+str(k)+"\\"+murmur+"\\"
+    #         target_dir = root_path+r'\fold_set_'+str(k)
+    #         if not os.path.exists(target_dir):
+    #             os.makedirs(target_dir)
+    #         if not os.path.exists(target_dir + "\\absent\\"):
+    #             os.makedirs(target_dir + "\\absent\\")
+    #         if not os.path.exists(target_dir + "\\present\\"):
+    #             os.makedirs(target_dir + "\\present\\")
+    #         for root, dir, file in os.walk(src_fold_path):
+    #             for subfile in file:
+    #                 files = os.path.join(root, subfile)
+    #                 print(subfile)
+    #                 state = subfile.split("_")[4]
+    #                 if state == 'Absent':
+    #                     shutil.copy(files, target_dir + "\\absent\\")
+    #                 elif state == 'Present':
+    #                     shutil.copy(files, target_dir + "\\present\\")
+    #                 else:
+    #                     raise ValueError("state error")
 
-    for k in range(5):
-        src_fold_root_path = root_path+r"'\fold_set_"+str(k)
-        for murmur in ['absent', 'present']:
-            src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
+    # for k in range(5):
+    #     src_fold_root_path = root_path+r"'\fold_set_"+str(k)
+    #     for murmur in ['absent', 'present']:
+    #         src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
 
-data_set(root_path)
+    # for k in range(5):
+    for murmur in ['Absent', 'Present']:
+        src_fold_path = root_path+"\\"+murmur+"\\"
+        target_dir = root_path  # +r'\fold_set_'+str(k)
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
+        if not os.path.exists(target_dir + "\\absent\\"):
+            os.makedirs(target_dir + "\\absent\\")
+        if not os.path.exists(target_dir + "\\present\\"):
+            os.makedirs(target_dir + "\\present\\")
+        for root, dir, file in os.walk(src_fold_path):
+            for subfile in file:
+                files = os.path.join(root, subfile)
+                print(subfile)
+                state = subfile.split("_")[4]
+                if state == 'Absent':
+                    shutil.copy(files, target_dir + "\\absent\\")
+                elif state == 'Present':
+                    shutil.copy(files, target_dir + "\\present\\")
+                else:
+                    raise ValueError("state error")
+
+    # for k in range(5):
+    src_fold_root_path = root_path
+    for murmur in ['absent', 'present']:
+        src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
+
+    data_set(root_path)
 
 
 # # 复制到trainset和testset
