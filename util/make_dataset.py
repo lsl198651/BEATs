@@ -394,7 +394,7 @@ def get_features_mod(data):
 # ==================================================================== #
 if __name__ == '__main__':
     # csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
-    csv_path = r"D:\Shilong\murmur\Dataset\PCGdataset\training_data.csv"
+    csv_path = r"D:\Shilong\murmur\Dataset\PCGdataset\validation_data.csv"
 
     # # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
@@ -414,8 +414,8 @@ if __name__ == '__main__':
     Systolic_murmur_timing = csv_reader_cl(csv_path, tag_list[3])
     Diastolic_murmur_timing = csv_reader_cl(csv_path, tag_list[4])
     # TODO 修改此处的root_path
-    root_path = r"D:\Shilong\murmur\01_dataset\12_baseset_4k"
-    # root_path = r"D:\Shilong\murmur\01_dataset\trainset_4k"
+    # root_path = r"D:\Shilong\murmur\01_dataset\12_baseset_4k"
+    root_path = r"D:\Shilong\murmur\01_dataset\validset_4k"
     data_set(root_path)
     if not os.path.exists(root_path):
         os.makedirs(root_path)
@@ -479,7 +479,7 @@ if __name__ == '__main__':
 
     # TODO 修改此处的src_path
     # src_path = r"D:\Shilong\murmur\dataset_all\training_data"
-    src_path = r"D:\Shilong\murmur\Dataset\PCGdataset\training_data"
+    src_path = r"D:\Shilong\murmur\Dataset\PCGdataset\validation_data"
     folder_path = root_path+"\\"
     # 将wav文件和tsv文件copy到目标文件夹
     copy_wav_file(src_path, folder_path, absent_patient_id, "Absent", positoin)
