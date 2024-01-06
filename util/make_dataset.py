@@ -460,16 +460,16 @@ if __name__ == '__main__':
     pd.DataFrame(data=present_patient_id, index=None).to_csv(
         patient_id_path, index=False, header=False)
 
-    # fold_absent = fold_devide(absent_patient_id)
-    # fold_present = fold_devide(present_patient_id)
+    fold_absent = fold_devide(absent_patient_id)
+    fold_present = fold_devide(present_patient_id)
     # 对Present和Absent分五折
     # 分别保存每折的id
-    # for k, v in fold_absent.items():
-    #     pd.DataFrame(data=v, index=None).to_csv(
-    #         root_path+r"\absent_fold_"+str(k)+".csv", index=False, header=False)
-    # for k, v in fold_present.items():
-    #     pd.DataFrame(data=v, index=None).to_csv(
-    #         root_path+r"\present_fold_"+str(k)+".csv", index=False, header=False)
+    for k, v in fold_absent.items():
+        pd.DataFrame(data=v, index=None).to_csv(
+            root_path+r"\absent_fold_"+str(k)+".csv", index=False, header=False)
+    for k, v in fold_present.items():
+        pd.DataFrame(data=v, index=None).to_csv(
+            root_path+r"\present_fold_"+str(k)+".csv", index=False, header=False)
 
     # digaiation position
     # define path options
@@ -540,10 +540,10 @@ if __name__ == '__main__':
 
     # 按照每折的id复制数据到每折对应文件夹
     # 此处执行后的数据，数据只按折分开了，并没有按present和Absnet分开
-    # for k, v in fold_absent.items():
-    #     copy_states_data(v, root_path, "\\fold_"+str(k), "\\Absent\\")
-    # for k, v in fold_present.items():
-    #     copy_states_data(v, root_path, "\\fold_"+str(k), "\\Present\\")
+    for k, v in fold_absent.items():
+        copy_states_data(v, root_path, "\\fold_"+str(k), "\\Absent\\")
+    for k, v in fold_present.items():
+        copy_states_data(v, root_path, "\\fold_"+str(k), "\\Present\\")
     # 若要继续按照present和absent分开，需要在save_as_npy.py中修改代码
 
     # 保存train、test id为CSV文件
@@ -572,59 +572,32 @@ if __name__ == '__main__':
     # target_dir_test_a = root_path+r'\testset\absent'
     # target_dir_test_p = root_path+r'\testset\present'
 
-    # for k in range(5):
-    #     for murmur in ['Absent', 'Present']:
-    #         src_fold_path = root_path+r"\fold_"+str(k)+"\\"+murmur+"\\"
-    #         target_dir = root_path+r'\fold_set_'+str(k)
-    #         if not os.path.exists(target_dir):
-    #             os.makedirs(target_dir)
-    #         if not os.path.exists(target_dir + "\\absent\\"):
-    #             os.makedirs(target_dir + "\\absent\\")
-    #         if not os.path.exists(target_dir + "\\present\\"):
-    #             os.makedirs(target_dir + "\\present\\")
-    #         for root, dir, file in os.walk(src_fold_path):
-    #             for subfile in file:
-    #                 files = os.path.join(root, subfile)
-    #                 print(subfile)
-    #                 state = subfile.split("_")[4]
-    #                 if state == 'Absent':
-    #                     shutil.copy(files, target_dir + "\\absent\\")
-    #                 elif state == 'Present':
-    #                     shutil.copy(files, target_dir + "\\present\\")
-    #                 else:
-    #                     raise ValueError("state error")
+    for k in range(5):
+        for murmur in ['Absent', 'Present']:
+            src_fold_path = root_path+r"\fold_"+str(k)+"\\"+murmur+"\\"
+            target_dir = root_path+r'\fold_set_'+str(k)
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            if not os.path.exists(target_dir + "\\absent\\"):
+                os.makedirs(target_dir + "\\absent\\")
+            if not os.path.exists(target_dir + "\\present\\"):
+                os.makedirs(target_dir + "\\present\\")
+            for root, dir, file in os.walk(src_fold_path):
+                for subfile in file:
+                    files = os.path.join(root, subfile)
+                    print(subfile)
+                    state = subfile.split("_")[4]
+                    if state == 'Absent':
+                        shutil.copy(files, target_dir + "\\absent\\")
+                    elif state == 'Present':
+                        shutil.copy(files, target_dir + "\\present\\")
+                    else:
+                        raise ValueError("state error")
 
-    # for k in range(5):
-    #     src_fold_root_path = root_path+r"'\fold_set_"+str(k)
-    #     for murmur in ['absent', 'present']:
-    #         src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
-
-    # for k in range(5):
-    for murmur in ['Absent', 'Present']:
-        src_fold_path = root_path+"\\"+murmur+"\\"
-        target_dir = root_path  # +r'\fold_set_'+str(k)
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
-        if not os.path.exists(target_dir + "\\absent\\"):
-            os.makedirs(target_dir + "\\absent\\")
-        if not os.path.exists(target_dir + "\\present\\"):
-            os.makedirs(target_dir + "\\present\\")
-        for root, dir, file in os.walk(src_fold_path):
-            for subfile in file:
-                files = os.path.join(root, subfile)
-                print(subfile)
-                state = subfile.split("_")[4]
-                if state == 'Absent':
-                    shutil.copy(files, target_dir + "\\absent\\")
-                elif state == 'Present':
-                    shutil.copy(files, target_dir + "\\present\\")
-                else:
-                    raise ValueError("state error")
-
-    # for k in range(5):
-    src_fold_root_path = root_path
-    for murmur in ['absent', 'present']:
-        src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
+    for k in range(5):
+        src_fold_root_path = root_path+r"'\fold_set_"+str(k)
+        for murmur in ['absent', 'present']:
+            src_fold_path = src_fold_root_path+"\\"+murmur+"\\"
 
     data_set(root_path)
 
