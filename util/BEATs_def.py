@@ -370,6 +370,7 @@ def get_segment_target_list(test_fold, set_type):
         根据csv文件生成并返回segment_target_list
         列表包含所有present的id和对应的位置
     """
+    # if len(test_fold) == 1:
     for k in test_fold:
         absent_test_id_path = fr"D:\Shilong\murmur\01_dataset" + \
             set_type+fr"\absent_fold_{k}.csv"
@@ -377,6 +378,23 @@ def get_segment_target_list(test_fold, set_type):
             set_type+fr"\present_fold_{k}.csv"
         absent_test_id = csv_reader_cl(absent_test_id_path, 0)
         present_test_id = csv_reader_cl(present_test_id_path, 0)
+    # else:
+    #     for i in range(len(test_fold)):
+    #         k = test_fold[i]
+    #         absent_test_id_path = fr"D:\Shilong\murmur\01_dataset" + \
+    #             set_type+fr"\absent_fold_{k}.csv"
+    #         present_test_id_path = fr"D:\Shilong\murmur\01_dataset" + \
+    #             set_type+fr"\present_fold_{k}.csv"
+    #         absent_test_id = csv_reader_cl(absent_test_id_path, 0)
+    #         present_test_id = csv_reader_cl(present_test_id_path, 0)
+    #         if i == 0:
+    #             absent_test_id_all = absent_test_id
+    #             present_test_id_all = present_test_id
+    #         else:
+    #             absent_test_id_all = np.concatenate(
+    #                 (absent_test_id_all, absent_test_id), axis=0)
+    #             present_test_id_all = np.concatenate(
+    #                 (present_test_id_all, present_test_id), axis=0)
     csv_path = r"D:\Shilong\murmur\dataset_all\training_data.csv"
     # get dataset tag from table
     row_line = csv_reader_row(csv_path, 0)
@@ -418,7 +436,8 @@ def get_segment_target_list(test_fold, set_type):
     for id in test_id:
         patient_dic[id] = Recording_locations[id_data.index(id)]
         present_id_loc[id] = Murmur_locations[id_data.index(id)]
-    return segment_present, patient_dic, absent_test_id, present_test_id  # , present_id_loc
+    # , present_id_loc
+    return segment_present, patient_dic, absent_test_id, present_test_id
 
 
 def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
@@ -431,6 +450,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
     """
     npy_path_padded = r"D:\Shilong\murmur\01_dataset" + \
         set_type+r"\npyFile_padded\npy_files01"
+    # if len(test_fold) == 1:
     for k in test_fold:
         absent_test_index = np.load(
             npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)
@@ -440,9 +460,36 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
             npy_path_padded + f"\\absent_name_norm01_fold{k}.npy", allow_pickle=True)
         present_test_names = np.load(
             npy_path_padded + f"\\present_name_norm01_fold{k}.npy", allow_pickle=True)
+    # else:
+    #     for i in range(len(test_fold)):
+    #         k = test_fold[i]
+    #         absent_test_index = np.load(
+    #             npy_path_padded + f"\\absent_index_norm01_fold{k}.npy", allow_pickle=True)
+    #         present_test_index = np.load(
+    #             npy_path_padded + f"\\present_index_norm01_fold{k}.npy", allow_pickle=True)
+    #         absent_test_names = np.load(
+    #             npy_path_padded + f"\\absent_name_norm01_fold{k}.npy", allow_pickle=True)
+    #         present_test_names = np.load(
+    #             npy_path_padded + f"\\present_name_norm01_fold{k}.npy", allow_pickle=True)
+    #         if i == 0:
+    #             absent_test_index_all = absent_test_index
+    #             present_test_index_all = present_test_index
+    #             absent_test_names_all = absent_test_names
+    #             present_test_names_all = present_test_names
+    #         else:
+    #             absent_test_index_all = np.concatenate(
+    #                 (absent_test_index_all, absent_test_index), axis=0)
+    #             present_test_index_all = np.concatenate(
+    #                 (present_test_index_all, present_test_index), axis=0)
+    #             absent_test_names_all = np.concatenate(
+    #                 (absent_test_names_all, absent_test_names), axis=0)
+    #             present_test_names_all = np.concatenate(
+    #                 (present_test_names_all, present_test_names), axis=0)
+
     """可以测一下这个字典names,index组合对不对"""
     absent_test_dic = dict(zip(absent_test_names, absent_test_index))
-    present_test_dic = dict(zip(present_test_names, present_test_index))
+    present_test_dic = dict(
+        zip(present_test_names, present_test_index))
     # 所有测试数据的字典
     test_dic = {**absent_test_dic, **present_test_dic}
     # 创建id_pos:idx的字典
@@ -477,7 +524,7 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
         result_dic[id_pos] = np.mean(value_list)
     # result_dic格式：12345_AV: 0.5, 12345_MV: 0.3
     # 获取segment_target_list,这是csv里面读取的有杂音的音频的id和位置
-    segment_present, patient_dic, absent_test_id, present_test_id = get_segment_target_list(
+    segment_present, patient_dic, absent_test_id_all, present_test_id_all = get_segment_target_list(
         test_fold, set_type)
     # 创建两个列表，分别保存outcome和target列表
     segment_output = []
@@ -539,9 +586,9 @@ def segment_classifier(result_list_1=[], test_fold=[], set_type=None):
         else:
             print('[WANGING 4]: result value is negtive?')  # 有负数
         # 做target
-        if patient_id in absent_test_id:
+        if patient_id in absent_test_id_all:
             patient_target.append(0)
-        elif patient_id in present_test_id:
+        elif patient_id in present_test_id_all:
             patient_target.append(1)
         else:
             print('[WANGING 5]: '+patient_id+' not in test_id')

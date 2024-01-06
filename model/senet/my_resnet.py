@@ -1,5 +1,5 @@
 # from functools import partial
-from typing import  Callable, List, Optional, Type, Union
+from typing import Callable, List, Optional, Type, Union
 
 import torch
 import torch.nn as nn
@@ -11,6 +11,7 @@ import torchaudio.transforms as T
 # from ._api import register_model, Weights, WeightsEnum
 # from ._meta import _IMAGENET_CATEGORIES
 # from ._utils import _ovewrite_named_param, handle_legacy_interface
+
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
@@ -49,9 +50,11 @@ class BasicBlock(nn.Module):
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         if groups != 1 or base_width != 64:
-            raise ValueError("BasicBlock only supports groups=1 and base_width=64")
+            raise ValueError(
+                "BasicBlock only supports groups=1 and base_width=64")
         if dilation > 1:
-            raise NotImplementedError("Dilation > 1 not supported in BasicBlock")
+            raise NotImplementedError(
+                "Dilation > 1 not supported in BasicBlock")
         # Both self.conv1 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = norm_layer(planes)
@@ -78,6 +81,8 @@ class BasicBlock(nn.Module):
         out = self.relu(out)
 
         return out
+
+
 class Bottleneck(nn.Module):
     # Bottleneck in torchvision places the stride for downsampling at 3x3 convolution(self.conv2)
     # while original implementation places the stride at the first 1x1 convolution(self.conv1)
@@ -135,6 +140,7 @@ class Bottleneck(nn.Module):
 
         return out
 
+
 class My_ResNet(nn.Module):
     def __init__(
         self,
@@ -166,16 +172,18 @@ class My_ResNet(nn.Module):
             )
         self.groups = groups
         self.base_width = width_per_group
-        self.conv1 = nn.Conv2d(1, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = nn.Conv2d(
+            1, self.inplanes, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.mp1 = nn.MaxPool2d(2)
         self.dp1 = nn.Dropout(p=0.15)
         self.layer1 = self._make_layer(block, 32, layers[0])
-        self.layer2 = self._make_layer(block, 64, layers[1], stride=1, dilate=replace_stride_with_dilation[0])
+        self.layer2 = self._make_layer(
+            block, 64, layers[1], stride=1, dilate=replace_stride_with_dilation[0])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.wide=nn.Linear(6, 20)
+        self.wide = nn.Linear(6, 20)
         self.fc = nn.Linear(70, num_classes)
 
         for m in self.modules():
@@ -236,7 +244,7 @@ class My_ResNet(nn.Module):
             )
 
         return nn.Sequential(*layers)
-    
+
     def preprocess(
             self,
             source: torch.Tensor,
@@ -244,7 +252,8 @@ class My_ResNet(nn.Module):
         fbanks = []
         for waveform in source:
             waveform = waveform.unsqueeze(0)
-            fbank = ta_kaldi.fbank(waveform, num_mel_bins=128, sample_frequency=4000, frame_length=25, frame_shift=10)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=4000, frame_length=25, frame_shift=10)
             fbank_mean = fbank.mean()
             fbank_std = fbank.std()
             fbank = (fbank - fbank_mean) / fbank_std
@@ -252,23 +261,22 @@ class My_ResNet(nn.Module):
         fbank = torch.stack(fbanks, dim=0)
         return fbank
 
-
-    def forward(self, x: Tensor,x1:Tensor) -> Tensor:
+    def forward(self, x: Tensor, x1: Tensor) -> Tensor:
         # See note [TorchScript super()]
-        x=self.preprocess(x)
-        x=x.unsqueeze(1)
-        x = self.conv1(x)        
+        x = self.preprocess(x)
+        x = x.unsqueeze(1)
+        x = self.conv1(x)
         x = self.bn1(x)
-        x = self.relu(x)   
+        x = self.relu(x)
         x = self.maxpool(x)
-        # x = self.mp1(x) 
+        # x = self.mp1(x)
         # x = self.dp1(x)
 
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.avgpool(x)
         x = x.view(x.shape[0], -1)
-        xall=torch.cat((x,x1),dim=1)
+        xall = torch.cat((x, x1), dim=1)
         x = self.fc(xall)
-        
+
         return x

@@ -268,8 +268,8 @@ def fold5_dataloader(train_folder, test_folder, Data_Augmentation, set_type):
                 train_feature_dic[train_folder[2]][data_class[1]],
                 train_feature_dic[train_folder[3]][data_class[0]],
                 train_feature_dic[train_folder[3]][data_class[1]],
-                train_feature_dic[train_folder[4]][data_class[0]],
-                train_feature_dic[train_folder[4]][data_class[1]],
+                # train_feature_dic[train_folder[4]][data_class[0]],
+                # train_feature_dic[train_folder[4]][data_class[1]],
             )
         )
         train_label = np.hstack(
@@ -282,8 +282,8 @@ def fold5_dataloader(train_folder, test_folder, Data_Augmentation, set_type):
                 train_labels_dic[train_folder[2]][data_class[1]],
                 train_labels_dic[train_folder[3]][data_class[0]],
                 train_labels_dic[train_folder[3]][data_class[1]],
-                train_labels_dic[train_folder[4]][data_class[0]],
-                train_labels_dic[train_folder[4]][data_class[1]],
+                # train_labels_dic[train_folder[4]][data_class[0]],
+                # train_labels_dic[train_folder[4]][data_class[1]],
             )
         )
         train_index = np.hstack(
@@ -296,8 +296,8 @@ def fold5_dataloader(train_folder, test_folder, Data_Augmentation, set_type):
                 train_index_dic[train_folder[2]][data_class[1]],
                 train_index_dic[train_folder[3]][data_class[0]],
                 train_index_dic[train_folder[3]][data_class[1]],
-                train_index_dic[train_folder[4]][data_class[0]],
-                train_index_dic[train_folder[4]][data_class[1]]
+                # train_index_dic[train_folder[4]][data_class[0]],
+                # train_index_dic[train_folder[4]][data_class[1]]
             )
         )
         train_ebd = np.hstack(
@@ -310,34 +310,34 @@ def fold5_dataloader(train_folder, test_folder, Data_Augmentation, set_type):
                 train_ebd_dic[train_folder[2]][data_class[1]],
                 train_ebd_dic[train_folder[3]][data_class[0]],
                 train_ebd_dic[train_folder[3]][data_class[1]],
-                train_ebd_dic[train_folder[4]][data_class[0]],
-                train_ebd_dic[train_folder[4]][data_class[1]]
+                # train_ebd_dic[train_folder[4]][data_class[0]],
+                # train_ebd_dic[train_folder[4]][data_class[1]]
             )
         )
 
-    # test_features = np.vstack(
-    #     (
-    #         test_feature_dic[test_folder[0]]['absent'],
-    #         test_feature_dic[test_folder[0]]['present'],
-    #     )
-    # )
-    # test_label = np.hstack(
-    #     (
-    #         test_labels_dic[test_folder[0]]['absent'],
-    #         test_labels_dic[test_folder[0]]['present'],
-    #     )
-    # )
-    # test_index = np.hstack(
-    #     (
-    #         test_index_dic[test_folder[0]]['absent'],
-    #         test_index_dic[test_folder[0]]['present'],
-    #     )
-    # )
-    # test_ebd = np.hstack(
-    #     (
-    #         test_ebd_dic[test_folder[0]]['absent'],
-    #         test_ebd_dic[test_folder[0]]['present'],
-    #     )
-    # )
-    # test_features,  test_label, test_index, test_ebd
-    return train_features, train_label, train_index, train_ebd, train_features, train_label, train_index, train_ebd
+    test_features = np.vstack(
+        (
+            test_feature_dic[test_folder[0]]['absent'],
+            test_feature_dic[test_folder[0]]['present'],
+        )
+    )
+    test_label = np.hstack(
+        (
+            test_labels_dic[test_folder[0]]['absent'],
+            test_labels_dic[test_folder[0]]['present'],
+        )
+    )
+    test_index = np.hstack(
+        (
+            test_index_dic[test_folder[0]]['absent'],
+            test_index_dic[test_folder[0]]['present'],
+        )
+    )
+    test_ebd = np.hstack(
+        (
+            test_ebd_dic[test_folder[0]]['absent'],
+            test_ebd_dic[test_folder[0]]['present'],
+        )
+    )
+
+    return train_features, train_label, train_index, train_ebd, test_features,  test_label, test_index, test_ebd
