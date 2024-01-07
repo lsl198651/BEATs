@@ -184,7 +184,7 @@ class My_ResNet(nn.Module):
             block, 64, layers[1], stride=1, dilate=replace_stride_with_dilation[0])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.wide = nn.Linear(6, 20)
-        self.fc = nn.Linear(70, num_classes)
+        self.fc = nn.Linear(64, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -269,15 +269,15 @@ class My_ResNet(nn.Module):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        x = self.maxpool(x)
-        # x = self.mp1(x)
-        # x = self.dp1(x)
+        # x = self.maxpool(x)
+        x = self.mp1(x)
+        x = self.dp1(x)
 
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.avgpool(x)
         x = x.view(x.shape[0], -1)
-        xall = torch.cat((x, x1), dim=1)
-        x = self.fc(xall)
+        # xall = torch.cat((x, x1), dim=1)
+        x = self.fc(x)
 
         return x

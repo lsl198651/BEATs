@@ -40,19 +40,19 @@ if __name__ == '__main__':
                         help="Add data augmentation", choices=[True, False],)
     parser.add_argument("--train_total", type=bool, default=True,
                         help="use grad_no_requiredn", choices=[True, False],)
-    parser.add_argument("--samplerWeight", type=bool, default=False,
+    parser.add_argument("--samplerWeight", type=bool, default=True,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try \
-4k sr 32 64 channel use samplerWeight[1,7] lr=0.001,reduction=8 kernel_size=3, stride=1, padding=1,")
+4k sr 32 64 channel use samplerWeight[1,5] lr=0.001,reduction=8 kernel_size=3, stride=1, padding=1,+mp1 +dp1")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['0', '1', '3',  '4'])
+                        default=['0', '1', '2',  '4'])
     parser.add_argument("--test_fold", type=list,
-                        default=['2'])
+                        default=['3'])
     parser.add_argument("--setType", type=str, default=r"\12_baseset_4k")
     parser.add_argument("--model_folder", type=str,
                         default=r"D:\Shilong\murmur\00_Code\LM\beats1\SE_ResNet6\MyModels")
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
     # ========================/ setup loader /========================== #
     if args.samplerWeight == True:
-        weights = [1 if label == 1 else 1 for label in train_label]
+        weights = [5 if label == 1 else 1 for label in train_label]
         Data_sampler = WeightedRandomSampler(
             weights, num_samples=len(weights), replacement=True)
         train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
