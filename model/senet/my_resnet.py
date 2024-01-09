@@ -180,10 +180,11 @@ class My_ResNet(nn.Module):
         self.mp1 = nn.MaxPool2d(2)
         self.dp1 = nn.Dropout(p=0.15)
         self.layer1 = self._make_layer(block, 32, layers[0])
+        self.dp2 = nn.Dropout(p=0.1)
         self.layer2 = self._make_layer(
             block, 64, layers[1], stride=1, dilate=replace_stride_with_dilation[0])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.wide = nn.Linear(6, 20)
+        # self.wide = nn.Linear(6, 20)
         self.fc = nn.Linear(64, num_classes)
 
         for m in self.modules():
@@ -274,6 +275,7 @@ class My_ResNet(nn.Module):
         x = self.dp1(x)
 
         x = self.layer1(x)
+        x = self.dp2(x)
         x = self.layer2(x)
         x = self.avgpool(x)
         x = x.view(x.shape[0], -1)
