@@ -232,11 +232,11 @@ def train_test(
         logging.info(f"----------------------------")
         logging.info(f"patient_acc:{test_patient_acc:.2%}")
         logging.info(f"patient_cm:{test_patient_cm.numpy()}")
+        logging.info(f"patient_TPR:{test_TPR:.3f}")
+        logging.info(f"patient_PPV:{test_PPV:.3f}")
+        logging.info(f"patient_f1_:{test_patient_f1:.3f}")
         logging.info(f"patient_auroc:{test_patient_auroc:.3f}")
         logging.info(f"patient_auprc:{test_patient_auprc:.3f}")
-        logging.info(f"patient_f1_:{test_patient_f1:.3f}")
-        logging.info(f"patient_PPV:{test_PPV:.3f}")
-        logging.info(f"patient_TPR:{test_TPR:.3f}")
         logging.info(f"best_acc:{best_acc:.2%}")
         # 画混淆矩阵
         # draw_confusion_matrix(
