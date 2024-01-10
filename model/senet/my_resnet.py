@@ -178,7 +178,7 @@ class My_ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.mp1 = nn.MaxPool2d(2)
-        self.dp1 = nn.Dropout(p=0.1)
+        self.dp1 = nn.Dropout(p=0.2)
         self.layer1 = self._make_layer(block, 32, layers[0])
         self.dp2 = nn.Dropout(p=0.1)
         self.layer2 = self._make_layer(

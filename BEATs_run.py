@@ -44,7 +44,7 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try \
-4k sr 32 64 channel use samplerWeight[1,5] lr=0.001,reduction=8 kernel_size=3, stride=1, padding=1,+mp1 +dp1(0.1) +dp2(0.1)")
+4k sr 32 64 channel use samplerWeight[1,5] lr=0.001,reduction=8 kernel_size=3, stride=1, padding=1,+mp1 +dp1(0.2) +dp2(0.1)")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
@@ -105,10 +105,10 @@ if __name__ == '__main__':
     logging.info(f"# Learning_rate = {args.learning_rate:.1e}")
     logging.info(f"# lr_scheduler = {args.scheduler_flag}")
     logging.info(f"# Loss_fn = {args.loss_type}")
-    logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
-    logging.info(f"# Trainset_balance = {args.trainset_balence}")
-    logging.info(f"# train_total = {args.train_total}")
-    logging.info(f"# Masking = {args.mask}")
+    # logging.info(f"# Data Augmentation = {args.Data_Augmentation}")
+    # logging.info(f"# Trainset_balance = {args.trainset_balence}")
+    # logging.info(f"# train_total = {args.train_total}")
+    # logging.info(f"# Masking = {args.mask}")
     logging.info(f"# SetType = {args.setType}")
     logging.info(f"# Train_a/p = {train_absent_size}/{train_present_size}")
     logging.info(f"# Test_a/p = {test_absent_size}/{test_present_size}")
