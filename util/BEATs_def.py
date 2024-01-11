@@ -210,6 +210,7 @@ def get_wav_data(dir_path, num=0):
                     )
                 elif y_16k_norm.shape[0] > data_length:
                     y_16k_norm = y_16k_norm[-data_length:]
+                    # y_16k_norm = y_16k_norm[:data_length]
                 wav.append(y_16k_norm)
                 file_name = subfile.split("_")
                 # 标签读取
