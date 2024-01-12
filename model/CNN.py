@@ -164,11 +164,13 @@ class CRNN(nn.Module):
         conv_layers += [self.conv4, self.relu4, self.bn4]
 
         # Bi-LSTM layer
-        self.lstm1 = nn.LSTM()
+        # self.lstm1 = nn.LSTM(input_size=64, hidden_size=64,)
+        self.lstm1 = nn.LSTM(64, 64, num_layers=2,
+                             bidirectional=True, batch_first=True)
 
         # Linear Classifier
         self.ap = nn.AdaptiveAvgPool2d(output_size=1)
-        self.lin = nn.Linear(in_features=64, out_features=3)
+        self.lin = nn.Linear(in_features=18*128, out_features=2)
 
         # Wrap the Convolutional Blocks
         self.conv = nn.Sequential(*conv_layers)
@@ -177,19 +179,41 @@ class CRNN(nn.Module):
     # Forward pass computations
     # ----------------------------
 
+    def preprocess(
+            self,
+            source: torch.Tensor,
+            args=None,
+    ) -> torch.Tensor:
+        fbanks = []
+        for waveform in source:
+            # waveform = waveform.unsqueeze(0) * 2 ** 15  # wavform × 2^15
+            waveform = waveform.unsqueeze(0)
+            fbank = ta_kaldi.fbank(
+                waveform, num_mel_bins=128, sample_frequency=4000, frame_length=25, frame_shift=10)
+            fbank_mean = fbank.mean()
+            fbank_std = fbank.std()
+            fbank = (fbank - fbank_mean) / fbank_std
+            fbanks.append(fbank)
+        fbank = torch.stack(fbanks, dim=0)
+        return fbank
+
     def forward(self, x, x1):
         # Run the convolutional blocks
-        x = self.conv(x)
+        fbank = self.preprocess(x, args=None)
+        fbank = fbank.unsqueeze(1)
+        x = self.conv(fbank)
+        x = x.view(x.shape[0], -1, x.shape[1])
+        # x = x.transpose(0, 2)
 
         # Run the lstm block
         out, hidden = self.lstm1(x)
-        x = out.squeeze()[-1, :]
+        # x = out.squeeze()[-1, :]
 
         # Adaptive pool and flatten for input to linear layer
-        x = self.ap(x)
-        x = x.view(x.shape[0], -1)
-        x1 = self.wide(x1)
-        x_all = torch.cat((x_all, x1), dim=1)
+        # x = self.ap(out)
+        x = out.reshape(out.shape[0], -1)
+        # x1 = self.wide(x1)
+        # x_all = torch.cat((x_all, x1), dim=1)
 
         # x = self.dp(x)
         # Linear layer

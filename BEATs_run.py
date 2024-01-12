@@ -14,7 +14,7 @@ from util.BEATs_def import (logger_init, DatasetClass)
 # from model.networks.imagenet import create_net
 # from BEATs import BEATs_Pre_Train_itere3
 # from model.model_sknet import AudioClassifier
-from model.CNN import AudioClassifier
+from model.CNN import AudioClassifier, CRNN
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=True,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
-    parser.add_argument("--model", type=str, default="CNN baseline")
+    parser.add_argument("--model", type=str, default="CRNN baseline")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -84,7 +84,8 @@ if __name__ == '__main__':
     trainset_size = train_label.shape[0]
     testset_size = test_label.shape[0]
     # ========================/ setup padding /========================== #
-    MyModel = AudioClassifier()
+    # MyModel = AudioClassifier()
+    MyModel = CRNN()
     # MyModel = se_resnet6()
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
