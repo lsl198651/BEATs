@@ -178,7 +178,7 @@ class My_ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.mp1 = nn.MaxPool2d(2)
-        self.dp1 = nn.Dropout(p=0.1)
+        self.dp1 = nn.Dropout(p=0.15)
         self.layer1 = self._make_layer(block, 32, layers[0])
         self.dp2 = nn.Dropout(p=0.1)
         self.layer2 = self._make_layer(
@@ -281,5 +281,6 @@ class My_ResNet(nn.Module):
         x = x.view(x.shape[0], -1)
         # xall = torch.cat((x, x1), dim=1)
         x = self.fc(x)
+        x = torch.softmax(x, dim=1)
 
         return x

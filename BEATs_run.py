@@ -14,7 +14,7 @@ from util.BEATs_def import (logger_init, DatasetClass)
 # from model.networks.imagenet import create_net
 # from BEATs import BEATs_Pre_Train_itere3
 # from model.model_sknet import AudioClassifier
-# from model.CNN import AudioClassifier
+from model.CNN import AudioClassifier
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -45,8 +45,7 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=True,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
-    parser.add_argument("--model", type=str, default="logmel +feat resnetv2 try \
-4k sr 32 64 channel use samplerWeight[1,5] lr=0.001,reduction=8 kernel_size=3, stride=1, padding=1,+mp1 +dp1(0.1)")
+    parser.add_argument("--model", type=str, default="CNN baseline")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--confusion_matrix_path", type=float,
@@ -54,8 +53,8 @@ if __name__ == '__main__':
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['0', '1', '3', '4'])
-    parser.add_argument("--test_fold", type=list, default=['2'])
+                        default=['0', '1', '2', '3'])
+    parser.add_argument("--test_fold", type=list, default=['4'])
     parser.add_argument("--setType", type=str, default=r"\12_baseset_4k")
     args = parser.parse_args()
     # 检测分折重复
@@ -85,8 +84,8 @@ if __name__ == '__main__':
     trainset_size = train_label.shape[0]
     testset_size = test_label.shape[0]
     # ========================/ setup padding /========================== #
-    # MyModel =  AudioClassifier()
-    MyModel = se_resnet6()
+    MyModel = AudioClassifier()
+    # MyModel = se_resnet6()
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
         for param in MyModel.BEATs.parameters():
