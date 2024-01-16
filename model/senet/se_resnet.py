@@ -1,6 +1,7 @@
 import torch.nn as nn
 from model.senet.my_resnet import My_ResNet
 
+
 class SELayer(nn.Module):
     def __init__(self, channel, reduction):
         super(SELayer, self).__init__()
@@ -17,7 +18,8 @@ class SELayer(nn.Module):
         y = self.avg_pool(x).view(b, c)
         y = self.fc(y).view(b, c, 1, 1)
         return x * y.expand_as(x)
-    
+
+
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
 
@@ -26,7 +28,7 @@ class SEBasicBlock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                base_width=64, dilation=1, norm_layer=None,*, reduction=8):
+                 base_width=64, dilation=1, norm_layer=None, *, reduction=8):
         super(SEBasicBlock, self).__init__()
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(inplanes)
@@ -42,11 +44,11 @@ class SEBasicBlock(nn.Module):
         out = self.bn1(x)
         out = self.relu(out)
         out = self.conv1(out)
-        
+
         out = self.bn2(out)
         out = self.relu(out)
-        out = self.conv2(out) 
-        out = self.se(out)
+        out = self.conv2(out)
+        # out = self.se(out)
 
         if self.downsample is not None:
             residual = self.downsample(x)
@@ -57,7 +59,6 @@ class SEBasicBlock(nn.Module):
         return out
 
 
-
 def se_resnet6(num_classes=2):
     """Constructs a ResNet-18 model.
     Args:
@@ -66,4 +67,3 @@ def se_resnet6(num_classes=2):
     model = My_ResNet(SEBasicBlock, [1, 1], num_classes=num_classes)
     model.avgpool = nn.AdaptiveAvgPool2d(1)
     return model
-
