@@ -48,7 +48,7 @@ class SEBasicBlock(nn.Module):
         out = self.bn2(out)
         out = self.relu(out)
         out = self.conv2(out)
-        # out = self.se(out)
+        out = self.se(out)
 
         if self.downsample is not None:
             residual = self.downsample(x)
