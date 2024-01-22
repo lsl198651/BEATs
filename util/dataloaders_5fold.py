@@ -340,4 +340,4 @@ def fold5_dataloader(train_folder, test_folder, Data_Augmentation, set_type):
         )
     )
 
-    return train_features, train_label, train_index, train_ebd, test_features,  test_label, test_index, test_ebd
+    return train_features, train_label, train_index, test_features,  test_label, test_index  # , test_ebd

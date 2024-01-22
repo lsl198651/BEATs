@@ -5,14 +5,15 @@ import logging
 import numpy as np
 from torch.utils.data.sampler import WeightedRandomSampler
 from torch.utils.data import DataLoader
-from model.senet.se_resnet import se_resnet6
+from model.resnet6v2.se_resnet import se_resnet6
+from model.resnet18.resnet18 import MyResnet18
 from util.dataloaders_5fold import fold5_dataloader
 from util.traintest import train_test
 from util.BEATs_def import (logger_init, DatasetClass)
 # from util.dataloaders import get_features
 # from model.model_sknet import AudioClassifier
 # from BEATs import BEATs_Pre_Train_itere3
-# from model.CNN import AudioClassifier
+from torchvision.models import resnet18
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -43,15 +44,15 @@ if __name__ == '__main__':
     parser.add_argument("--samplerWeight", type=bool, default=True,
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
-    parser.add_argument("--model", type=str, default="logmel + resnet6v2 try \
-4k sr 32 64 channel use samplerWeight[1,5] lr=0.001,reduction=8 kernel_size=7, stride=2, padding=3,+mp1 +dp1(0.15),try 1250front")
+    parser.add_argument(
+        "--model", type=str, default="logmel + resnet18  4k  samplerWeight[1,5] lr=0.001")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
     parser.add_argument("--cross_evalue", type=bool, default=False)
     parser.add_argument("--train_fold", type=list,
-                        default=['0', '1', '2', '3'])
-    parser.add_argument("--test_fold", type=list, default=['4'])
+                        default=['1', '2', '3', '4'])
+    parser.add_argument("--test_fold", type=list, default=['0'])
     parser.add_argument("--setType", type=str, default=r"\12_baseset_4k")
     parser.add_argument("--model_folder", type=str,
                         default=r"D:\Shilong\murmur\00_Code\LM\beats1\SE_ResNet6\MyModels")
@@ -61,21 +62,21 @@ if __name__ == '__main__':
         if val in args.train_fold:
             raise ValueError("train_fold and test_fold have same fold")
 
-    train_features, train_label, train_index, train_ebd, test_features,  test_label, test_index, test_ebd = fold5_dataloader(
+    train_features, train_label, train_index, test_features,  test_label, test_index = fold5_dataloader(
         args.train_fold, args.test_fold, args.Data_Augmentation, args.setType)
     # ========================/ setup loader /========================== #
     if args.samplerWeight == True:
         weights = [5 if label == 1 else 1 for label in train_label]
         Data_sampler = WeightedRandomSampler(
             weights, num_samples=len(weights), replacement=True)
-        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                                  sampler=Data_sampler, batch_size=args.batch_size, drop_last=True,  pin_memory=True, num_workers=4)
+        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
+                                  sampler=Data_sampler, batch_size=args.batch_size, drop_last=True,  pin_memory=True, num_workers=2)
     else:
-        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index, wavebd=train_ebd),
-                                  batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=4)
+        train_loader = DataLoader(DatasetClass(wavlabel=train_label, wavdata=train_features, wavidx=train_index),
+                                  batch_size=args.batch_size, drop_last=True, shuffle=True, pin_memory=True, num_workers=2)
 
-    val_loader = DataLoader(DatasetClass(wavlabel=test_label, wavdata=test_features, wavidx=test_index, wavebd=test_ebd),
-                            batch_size=1, shuffle=False, pin_memory=True, num_workers=4)
+    val_loader = DataLoader(DatasetClass(wavlabel=test_label, wavdata=test_features, wavidx=test_index),
+                            batch_size=1, shuffle=False, pin_memory=True, num_workers=2)
 
     # ========================/ dataset size /========================== #
     train_present_size = np.sum(train_label == 1)
@@ -86,7 +87,8 @@ if __name__ == '__main__':
     testset_size = test_label.shape[0]
     # ========================/ setup padding /========================== #
     # MyModel = AudioClassifier()
-    MyModel = se_resnet6()
+    # MyModel = se_resnet6()
+    MyModel = MyResnet18()
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
         for param in MyModel.BEATs.parameters():
@@ -95,7 +97,7 @@ if __name__ == '__main__':
         )), lr=args.learning_rate, betas=args.beta,)
     else:
         optimizer = torch.optim.AdamW(
-            MyModel.parameters(), lr=args.learning_rate, betas=args.beta,)
+            MyModel.parameters(), lr=args.learning_rate, betas=args.beta)
     # ========================/ setup scaler /========================== #
     logger_init()
     logging.info(f"{args.model}  ")

@@ -1,19 +1,8 @@
-# from functools import partial
-from typing import Callable, List, Optional, Type, Union
-from numpy import fmin
-
+from typing import Any, Callable, List, Optional, Type, Union
 import torch
 import torch.nn as nn
 from torch import Tensor
 import torchaudio.compliance.kaldi as ta_kaldi
-import torchaudio.transforms as T
-import torchaudio.functional as F
-import librosa
-# from ..transforms._presets import ImageClassification
-# from ..utils import _log_api_usage_once
-# from ._api import register_model, Weights, WeightsEnum
-# from ._meta import _IMAGENET_CATEGORIES
-# from ._utils import _ovewrite_named_param, handle_legacy_interface
 
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
@@ -144,7 +133,7 @@ class Bottleneck(nn.Module):
         return out
 
 
-class My_ResNet(nn.Module):
+class ResNet(nn.Module):
     def __init__(
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
@@ -162,7 +151,7 @@ class My_ResNet(nn.Module):
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
 
-        self.inplanes = 32
+        self.inplanes = 64
         self.dilation = 1
         if replace_stride_with_dilation is None:
             # each element in the tuple indicates if we should replace
@@ -180,21 +169,20 @@ class My_ResNet(nn.Module):
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.mp1 = nn.MaxPool2d(2)
-        self.dp1 = nn.Dropout(p=0.15)
-        self.layer1 = self._make_layer(block, 32, layers[0])
-        self.dp2 = nn.Dropout(p=0.1)
+        self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(
-            block, 64, layers[1], stride=1, dilate=replace_stride_with_dilation[0])
+            block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
+        self.layer3 = self._make_layer(
+            block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
+        self.layer4 = self._make_layer(
+            block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        # self.wide = nn.Linear(6, 20)
-        self.fc = nn.Linear(64, num_classes)
+        self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(
                     m.weight, mode="fan_out", nonlinearity="relu")
-                # nn.init.kaiming_normal_(m.weight, a=0.1)
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
@@ -202,12 +190,14 @@ class My_ResNet(nn.Module):
         # Zero-initialize the last BN in each residual branch,
         # so that the residual branch starts with zeros, and each residual block behaves like an identity.
         # This improves the model by 0.2~0.3% according to https://arxiv.org/abs/1706.02677
-        # if zero_init_residual:
-        #     for m in self.modules():
-        #         if isinstance(m, Bottleneck) and m.bn3.weight is not None:
-        #             nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
-        #         elif isinstance(m, BasicBlock) and m.bn2.weight is not None:
-        #             nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
+        if zero_init_residual:
+            for m in self.modules():
+                if isinstance(m, Bottleneck) and m.bn3.weight is not None:
+                    # type: ignore[arg-type]
+                    nn.init.constant_(m.bn3.weight, 0)
+                elif isinstance(m, BasicBlock) and m.bn2.weight is not None:
+                    # type: ignore[arg-type]
+                    nn.init.constant_(m.bn2.weight, 0)
 
     def _make_layer(
         self,
@@ -255,13 +245,8 @@ class My_ResNet(nn.Module):
             source: torch.Tensor,
     ) -> torch.Tensor:
         fbanks = []
-        # mel = T.MelSpectrogram(sample_rate=4000, n_fft=512,
-        #                        win_length=100, f_min=10, f_max=1000, n_mels=128)
         for waveform in source:
             waveform = waveform.unsqueeze(0)
-            # mel = mel.to('cuda')
-            # melspec = mel(waveform)
-            # logfbank = T.AmplitudeToDB()(melspec)
             fbank = ta_kaldi.fbank(
                 waveform, num_mel_bins=128, sample_frequency=4000, frame_length=25, frame_shift=10)
             fbank_mean = fbank.mean()
@@ -271,23 +256,31 @@ class My_ResNet(nn.Module):
         fbank = torch.stack(fbanks, dim=0)
         return fbank
 
-    def forward(self, x: Tensor, x1: Tensor) -> Tensor:
+    def _forward_impl(self, x: Tensor) -> Tensor:
         # See note [TorchScript super()]
         x = self.preprocess(x)
         x = x.unsqueeze(1)
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        # x = self.maxpool(x)
-        x = self.mp1(x)
-        x = self.dp1(x)
+        x = self.maxpool(x)
 
         x = self.layer1(x)
-        # x = self.dp2(x)
         x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+
         x = self.avgpool(x)
-        x = x.view(x.shape[0], -1)
-        # xall = torch.cat((x, x1), dim=1)
+        x = torch.flatten(x, 1)
         x = self.fc(x)
 
         return x
+
+    def forward(self, x: Tensor) -> Tensor:
+        return self._forward_impl(x)
+
+
+def MyResnet18() -> ResNet:
+
+    model = ResNet(BasicBlock, [2, 2, 2, 2])
+    return model

@@ -8,7 +8,7 @@ from torch import optim
 from datetime import datetime
 from transformers import optimization
 # import numpy as np
-import sklearn.metrics
+# import sklearn.metrics
 # from torch.cuda.amp import autocast, GradScaler
 # from util.BEATs_def import draw_confusion_matrix, butterworth_low_pass_filter
 from torch.utils.tensorboard import SummaryWriter
@@ -84,7 +84,7 @@ def train_test(
         train_len = 0
         input_train = []
         target_train = []
-        for data_t, label_t, index_t, feat, embeding in train_loader:
+        for data_t, label_t, index_t in train_loader:  # , feat, embeding
             # embedings = []
             # for ebed in embeding:
             #     ebd_List = []
@@ -96,10 +96,10 @@ def train_test(
             #         torch.tensor(ebed % 10)).detach().numpy())
             #     embedings.append(ebd_List)
             # embedings = torch.tensor(embedings)
-            data_t, label_t,  index_t, feat = data_t.to(
-                device), label_t.to(device),  index_t.to(device), feat.to(device)  # , embedings.to(device)
+            data_t, label_t,  index_t = data_t.to(
+                device), label_t.to(device),  index_t.to(device)  # , feat.to(device)  # , embedings.to(device)
             # with autocast(device_type='cuda', dtype=torch.float16):# 这函数害人呀，慎用
-            predict_t = model(data_t, feat)  #
+            predict_t = model(data_t)  #
             loss = loss_fn(
                 predict_t, label_t.long())
             optimizer.zero_grad()
@@ -127,7 +127,7 @@ def train_test(
         test_loss = 0
         correct_v = 0
         with torch.no_grad():
-            for data_v, label_v, index_v, feat_v, embeding_v in test_loader:
+            for data_v, label_v, index_v in test_loader:
                 # embedings_v = []
                 # for ebed in embeding_v:
                 #     ebd_List = []
@@ -139,11 +139,11 @@ def train_test(
                 #         torch.tensor(ebed % 10)).detach().numpy())
                 #     embedings_v.append(ebd_List)
                 # embedings_v = torch.tensor(embedings_v)
-                data_v, label_v, index_v, feat_v = \
+                data_v, label_v, index_v = \
                     data_v.to(device), label_v.to(device), index_v.to(
-                        device), feat_v.to(device)
+                        device)  # , feat_v.to(device)
                 optimizer.zero_grad()
-                predict_v = model(data_v, feat_v)
+                predict_v = model(data_v)
                 loss_v = loss_fn(predict_v, label_v.long())
                 # get the index of the max log-probability
                 pred_v = predict_v.max(1, keepdim=True)[1]
@@ -192,9 +192,9 @@ def train_test(
         # 保存最好的模型
         if test_patient_acc > best_acc:
             best_acc = test_patient_acc
-            utils.save_checkpoint({"epoch": epochs + 1,
-                                   "model": model.state_dict(),
-                                   "optimizer": optimizer.state_dict()}, "se_resnet6v2", args.test_fold[0], "{}".format(args.model_folder))
+            # utils.save_checkpoint({"epoch": epochs + 1,
+            #                        "model": model.state_dict(),
+            #                        "optimizer": optimizer.state_dict()}, "se_resnet6v2", args.test_fold[0], "{}".format(args.model_folder))
 
         pd.DataFrame(patient_error_id).to_csv(patient_error_index_path+"/epoch" +
                                               str(epochs+1)+".csv", index=False, header=False)
