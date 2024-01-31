@@ -45,7 +45,7 @@ if __name__ == '__main__':
                         help="use balanced sampler", choices=[True, False],)
     # TODO 改模型名字
     parser.add_argument(
-        "--model", type=str, default="logmel + resnet18  4k  samplerWeight[1,5] lr=0.001")
+        "--model", type=str, default="logmel + se_resnet6v2  4k  samplerWeight[1,5] lr=0.001,32,64 channel reductiom=8 high_freq=1000, window_type='hamming'")
     parser.add_argument("--ap_ratio", type=float, default=1.0,
                         help="ratio of absent and present")
     parser.add_argument("--beta", type=float, default=(0.9, 0.98), help="beta")
@@ -87,8 +87,8 @@ if __name__ == '__main__':
     testset_size = test_label.shape[0]
     # ========================/ setup padding /========================== #
     # MyModel = AudioClassifier()
-    # MyModel = se_resnet6()
-    MyModel = MyResnet18()
+    MyModel = se_resnet6()
+    # MyModel = MyResnet18()
     # ========================/ setup optimizer /========================== #
     if not args.train_total:       # tmd 谁给我这么写的！！！！！！
         for param in MyModel.BEATs.parameters():
@@ -99,6 +99,8 @@ if __name__ == '__main__':
         optimizer = torch.optim.AdamW(
             MyModel.parameters(), lr=args.learning_rate, betas=args.beta)
     # ========================/ setup scaler /========================== #
+    # import torch
+    # print(torch.__version__)
     logger_init()
     logging.info(f"{args.model}  ")
     logging.info(f"# Batch_size = {args.batch_size}")

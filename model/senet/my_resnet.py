@@ -271,7 +271,7 @@ class My_ResNet(nn.Module):
         fbank = torch.stack(fbanks, dim=0)
         return fbank
 
-    def forward(self, x: Tensor, x1: Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         # See note [TorchScript super()]
         x = self.preprocess(x)
         x = x.unsqueeze(1)
